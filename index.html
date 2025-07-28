@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OSINT Search Tool</title>
+</head>
+<body>
+  <h2>OSINT Keyword Search</h2>
+  <input type="text" id="keyword" placeholder="Enter a name, company, etc">
+  
+  <h3>Choose sites to search:</h3>
+  <label><input type="checkbox" value="https://www.google.com/search?q=">Google</label><br>
+  <label><input type="checkbox" value="https://www.linkedin.com/search/results/all/?keywords=">LinkedIn</label><br>
+  <label><input type="checkbox" value="https://find-and-update.company-information.service.gov.uk/search?q=">Companies House</label><br>
+  <label><input type="checkbox" value="https://www.yandex.com/search/?text=">Yandex</label><br>
+
+  <br><button onclick="search()">Search</button>
+
+  <script>
+    function search() {
+      const keyword = encodeURIComponent(document.getElementById("keyword").value);
+      const checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+
+      checkboxes.forEach(cb => {
+        const url = cb.value + keyword;
+        window.open(url, "_blank");
+      });
+    }
+  </script>
+</body>
+</html>

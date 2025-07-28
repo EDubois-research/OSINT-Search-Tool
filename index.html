@@ -1,30 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>OSINT Search Tool</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simple OSINT Search Tool</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; }
+  h1 { text-align: center; }
+  label { display: block; margin-top: 10px; }
+  input[type=text], select { width: 100%; padding: 6px; margin-top: 4px; }
+  button { margin-top: 10px; padding: 8px 12px; }
+  .category-list, .site-list { margin: 10px 0; }
+  .site-item { margin-bottom: 5px; }
+  .results { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+  .checkbox-inline { display: inline-block; margin-right: 10px; }
+</style>
 </head>
 <body>
-  <h2>OSINT Keyword Search</h2>
-  <input type="text" id="keyword" placeholder="Enter a name, company, etc">
-  
-  <h3>Choose sites to search:</h3>
-  <label><input type="checkbox" value="https://www.google.com/search?q=">Google</label><br>
-  <label><input type="checkbox" value="https://www.linkedin.com/search/results/all/?keywords=">LinkedIn</label><br>
-  <label><input type="checkbox" value="https://find-and-update.company-information.service.gov.uk/search?q=">Companies House</label><br>
 
+<h1>Simple OSINT Search Tool</h1>
 
-  <br><button onclick="search()">Search</button>
+<section>
+  <h2>Categories</h2>
+  <input type="text" id="newCategory" placeholder="Add new category" />
+  <button onclick="addCategory()">Add Category</button>
+  <div id="categoryList" class="category-list"></div>
+</section>
 
-  <script>
-    function search() {
-      const keyword = encodeURIComponent(document.getElementById("keyword").value);
-      const checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+<section>
+  <h2>Websites</h2>
+  <input type="text" id="siteName" placeholder="Site Name (e.g. LinkedIn)" />
+  <input type="text" id="siteUrl" placeholder="Search URL (use %s for keyword, e.g. https://www.google.com/search?q=%s)" />
+  <label>Select categories (Ctrl+click or Cmd+click for multiple):</label>
+  <select id="siteCategories" multiple size="5"></select>
+  <button onclick="addSite()">Add Website</button>
+  <div id="siteList" class="site-list"></div>
+</section>
 
-      checkboxes.forEach(cb => {
-        const url = cb.value + keyword;
-        window.open(url, "_blank");
-      });
+<section>
+  <h2>Search</h2>
+  <label>Enter keywords (separated by commas):</label>
+  <input type="text" id="searchKeywords" placeholder="e.g. John Smith, New York" />
+  <div id="searchCategories"></div>
+  <button onclick="performSearch()">Search Selected Sites</button>
+</section>
+
+<section class="results" id="results"></section>
+
+<script>
+  let categories = [];
+  let sites = [];
+
+  function addCategory() {
+    const catInput = document.getElementById('newCategory');
+    const name = catInput.value.trim();
+    if(name && !categories.includes(name)) {
+      categories.push(name);
+      catInput.value = '';
+      renderCategories();
+      renderSiteCategoryOptions();
     }
-  </script>
+  }
+
+  function renderCategories() {
+    const catList = document.getElementById('categoryList');
+    catList.innerHTML = categories.map(c => `<span>${c}</span>`).join(', ');
+  }
+
+  function renderSiteCategoryOptions() {
+    const select = document.getElementById('siteCategories');
+    select.innerHTML = '';
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      select.appendChild(option);
+    });
+
+    renderSearchCategoryCheckboxes();
+  }
+
+  function addSite() {
+    const name = document.getElementById('siteName').value.trim();
+    const url = document.getElementById('siteUrl').value.trim();
+    const select = document.getElementById('siteCategories');
+    const selectedCats = Array.from(select.selectedOptions).map(opt => opt.value);
+
+    if (!name || !url || selectedCats.length === 0) {
+      alert('Please enter site name, URL, and select at least one category.');
+      return;
+    }
+
+    // Make sure url contains %s for keyword placeholder
+    if (!url.includes('%s')) {
+      alert('Search URL must include "%s" where the keyword will be inserted.');
+      return;
+    }
+
+    sites.push({ name, url, categories: selectedCats });
+
+    document.getElementById('siteName').value = '';
+    document.getElementById('siteUrl').value = '';
+    select.selectedIndex = -1;
+
+    renderSites();
+  }
+
+  function renderSites() {
+    const list = document.getElementById('siteList');
+    list.innerHTML = '';
+    sites.forEach((site, i) => {
+      const cats = site.categories.join(', ');
+      const div = document.createElement('div');
+      div.className = 'site-item';
+      div.textContent = `${site.name} [${cats}] — ${site.url}`;
+      list.appendChild(div);
+    });
+  }
+
+  function renderSearchCategoryCheckboxes() {
+    const container = document.getElementById('searchCategories');
+    container.innerHTML = '';
+    categories.forEach(cat => {
+      const id = 'chk_' + cat.replace(/\s+/g,'_');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = id;
+      checkbox.value = cat;
+      checkbox.checked = true;
+      const label = document.createElement('label');
+      label.htmlFor = id;
+      label.textContent = cat;
+      label.style.marginRight = '15px';
+
+      container.appendChild(checkbox);
+      container.appendChild(label);
+    });
+  }
+
+  function performSearch() {
+    const keywordInput = document.getElementById('searchKeywords').value.trim();
+    if (!keywordInput) {
+      alert('Please enter keywords.');
+      return;
+    }
+    const keywords = keywordInput.split(',').map(k => k.trim()).filter(k => k);
+
+    const selectedCats = Array.from(document.querySelectorAll('#searchCategories input[type=checkbox]:checked'))
+                              .map(chk => chk.value);
+
+    // Filter sites by selected categories
+    const filteredSites = sites.filter(site =>
+      site.categories.some(cat => selectedCats.includes(cat))
+    );
+
+    if(filteredSites.length === 0){
+      alert('No sites selected for the chosen categories.');
+      return;
+    }
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<h3>Search Results (opening new tabs)...</h3><ul></ul>';
+    const ul = resultsDiv.querySelector('ul');
+
+    // Open new tabs for each keyword & each site
+    filteredSites.forEach(site => {
+      keywords.forEach(kw => {
+        const searchUrl = site.url.replace('%s', encodeURIComponent(kw));
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${searchUrl}" target="_blank" rel="noopener">${site.name} — "${kw}"</a>`;
+        ul.appendChild(li);
+        window.open(searchUrl, '_blank');
+      });
+    });
+  }
+
+  // Initialize with some categories & example sites
+  function init() {
+    categories = ['Company Searches', 'Transport', 'Social Media', 'Court Searches', 'Sanctions & PEPs', 'Offshore Companies', 'Occupation Registers', 'Domain, Leaked, Cached', 'Genealogy'];
+    renderCategories();
+    renderSiteCategoryOptions();
+
+    sites = [
+      { name: 'LinkedIn', url: 'https://www.linkedin.com/search/results/all/?keywords=%s', categories: ['Social Media'] },
+      { name: 'Google Images', url: 'https://www.google.com/search?tbm=isch&q=%s', categories: ['Domain, Leaked, Cached'] },
+      { name: 'Companies House', url: 'https://find-and-update.company-information.service.gov.uk/search?q=%s', categories: ['Company Searches'] }
+    ];
+    renderSites();
+  }
+
+  init();
+</script>
+
 </body>
 </html>

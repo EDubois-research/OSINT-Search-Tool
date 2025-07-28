@@ -132,5 +132,22 @@ document.getElementById('searchBtn').addEventListener('click', () => {
   html += `<p>Categories: ${checkedCategories.join(', ')}</p>`;
 
   filteredSites.forEach(site => {
-    const searchU
-    
+    const searchUrl = buildSearchUrl(site, keyword, filters);
+    const relevance = simulateRelevanceScore(keyword, site.name);
+
+    html += `
+      <div class="result">
+        <h3><a href="${searchUrl}" target="_blank" rel="noopener">${site.name}</a></h3>
+        <p>Categories: ${site.categories.join(', ')}</p>
+        <p>Relevance Score: <span class="relevance">${relevance}%</span></p>
+        <p><a href="${searchUrl}" target="_blank" rel="noopener">Open Search</a></p>
+      </div>
+    `;
+  });
+
+  document.getElementById('results').innerHTML = html;
+});
+</script>
+
+</body>
+</html>

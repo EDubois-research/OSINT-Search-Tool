@@ -91,16 +91,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 5px;
+      padding: 12px 8px;
       cursor: pointer;
       font-weight: 600;
       user-select: none;
-      transition: background-color 0.2s;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      position: relative;
     }
 
     .category-header:hover {
-      background: #f0e6e1;
-      border-radius: 4px;
+      background: linear-gradient(135deg, #f0e6e1 0%, #e8ddd8 100%);
+      border-color: #B13F17;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(177, 63, 23, 0.2);
+    }
+
+    .category-header:before {
+      content: "👆 Click to expand";
+      position: absolute;
+      right: 50px;
+      font-size: 0.7rem;
+      color: #888;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .category-header:hover:before {
+      opacity: 1;
     }
 
     .category-websites {
@@ -500,6 +522,15 @@
         flex-direction: column;
         gap: 5px;
       }
+      
+      /* Mobile category improvements */
+      .category-header:before {
+        display: none; /* Hide tooltip on mobile */
+      }
+      
+      .category-header {
+        padding: 10px 6px;
+      }
     }
   </style>
 </head>
@@ -577,7 +608,13 @@
 
     <section class="categories-section">
       <h2>Search Categories</h2>
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 15px;">
+        <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1565c0;">
+          <p style="margin: 0; font-size: 0.9em; color: #1565c0;">
+            💡 <strong>Tip:</strong> Click on any category header below to expand and see the available websites. 
+            All sites are selected by default.
+          </p>
+        </div>
         <button id="selectAllBtn" class="btn-small">Select All</button>
         <button id="deselectAllBtn" class="btn-small">Deselect All</button>
       </div>
@@ -883,6 +920,8 @@
     function renderCategories() {
       categoriesContainer.innerHTML = "";
       
+      let isFirstCategory = true;
+      
       for (const catName in categories) {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
@@ -891,7 +930,7 @@
         header.className = "category-header";
         
         const titleSpan = document.createElement("span");
-        titleSpan.textContent = catName;
+        titleSpan.innerHTML = `<span style="color: #B13F17;">📁</span> ${catName} <small style="color: #666; font-weight: normal;">(${categories[catName].length} sites)</small>`;
         
         const toggleIcon = document.createElement("span");
         toggleIcon.className = "toggle-icon";
@@ -902,6 +941,13 @@
 
         const websitesDiv = document.createElement("div");
         websitesDiv.className = "category-websites";
+        
+        // Start with first category open
+        if (isFirstCategory) {
+          websitesDiv.classList.add("visible");
+          toggleIcon.classList.add("rotated");
+          isFirstCategory = false;
+        }
 
         categories[catName].forEach((site, idx) => {
           const websiteItem = document.createElement("div");
@@ -932,6 +978,13 @@
         header.addEventListener("click", () => {
           const isVisible = websitesDiv.classList.toggle("visible");
           toggleIcon.classList.toggle("rotated", isVisible);
+          
+          // Update the tooltip
+          if (isVisible) {
+            header.style.setProperty('--tooltip-text', '"👆 Click to collapse"');
+          } else {
+            header.style.setProperty('--tooltip-text', '"👆 Click to expand"');
+          }
         });
       }
     }

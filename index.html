@@ -514,13 +514,13 @@
       }
       
       /* Mobile category improvements */
-      .category-title {
-        font-size: 0.9rem;
-        padding: 6px 0;
+      .category {
+        padding: 10px !important;
+        margin-bottom: 6px !important;
       }
       
-      .websites-list {
-        padding-left: 15px !important;
+      .category label div {
+        font-size: 0.9rem !important;
       }
     }
   </style>
@@ -602,8 +602,8 @@
       <div style="margin-bottom: 15px;">
         <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1565c0;">
           <p style="margin: 0; font-size: 0.9em; color: #1565c0;">
-            💡 <strong>Search Selection:</strong> All websites are listed below with checkboxes. 
-            Uncheck any sites you don't want to include in your search. All sites are selected by default.
+            💡 <strong>Category Selection:</strong> Select which categories of websites to include in your search. 
+            Each category contains multiple websites that will all be searched when selected.
           </p>
         </div>
         <button id="selectAllBtn" class="btn-small">Select All</button>
@@ -866,11 +866,10 @@
       // Clear all checkboxes first
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
       
-      // Restore selected websites
-      savedCase.selectedWebsites.forEach(sel => {
-        const checkbox = categoriesContainer.querySelector(
-          `input[data-category="${sel.category}"][data-index="${sel.index}"]`
-        );
+      // Restore selected categories (get unique categories from selected websites)
+      const selectedCategories = [...new Set(savedCase.selectedWebsites.map(sel => sel.category))];
+      selectedCategories.forEach(category => {
+        const checkbox = categoriesContainer.querySelector(`input[data-category="${category}"]`);
         if (checkbox) checkbox.checked = true;
       });
       
@@ -921,73 +920,66 @@
       for (const catName in categories) {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
-
-        // Simple category header (no dropdown functionality)
-        const header = document.createElement("div");
-        header.className = "category-title";
-        header.innerHTML = `<strong style="color: #B13F17;">📋 ${catName}</strong> <small style="color: #666;">(${categories[catName].length} sites)</small>`;
-        header.style.cssText = `
-          padding: 8px 0;
-          margin-bottom: 8px;
-          border-bottom: 1px solid #eee;
-          font-size: 1rem;
-        `;
-
-        categoryDiv.appendChild(header);
-
-        // Create flat list of websites with checkboxes
-        const websitesDiv = document.createElement("div");
-        websitesDiv.className = "websites-list";
-        websitesDiv.style.cssText = `
+        categoryDiv.style.cssText = `
           display: flex;
-          flex-direction: column;
-          gap: 6px;
-          margin-bottom: 15px;
-          padding-left: 20px;
+          align-items: center;
+          padding: 12px;
+          margin-bottom: 8px;
+          background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          transition: all 0.3s ease;
         `;
 
-        categories[catName].forEach((site, idx) => {
-          const websiteItem = document.createElement("div");
-          websiteItem.className = "website-item";
-          websiteItem.style.cssText = `
-            display: flex;
-            align-items: center;
-            padding: 4px 0;
-          `;
+        // Category checkbox
+        const label = document.createElement("label");
+        label.style.cssText = `
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          flex-grow: 1;
+        `;
 
-          const label = document.createElement("label");
-          label.style.cssText = `
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            flex-grow: 1;
-          `;
-          
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = true;
-          checkbox.dataset.category = catName;
-          checkbox.dataset.index = idx;
-          checkbox.style.cssText = `
-            margin-right: 8px;
-            width: auto;
-          `;
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = true;
+        checkbox.dataset.category = catName;
+        checkbox.style.cssText = `
+          margin-right: 12px;
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        `;
 
-          const nameSpan = document.createElement("span");
-          nameSpan.textContent = site.name;
-          nameSpan.style.cssText = `
-            color: #333;
-            font-size: 0.95rem;
-          `;
-          
-          label.appendChild(checkbox);
-          label.appendChild(nameSpan);
-          websiteItem.appendChild(label);
-          websitesDiv.appendChild(websiteItem);
+        const categoryInfo = document.createElement("div");
+        categoryInfo.innerHTML = `
+          <div style="font-weight: 600; color: #B13F17; font-size: 1.1rem; margin-bottom: 2px;">
+            📋 ${catName}
+          </div>
+          <div style="font-size: 0.85rem; color: #666;">
+            ${categories[catName].length} websites included
+          </div>
+        `;
+
+        label.appendChild(checkbox);
+        label.appendChild(categoryInfo);
+        categoryDiv.appendChild(label);
+        categoriesContainer.appendChild(categoryDiv);
+
+        // Add hover effect
+        categoryDiv.addEventListener('mouseenter', () => {
+          categoryDiv.style.background = 'linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%)';
+          categoryDiv.style.borderColor = '#B13F17';
+          categoryDiv.style.transform = 'translateY(-1px)';
+          categoryDiv.style.boxShadow = '0 2px 8px rgba(177, 63, 23, 0.15)';
         });
 
-        categoryDiv.appendChild(websitesDiv);
-        categoriesContainer.appendChild(categoryDiv);
+        categoryDiv.addEventListener('mouseleave', () => {
+          categoryDiv.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
+          categoryDiv.style.borderColor = '#e0e0e0';
+          categoryDiv.style.transform = 'translateY(0)';
+          categoryDiv.style.boxShadow = 'none';
+        });
       }
     }
 
@@ -1415,12 +1407,14 @@
       const selectedSites = [];
       categoriesContainer.querySelectorAll("input[type=checkbox]:checked").forEach(cb => {
         const category = cb.dataset.category;
-        const index = parseInt(cb.dataset.index, 10);
-        if (categories[category] && categories[category][index]) {
-          selectedSites.push({
-            category,
-            index,
-            site: categories[category][index]
+        if (categories[category]) {
+          // Add all websites from selected categories
+          categories[category].forEach((site, index) => {
+            selectedSites.push({
+              category,
+              index,
+              site: site
+            });
           });
         }
       });
@@ -1443,12 +1437,12 @@
     // Select/Deselect all functionality
     selectAllBtn.addEventListener("click", () => {
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
-      showMessage("All websites selected", "success");
+      showMessage("All categories selected", "success");
     });
 
     deselectAllBtn.addEventListener("click", () => {
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
-      showMessage("All websites deselected", "success");
+      showMessage("All categories deselected", "success");
     });
 
     // Category management

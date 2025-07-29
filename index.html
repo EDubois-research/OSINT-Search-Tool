@@ -1,153 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OSINT Search Tool</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  h1 { text-align: center; }
-  .category-group { margin-bottom: 15px; }
-  .category-label { font-weight: bold; margin-right: 10px; }
-  .search-results { margin-top: 20px; }
-  .result { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-  .result h3 { margin: 0 0 5px 0; }
-  .result .relevance { font-weight: bold; color: #2a9d8f; }
-  .filters { margin-top: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>OSINT Search Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 900px; }
+    h1, h2 { color: #333; }
+    .section { margin-bottom: 30px; }
+    .category-group, .site { margin: 10px 0; }
+    .sites { margin-left: 20px; }
+    input[type="text"] { width: 300px; padding: 6px; }
+    label { margin-right: 10px; }
+    button { margin-top: 10px; padding: 8px 12px; }
+    .result a { word-break: break-all; }
+  </style>
 </head>
 <body>
 
-<h1>OSINT Search Tool</h1>
+  <h1>OSINT Search Tool</h1>
 
-<div>
-  <label for="keyword">Keyword Search:</label>
-  <input type="text" id="keyword" placeholder="Enter keyword" style="width: 300px;" />
-</div>
+  <!-- Keyword Search -->
+  <div class="section">
+    <label for="keyword">🔍 Enter keyword:</label><br />
+    <input type="text" id="keyword" placeholder="e.g. John Smith" />
+  </div>
 
-<div class="category-group">
-  <span class="category-label">Categories:</span>
-  <label><input type="checkbox" class="category-checkbox" data-category="company"> Company Searches</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="transport"> Transport</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="socialmedia"> Social Media</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="court"> Court Searches</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="sanctions"> Sanctions, Watchlists & PEPs</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="offshore"> Offshore Companies</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="occupation"> Occupation Registers</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="domain"> Domain, Leaked & Cached</label>
-  <label><input type="checkbox" class="category-checkbox" data-category="genealogy"> Genealogy</label>
-</div>
+  <!-- Category Selection -->
+  <div class="section">
+    <h2>📂 Categories</h2>
+    <div id="categoryList"></div>
+  </div>
 
-<!-- Advanced filters for social media -->
-<div id="socialMediaFilters" style="display:none; margin-top:10px;">
-  <h4>Social Media Filters</h4>
-  <label>Workplace: <input type="text" id="smWorkplace" placeholder="e.g. Company XYZ" /></label>
-  <label>Location: <input type="text" id="smLocation" placeholder="e.g. London" /></label>
-</div>
+  <!-- Search Button -->
+  <button id="searchBtn">Search</button>
 
-<button id="searchBtn" style="margin-top: 15px;">Search</button>
+  <!-- Results -->
+  <div class="section" id="results"></div>
 
-<div class="search-results" id="results"></div>
+  <hr />
 
-<script>
-// Sample sites database with categories and optional advanced params
-const sites = [
-  { name: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/search?q={keyword}", categories: ["company"] },
-  { name: "Transport Registry", url: "https://transport-registry.example.com/search?q={keyword}", categories: ["transport"] },
-  { name: "LinkedIn", url: "https://www.linkedin.com/search/results/all/?keywords={keyword}&origin=GLOBAL_SEARCH_HEADER", categories: ["socialmedia"], supportsFilters: true },
-  { name: "Facebook", url: "https://www.facebook.com/search/top/?q={keyword}", categories: ["socialmedia"], supportsFilters: true },
-  { name: "Court Records", url: "https://court-records.example.com/search?q={keyword}", categories: ["court"] },
-  { name: "Sanctions List", url: "https://sanctions-list.example.com/search?q={keyword}", categories: ["sanctions"] },
-  { name: "Offshore Companies DB", url: "https://offshore-db.example.com/search?q={keyword}", categories: ["offshore"] },
-  { name: "Professional Register", url: "https://occupation-register.example.com/search?q={keyword}", categories: ["occupation"] },
-  { name: "Domain Leak Checker", url: "https://domain-leak.example.com/search?q={keyword}", categories: ["domain"] },
-  { name: "Genealogy Database", url: "https://genealogy-db.example.com/search?q={keyword}", categories: ["genealogy"] }
-];
-
-// Show/hide social media filters if socialmedia category is checked
-document.querySelectorAll('.category-checkbox').forEach(cb => {
-  cb.addEventListener('change', () => {
-    const socialMediaChecked = [...document.querySelectorAll('.category-checkbox')]
-      .some(chk => chk.dataset.category === 'socialmedia' && chk.checked);
-    document.getElementById('socialMediaFilters').style.display = socialMediaChecked ? 'block' : 'none';
-  });
-});
-
-function buildSearchUrl(site, keyword, filters) {
-  let url = site.url.replace('{keyword}', encodeURIComponent(keyword));
-
-  // Add advanced filters for social media
-  if (site.supportsFilters && filters) {
-    if (filters.workplace) {
-      url += `&workplace=${encodeURIComponent(filters.workplace)}`;
-    }
-    if (filters.location) {
-      url += `&location=${encodeURIComponent(filters.location)}`;
-    }
-  }
-  return url;
-}
-
-function simulateRelevanceScore(keyword, siteName) {
-  // Simple dummy function: higher score if site name contains keyword letters
-  let score = 50;
-  if (siteName.toLowerCase().includes(keyword.toLowerCase())) {
-    score += 30;
-  }
-  if (keyword.length > 5) {
-    score += 10;
-  }
-  return Math.min(score, 100);
-}
-
-document.getElementById('searchBtn').addEventListener('click', () => {
-  const keyword = document.getElementById('keyword').value.trim();
-  if (!keyword) {
-    alert("Please enter a keyword to search.");
-    return;
-  }
-
-  // Gather checked categories
-  const checkedCategories = [...document.querySelectorAll('.category-checkbox:checked')]
-    .map(cb => cb.dataset.category);
-
-  if (checkedCategories.length === 0) {
-    alert("Please select at least one category.");
-    return;
-  }
-
-  // Get social media filters if any
-  const filters = {
-    workplace: document.getElementById('smWorkplace').value.trim(),
-    location: document.getElementById('smLocation').value.trim()
-  };
-
-  // Filter sites by selected categories
-  const filteredSites = sites.filter(site =>
-    site.categories.some(cat => checkedCategories.includes(cat))
-  );
-
-  // Build results HTML
-  let html = `<h2>Search Results for "${keyword}"</h2>`;
-  html += `<p>Categories: ${checkedCategories.join(', ')}</p>`;
-
-  filteredSites.forEach(site => {
-    const searchUrl = buildSearchUrl(site, keyword, filters);
-    const relevance = simulateRelevanceScore(keyword, site.name);
-
-    html += `
-      <div class="result">
-        <h3><a href="${searchUrl}" target="_blank" rel="noopener">${site.name}</a></h3>
-        <p>Categories: ${site.categories.join(', ')}</p>
-        <p>Relevance Score: <span class="relevance">${relevance}%</span></p>
-        <p><a href="${searchUrl}" target="_blank" rel="noopener">Open Search</a></p>
-      </div>
-    `;
-  });
-
-  document.getElementById('results').innerHTML = html;
-});
-</script>
-
-</body>
-</html>
+  <!-- Add New Website -->
+  <div clas

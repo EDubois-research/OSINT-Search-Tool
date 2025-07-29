@@ -629,6 +629,13 @@
         <div id="manageCategoriesContainer"></div>
         <input type="text" id="newCategoryInput" placeholder="New category name" />
         <button id="addCategoryBtn" class="btn-brand">Add Category</button>
+        
+        <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #ffc107;">
+          <p style="margin: 0; font-size: 0.9em; color: #856404;">
+            🛠️ <strong>Website Management:</strong> Click on the category headers below to view and manage existing websites. 
+            You can edit or delete individual sites from each category.
+          </p>
+        </div>
       </div>
 
       <div class="manage-websites">
@@ -1037,32 +1044,36 @@
       // Remove existing website lists
       document.querySelectorAll(".website-manage-list").forEach(el => el.remove());
 
+      let isFirstManageCategory = true;
+
       Object.keys(categories).forEach(catName => {
         if (categories[catName].length === 0) return;
 
         const container = document.createElement("div");
         container.className = "website-manage-list";
 
-        // Create collapsible header
+        // Create collapsible header with improved styling
         const header = document.createElement("div");
         header.className = "category-header";
         header.style.cssText = `
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 5px;
+          padding: 12px 8px;
           cursor: pointer;
           font-weight: 600;
           user-select: none;
-          transition: background-color 0.2s;
-          background: #f8f8f8;
-          border-radius: 4px;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
           margin-bottom: 8px;
+          position: relative;
         `;
 
         const titleSpan = document.createElement("span");
-        titleSpan.textContent = `Websites in "${catName}"`;
-        titleSpan.style.color = "#666";
+        titleSpan.innerHTML = `<span style="color: #B13F17;">🛠️</span> Websites in "${catName}" <small style="color: #666; font-weight: normal;">(${categories[catName].length} sites)</small>`;
+        titleSpan.style.color = "#333";
 
         const toggleIcon = document.createElement("span");
         toggleIcon.className = "toggle-icon";
@@ -1074,7 +1085,15 @@
         // Create collapsible content
         const websitesContent = document.createElement("div");
         websitesContent.className = "category-websites";
-        websitesContent.style.display = "none"; // Start collapsed
+        
+        // Start with first category open in manage section
+        if (isFirstManageCategory) {
+          websitesContent.classList.add("visible");
+          toggleIcon.classList.add("rotated");
+          isFirstManageCategory = false;
+        } else {
+          websitesContent.style.display = "none";
+        }
 
         categories[catName].forEach((site, idx) => {
           const siteDiv = document.createElement("div");

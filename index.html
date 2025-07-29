@@ -227,17 +227,28 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
+      cursor: pointer;
     }
     .manage-category-title {
       font-size: 1.08rem;
       font-weight: 600;
       color: #B13F17;
+      display: flex;
+      align-items: center;
+    }
+    .manage-category-title .arrow {
+      font-size: 1rem;
+      margin-right: 6px;
+      transition: transform 0.2s;
+    }
+    .manage-category-title.collapsed .arrow {
+      transform: rotate(-90deg);
     }
     .manage-category-actions button {
       margin-left: 6px;
     }
     .websites-list {
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 8px;
       margin-top: 10px;
@@ -463,28 +474,106 @@
     function loadCategoriesFromStorage() {
       const stored = localStorage.getItem('osint_categories');
       if (stored) {
-        categories = JSON.parse(stored);
-      } else {
+        try {
+          categories = JSON.parse(stored);
+        } catch (e) {
+          categories = {};
+        }
+      }
+      if (!stored || Object.keys(categories).length === 0) {
         categories = {
-          "Social Media": [
-            { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
-            { name: "Facebook", url: "https://www.facebook.com/search/people/" },
-            { name: "Twitter/X", url: "https://twitter.com/search" },
-            { name: "Instagram", url: "https://www.instagram.com/explore/tags/" }
-          ],
-          "Professional Registers": [
-            { name: "GMC (UK)", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
-            { name: "NMC (UK)", url: "https://www.nmc.org.uk/registration/search-the-register/" },
-            { name: "SRA (UK)", url: "https://www.sra.org.uk/consumers/register/" }
-          ],
           "Company Searches": [
-            { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
-            { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
+            { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/" },
+            { name: "Haulage Index", url: "https://haulage-index.co.uk/index.php" },
+            { name: "Insolvency Service", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+            { name: "Caseboard", url: "https://caseboard.io/cases/" }
           ],
-          "People Search": [
-            { name: "Pipl", url: "https://pipl.com/" },
-            { name: "WhitePages", url: "https://www.whitepages.com/" },
-            { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
+          "Court Case Searches": [
+            { name: "CaseMine", url: "https://www.casemine.com/" },
+            { name: "HUDOC", url: "https://hudoc.echr.coe.int/eng#{%22documentcollectionid2%22:[%22GRANDCHAMBER%22,%22CHAMBER%22]}" },
+            { name: "BAILII", url: "https://www.bailii.org/" },
+            { name: "Employment Tribunal Decisions", url: "https://www.gov.uk/employment-tribunal-decisions" },
+            { name: "UK Supreme Court Cases", url: "https://www.supremecourt.uk/cases" }
+          ],
+          "Occupation Registers": [
+            { name: "GDC Dentist Register", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+            { name: "GMC Medical Register", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+            { name: "GDC Registration", url: "https://www.gdc-uk.org/registration" },
+            { name: "NMC Register", url: "https://www.nmc.org.uk/registration/search-the-register" },
+            { name: "HCPC Register", url: "https://www.hcpc-uk.org/check-the-register" },
+            { name: "Pharmacy Register", url: "https://www.pharmacyregulation.org/registers" },
+            { name: "Optical Register", url: "https://www.optical.org/en" },
+            { name: "Chiropractor Register", url: "https://www.gcc-uk.org/registration/the-register" },
+            { name: "Osteopath Register", url: "https://www.osteopathy.org.uk/register-search" },
+            { name: "Solicitor Check", url: "https://www.sra.org.uk/consumers/solicitor-check/" },
+            { name: "Barrister Register", url: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html" },
+            { name: "Licensed Conveyancer", url: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/" },
+            { name: "CILEx Directory", url: "https://www.cilexregulation.org.uk/practitioners-directory" },
+            { name: "Notary Finder", url: "https://www.facultyoffice.org.uk/notary/find-a-notary/" },
+            { name: "ICAEW Directory", url: "https://find.icaew.com/" },
+            { name: "ACCA Directory", url: "https://www.accaglobal.com/an/en/member/find-an-accountant.html" },
+            { name: "RICS Directory", url: "https://www.rics.org/find-a-member" },
+            { name: "Architects Register", url: "https://arb.org.uk/public-information/members-of-the-public/" },
+            { name: "Engineering Council", url: "https://www.engc.org.uk/registers" },
+            { name: "Electrician Register", url: "https://www.electricalcompetentperson.co.uk/" },
+            { name: "Gas Safe Register", url: "https://www.gassaferegister.co.uk/find-an-engineer" },
+            { name: "NHBC Builder Register", url: "https://www.nhbc.co.uk/homeowners/find-a-builder" },
+            { name: "FMB Directory", url: "https://www.fmb.org.uk/find-a-builder" },
+            { name: "Find an Investigator", url: "https://ipi.org.uk/find-an-investigator" },
+            { name: "SIA Licence Check", url: "https://services.sia.homeoffice.gov.uk/rolh/" },
+            { name: "Immigration Adviser Finder", url: "https://home.oisc.gov.uk/adviser_finder/finder.aspx" },
+            { name: "Social Work England", url: "https://www.socialworkengland.org.uk/search-the-register/" },
+            { name: "BPS Workforce Register", url: "https://www.bps.org.uk/psychological-workforce" },
+            { name: "Find a Vet", url: "https://findavet.rcvs.org.uk/home/" },
+            { name: "CQC Care Finder", url: "https://www.cqc.org.uk/find-a-care-home" },
+            { name: "FCA Register", url: "https://register.fca.org.uk/" },
+            { name: "Charity Register", url: "https://register-of-charities.charitycommission.gov.uk/" }
+          ],
+          "Genealogy": [
+            { name: "Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
+          ],
+          "Transport": [
+            { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" },
+            { name: "Plane Finder", url: "https://planefinder.net/" },
+            { name: "MarineTraffic", url: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4" },
+            { name: "VesselFinder", url: "https://www.vesselfinder.com/vessels" },
+            { name: "Haulage Index", url: "https://haulage-index.co.uk/index.php" },
+            { name: "Racing Post", url: "https://www.racingpost.com/racecards" }
+          ],
+          "Sanctions, Watchlists, Insolvency, PEPs": [
+            { name: "Insolvency Service", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+            { name: "The Gazette", url: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices" },
+            { name: "Interpol Red Notices", url: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices" },
+            { name: "Interpol Yellow Notices", url: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices" },
+            { name: "FBI Most Wanted", url: "https://www.fbi.gov/wanted/topten" },
+            { name: "Proscribed Terror Groups", url: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version" },
+            { name: "EU Most Wanted", url: "https://eumostwanted.eu/" },
+            { name: "UK Sanctions List", url: "https://search-uk-sanctions-list.service.gov.uk/" },
+            { name: "NCA Most Wanted", url: "https://www.nationalcrimeagency.gov.uk/most-wanted" },
+            { name: "FCA Warning List", url: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms" },
+            { name: "SFO Cases", url: "https://www.gov.uk/sfo-cases" },
+            { name: "Vexatious Litigants", url: "https://www.gov.uk/guidance/vexatious-litigants" },
+            { name: "Tax Defaulters", url: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters" }
+          ],
+          "Social Media": [
+            { name: "Facebook", url: "https://www.facebook.com/" },
+            { name: "LinkedIn", url: "https://www.linkedin.com" },
+            { name: "Instagram", url: "https://www.instagram.com/" },
+            { name: "Twitter/X", url: "https://x.com" },
+            { name: "TikTok", url: "https://www.tiktok.com/?kuid=31b6d78a-c086-437f-9ab0-df56eaf7fd8b&kref=vGWRdzLJnjYf" },
+            { name: "Reddit", url: "https://www.reddit.com/" }
+          ],
+          "Offshore Companies": [
+            { name: "Offshore Leaks", url: "https://offshoreleaks.icij.org/" },
+            { name: "OpenCorporates", url: "https://opencorporates.com/" }
+          ],
+          "Domain/Leaked/Cached": [
+            { name: "Who.is", url: "https://who.is/" },
+            { name: "Internet Archive", url: "https://web.archive.org/" },
+            { name: "AnalyzeID", url: "https://analyzeid.com/" },
+            { name: "Have I Been Pwned", url: "https://haveibeenpwned.com/" },
+            { name: "IP Fingerprints", url: "https://www.ipfingerprints.com/" },
+            { name: "DataBreach.com", url: "https://databreach.com/" }
           ]
         };
       }
@@ -662,7 +751,6 @@
       categoriesContainer.innerHTML = '';
       categorySelect.innerHTML = '<option value="">Select Category</option>';
       Object.keys(categories).forEach(categoryName => {
-        // Main categories display (no dropdowns, just tickboxes)
         const categoryCard = document.createElement('div');
         categoryCard.className = 'category-card';
         categoryCard.innerHTML = `
@@ -670,13 +758,11 @@
           <div class="category-title">${categoryName}</div>
           <span class="website-count">${categories[categoryName].length}</span>
         `;
-        // Handle category selection
         const checkbox = categoryCard.querySelector('.category-checkbox');
         checkbox.addEventListener('change', (e) => {
           categoryCard.classList.toggle('selected', e.target.checked);
         });
         categoriesContainer.appendChild(categoryCard);
-        // Category select dropdown
         const option = document.createElement('option');
         option.value = categoryName;
         option.textContent = categoryName;
@@ -690,27 +776,46 @@
       Object.keys(categories).forEach(categoryName => {
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'category-card';
-        categoryDiv.style.marginBottom = '12px';
-        categoryDiv.innerHTML = `
-          <div class="manage-category-header">
-            <span class="manage-category-title">${categoryName}</span>
-            <span class="manage-category-actions">
-              <button class="btn btn-small" onclick="editCategory('${categoryName}')">Edit</button>
-              <button class="btn btn-danger btn-small" onclick="deleteCategory('${categoryName}')">Delete</button>
-            </span>
+        const header = document.createElement('div');
+        header.className = 'manage-category-header';
+        header.innerHTML = `
+          <div class="manage-category-title">
+            <span class="arrow">▶</span>${categoryName}
           </div>
-          <div class="websites-list">
-            ${categories[categoryName].map((site, idx) => `
-              <div class="website-item">
-                <span>${site.name} <span style='color:#888;font-size:0.9em;'>(${site.url})</span></span>
-                <span>
-                  <button class="btn btn-small" onclick="editWebsite('${categoryName}',${idx})">Edit</button>
-                  <button class="btn btn-danger btn-small" onclick="deleteWebsite('${categoryName}',${idx})">Delete</button>
-                </span>
-              </div>
-            `).join('')}
-          </div>
+          <span class="manage-category-actions">
+            <button class="btn btn-small" onclick="editCategory('${categoryName}')">Edit</button>
+            <button class="btn btn-danger btn-small" onclick="deleteCategory('${categoryName}')">Delete</button>
+          </span>
         `;
+        categoryDiv.appendChild(header);
+        const list = document.createElement('div');
+        list.className = 'websites-list';
+        list.style.display = 'none';
+        categories[categoryName].forEach((site, idx) => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'website-item';
+          itemDiv.innerHTML = `
+            <span>${site.name} <span style='color:#888;font-size:0.9em;'>(${site.url})</span></span>
+            <span>
+              <button class="btn btn-small" onclick="editWebsite('${categoryName}',${idx})">Edit</button>
+              <button class="btn btn-danger btn-small" onclick="deleteWebsite('${categoryName}',${idx})">Delete</button>
+            </span>
+          `;
+          list.appendChild(itemDiv);
+        });
+        categoryDiv.appendChild(list);
+        header.addEventListener('click', (e) => {
+          if (e.target.closest('.manage-category-actions')) return;
+          const arrow = header.querySelector('.arrow');
+          const isCollapsed = list.style.display === 'none' || list.style.display === '';
+          if (isCollapsed) {
+            list.style.display = 'flex';
+            arrow.style.transform = 'rotate(90deg)';
+          } else {
+            list.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+          }
+        });
         manageCategoriesContainer.appendChild(categoryDiv);
       });
     }
@@ -793,9 +898,7 @@
         showNotification(`Search completed! Found ${results.length} sources`, 'success');
       }, 1200);
     }
-
     function renderResultsGrouped(results, keyword, filterText = '') {
-      // Group by category
       const grouped = {};
       results.forEach(r => {
         if (filterText && !(
@@ -814,18 +917,15 @@
       Object.keys(grouped).forEach(category => {
         const groupDiv = document.createElement('div');
         groupDiv.className = 'result-category-group';
-        // Collapsible header
         const header = document.createElement('div');
         header.className = 'result-category-header';
         header.innerHTML = `<span>${category}</span><span class="dropdown-icon">▶</span>`;
         groupDiv.appendChild(header);
-        // Results list
         const list = document.createElement('div');
         grouped[category].forEach(result => {
           const resultDiv = document.createElement('div');
           resultDiv.className = 'result-item';
-          // Highlight keyword in site name and preview
-          const preview = `Search for: "${result.keyword}"`;
+          const preview = `Search for: \"${result.keyword}\"`;
           resultDiv.innerHTML = `
             <div style="margin-bottom: 8px;">
               <strong>${highlightKeyword(result.site.name, keyword)}</strong>
@@ -839,7 +939,6 @@
           list.appendChild(resultDiv);
         });
         groupDiv.appendChild(list);
-        // Collapsible logic
         let open = true;
         header.addEventListener('click', () => {
           open = !open;
@@ -849,8 +948,6 @@
         resultsContainer.appendChild(groupDiv);
       });
     }
-
-    // --- Results Filter ---
     resultsFilterInput.addEventListener('input', () => {
       renderResultsGrouped(lastResults, searchInput.value.trim(), resultsFilterInput.value);
     });
@@ -885,7 +982,7 @@
         caseDiv.className = 'case-item';
         caseDiv.innerHTML = `
           <div>
-            <div style="font-weight: 600; color: #B13F17; margin-bottom: 5px;">"${caseData.keyword}"</div>
+            <div style="font-weight: 600; color: #B13F17; margin-bottom: 5px;">\"${caseData.keyword}\"</div>
             <div style="color: #888; font-size: 0.9rem;">${caseData.date} • ${caseData.categories.length} categories • ${caseData.results.length} results</div>
           </div>
           <div>
@@ -900,17 +997,14 @@
       const caseData = savedCases.find(c => c.id === caseId);
       if (!caseData) return;
       searchInput.value = caseData.keyword;
-      // Restore filters
       Object.entries(caseData.filters).forEach(([key, value]) => {
         const element = document.getElementById(key);
         if (element) element.value = value || '';
       });
-      // Restore category selections
       document.querySelectorAll('.category-checkbox').forEach(cb => {
         cb.checked = caseData.categories.includes(cb.dataset.category);
         cb.closest('.category-card').classList.toggle('selected', cb.checked);
       });
-      // Restore results
       lastResults = caseData.results;
       renderResultsGrouped(caseData.results, caseData.keyword, resultsFilterInput.value);
       showNotification('Case loaded successfully', 'success');
@@ -947,7 +1041,7 @@
         <body>
           <div class="header-info">
             <h1>🔍 OSINT Search Report</h1>
-            <h2>Search Query: "${keyword}"</h2>
+            <h2>Search Query: \"${keyword}\"</h2>
             <p>Generated: ${timestamp}</p>
           </div>
           ${resultsContainer.innerHTML}

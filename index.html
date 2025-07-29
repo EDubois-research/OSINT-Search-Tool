@@ -314,6 +314,13 @@
       </div>
     </section>
 
+    <section class="advanced-filters">
+      <h2>Advanced Filters</h2>
+      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
+      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
+      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
+    </section>
+
     <section class="categories-section">
       <h2>Search Categories</h2>
       <div style="margin-bottom: 10px;">
@@ -340,13 +347,6 @@
         <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)" />
         <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
       </div>
-    </section>
-
-    <section class="advanced-filters">
-      <h2>Advanced Filters</h2>
-      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
-      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
-      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
     </section>
 
     <section class="results-section">
@@ -736,9 +736,38 @@
         const container = document.createElement("div");
         container.className = "website-manage-list";
 
-        const header = document.createElement("h4");
-        header.textContent = `Websites in "${catName}"`;
-        container.appendChild(header);
+        // Create collapsible header
+        const header = document.createElement("div");
+        header.className = "category-header";
+        header.style.cssText = `
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 5px;
+          cursor: pointer;
+          font-weight: 600;
+          user-select: none;
+          transition: background-color 0.2s;
+          background: #f8f8f8;
+          border-radius: 4px;
+          margin-bottom: 8px;
+        `;
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = `Websites in "${catName}"`;
+        titleSpan.style.color = "#666";
+
+        const toggleIcon = document.createElement("span");
+        toggleIcon.className = "toggle-icon";
+        toggleIcon.textContent = "▼";
+
+        header.appendChild(titleSpan);
+        header.appendChild(toggleIcon);
+
+        // Create collapsible content
+        const websitesContent = document.createElement("div");
+        websitesContent.className = "category-websites";
+        websitesContent.style.display = "none"; // Start collapsed
 
         categories[catName].forEach((site, idx) => {
           const siteDiv = document.createElement("div");
@@ -777,9 +806,17 @@
 
           siteDiv.appendChild(siteInfo);
           siteDiv.appendChild(buttonGroup);
-          container.appendChild(siteDiv);
+          websitesContent.appendChild(siteDiv);
         });
 
+        // Add click event to toggle dropdown
+        header.addEventListener("click", () => {
+          const isVisible = websitesContent.classList.toggle("visible");
+          toggleIcon.classList.toggle("rotated", isVisible);
+        });
+
+        container.appendChild(header);
+        container.appendChild(websitesContent);
         manageCategoriesContainer.appendChild(container);
       });
     }

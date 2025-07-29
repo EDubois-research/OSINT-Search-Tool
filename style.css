@@ -1,15 +1,13 @@
-/* Reset */
+/* Reset & basics */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: #f8f9fa;
-  color: #333;
-  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0; padding: 20px;
+  background: #f9f9f9;
+  color: #222;
 }
 
 .container {
@@ -17,121 +15,152 @@ body {
   margin: 0 auto;
 }
 
-h1, h2 {
-  margin-bottom: 15px;
-  font-weight: 600;
-  color: #333;
+h1, h2, h3 {
+  color: #B13F17;
+  margin-bottom: 10px;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 15px;
+input, select, button {
+  padding: 8px 10px;
+  margin: 5px 0;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
 }
 
-.btn {
+input[type="url"], input[type="text"], select {
+  width: 100%;
+  max-width: 350px;
+}
+
+button {
   cursor: pointer;
-  padding: 10px 18px;
   border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-  display: inline-block;
-  margin-top: 10px;
-}
-
-.brand-btn {
   background-color: #B13F17;
   color: white;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+  min-width: 110px;
 }
 
-.brand-btn:hover {
-  background-color: #8a3011;
+button:hover {
+  background-color: #8a2e11;
 }
 
-#category-checkboxes, #manage-categories, #manage-websites {
-  margin-bottom: 20px;
+.btn-brand {
+  min-width: 120px;
 }
 
-.category-group {
+section {
+  margin-bottom: 30px;
   background: white;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* Categories with dropdown */
+.category {
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
 }
 
 .category-header {
-  padding: 12px 15px;
-  font-weight: 700;
-  cursor: pointer;
-  user-select: none;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  color: #B13F17;
+  padding: 8px 5px;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
 }
 
-.category-content {
-  padding: 10px 15px;
+.category-header:hover {
+  background: #f0e6e1;
+}
+
+.category-websites {
+  padding-left: 20px;
   display: none;
-  border-top: 1px solid #ddd;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.category-content.show {
-  display: block;
+.category-websites.visible {
+  display: flex;
 }
 
 .website-item {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
+  align-items: center;
 }
 
-.website-item input[type="text"] {
-  width: 70%;
-  margin-right: 10px;
-}
-
-.website-item button {
-  background-color: transparent;
-  border: none;
-  color: #B13F17;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.website-item button:hover {
-  text-decoration: underline;
-}
-
-.search-result {
-  background: white;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-}
-
-.search-result a {
+.website-item a {
   color: #B13F17;
   text-decoration: none;
-  font-weight: 600;
+  flex-grow: 1;
 }
 
-.search-result a:hover {
+.website-item a:hover {
   text-decoration: underline;
 }
 
-.toggle-icon {
-  font-size: 18px;
-  user-select: none;
+.edit-btn, .delete-btn {
+  background: transparent;
+  border: none;
+  color: #B13F17;
+  cursor: pointer;
+  font-size: 0.9rem;
   margin-left: 8px;
-  transition: transform 0.3s ease;
 }
 
-.toggle-icon.rotated {
-  transform: rotate(90deg);
+.edit-btn:hover, .delete-btn:hover {
+  color: #8a2e11;
+}
+
+/* Results */
+.result-item {
+  border-bottom: 1px solid #ddd;
+  padding: 8px 0;
+}
+
+/* Manage section styling */
+.manage-categories, .manage-websites {
+  margin-top: 15px;
+}
+
+.manage-categories input, .manage-websites input, .manage-websites select {
+  width: calc(100% - 130px);
+  display: inline-block;
+}
+
+.manage-websites input, .manage-websites select {
+  margin-right: 10px;
+  max-width: 300px;
+}
+
+.image-search {
+  margin-top: 15px;
+}
+
+.image-engines {
+  margin-top: 10px;
+}
+
+.engine-btn {
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+/* Advanced filters */
+.advanced-filters label {
+  display: inline-block;
+  margin-right: 15px;
+  margin-bottom: 8px;
+}
+
+.saved-cases-section input {
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 10px;
 }

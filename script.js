@@ -1,246 +1,325 @@
-// Part 3: script.js
-
-// Initial Data
+// Data structures for categories and websites
 let categories = {
-  "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
-  "Court Case Searches": ["https://www.casemine.com/"],
-  "Occupation Registers": [
-    "https://www.gdc-uk.org/pages/searchregisters.aspx",
-    "https://www.nmc.org.uk/registration/the-register/",
-    "https://www.gmc-uk.org/registration-and-licensing/the-medical-register",
-    "https://www.gphc.org.uk/registration-and-registration-requirements/the-register/",
-    "https://www.hcpc-uk.org/registration/",
-    "https://www.rccp.co.uk/registration",
-    "https://www.gmc-uk.org/registration-and-licensing/the-medical-register",
-    "https://www.gdc-uk.org/pages/searchregisters.aspx",
-    // add more here...
+  "Company Searches": [
+    { name: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/" }
   ],
-  "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
-  "Transport": ["https://cartaxcheck.co.uk/"],
-  "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
-  "Social Media": ["https://www.facebook.com/"],
-  "Offshore Companies": ["https://offshoreleaks.icij.org/"],
-  "Domain/Leaked/Cached": ["https://who.is/"]
+  "Court Case Searches": [
+    { name: "CaseMine", url: "https://www.casemine.com/" }
+  ],
+  "Occupation Registers": [
+    { name: "General Dental Council", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+    { name: "Nursing & Midwifery Council", url: "https://www.nmc.org.uk/registration/search-the-register/" },
+    { name: "Health & Care Professions Council", url: "https://www.hcpc-uk.org/check/" }
+    // Add more occupation registers here
+  ],
+  "Genealogy": [
+    { name: "UK Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
+  ],
+  "Transport": [
+    { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" }
+  ],
+  "Sanctions, Watchlists, PEPs": [
+    { name: "Insolvency Register", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" }
+  ],
+  "Social Media": [
+    { name: "Facebook", url: "https://www.facebook.com/" }
+  ],
+  "Offshore Companies": [
+    { name: "ICIJ Offshore Leaks", url: "https://offshoreleaks.icij.org/" }
+  ],
+  "Domain/Leaked/Cached": [
+    { name: "Who.is", url: "https://who.is/" }
+  ]
 };
 
-let savedReports = {}; // saved reports with IDs
-
-// Utility: Save categories & reports to localStorage
+// Utility function to save data to localStorage
 function saveData() {
-  localStorage.setItem('osintCategories', JSON.stringify(categories));
-  localStorage.setItem('osintReports', JSON.stringify(savedReports));
+  localStorage.setItem("osintCategories", JSON.stringify(categories));
 }
 
-// Utility: Load categories & reports from localStorage
+// Utility function to load data from localStorage
 function loadData() {
-  const cats = localStorage.getItem('osintCategories');
-  const reps = localStorage.getItem('osintReports');
-  if (cats) categories = JSON.parse(cats);
-  if (reps) savedReports = JSON.parse(reps);
+  const saved = localStorage.getItem("osintCategories");
+  if (saved) {
+    categories = JSON.parse(saved);
+  }
 }
 
-// Populate category list with collapsible website dropdowns
-function renderCategories() {
-  const container = document.getElementById('category-list');
-  container.innerHTML = '';
-  Object.entries(categories).forEach(([catName, sites], idx) => {
-    const catDiv = document.createElement('div');
-    catDiv.className = 'category';
-
-    // Header with expand/collapse toggle
-    const header = document.createElement('div');
-    header.className = 'category-header';
-    header.textContent = catName;
-    header.onclick = () => {
-      sitesDiv.style.display = sitesDiv.style.display === 'none' ? 'block' : 'none';
-    };
-    catDiv.appendChild(header);
-
-    // Sites list (hidden by default)
-    const sitesDiv = document.createElement('div');
-    sitesDiv.className = 'sites-list';
-    sitesDiv.style.display = 'none';
-
-    sites.forEach((url, i) => {
-      const siteDiv = document.createElement('div');
-      siteDiv.className = 'site-entry';
-
-      // Site text input (editable)
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = url;
-      input.className = 'site-input';
-      input.onchange = () => {
-        categories[catName][i] = input.value;
-        saveData();
-      };
-      siteDiv.appendChild(input);
-
-      // Delete button
-      const delBtn = document.createElement('button');
-      delBtn.textContent = 'Delete';
-      delBtn.onclick = () => {
-        categories[catName].splice(i, 1);
-        saveData();
-        renderCategories();
-      };
-      siteDiv.appendChild(delBtn);
-
-      sitesDiv.appendChild(siteDiv);
-    });
-
-    // Add new site input & button
-    const addSiteDiv = document.createElement('div');
-    addSiteDiv.className = 'add-site';
-
-    const addInput = document.createElement('input');
-    addInput.type = 'text';
-    addInput.placeholder = 'Add new website URL';
-    addSiteDiv.appendChild(addInput);
-
-    const addBtn = document.createElement('button');
-    addBtn.textContent = 'Add Website';
-    addBtn.onclick = () => {
-      if (addInput.value.trim()) {
-        categories[catName].push(addInput.value.trim());
-        addInput.value = '';
-        saveData();
-        renderCategories();
-      }
-    };
-    addSiteDiv.appendChild(addBtn);
-
-    sitesDiv.appendChild(addSiteDiv);
-
-    catDiv.appendChild(sitesDiv);
-
-    container.appendChild(catDiv);
-  });
+// Toggle dropdown visibility
+function toggleDropdown(e) {
+  const content = e.currentTarget.nextElementSibling;
+  const icon = e.currentTarget.querySelector(".toggle-icon");
+  content.classList.toggle("show");
+  icon.classList.toggle("rotated");
 }
 
-// Render the category checkboxes in search area
+// Render category checkboxes for searching
 function renderCategoryCheckboxes() {
-  const container = document.getElementById('category-checkboxes');
-  container.innerHTML = '';
-  Object.keys(categories).forEach(catName => {
-    const label = document.createElement('label');
-    label.className = 'checkbox-label';
+  const container = document.getElementById("category-checkboxes");
+  container.innerHTML = "";
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.value = catName;
-    checkbox.checked = true;
+  Object.keys(categories).forEach(cat => {
+    const label = document.createElement("label");
+    label.style.marginRight = "15px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = cat;
+    checkbox.checked = true; // default all checked
 
     label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(catName));
+    label.append(" " + cat);
+
     container.appendChild(label);
   });
 }
 
-// Perform the search over selected categories and sites
-async function performSearch() {
-  const keyword = document.getElementById('search-keyword').value.trim();
-  if (!keyword) {
-    alert('Please enter a keyword to search.');
-    return;
-  }
-  // Clear previous results
-  const resultsDiv = document.getElementById('search-results');
-  resultsDiv.innerHTML = 'Searching...';
+// Render manage categories panel
+function renderManageCategories() {
+  const container = document.getElementById("manage-categories");
+  container.innerHTML = "<h3>Categories</h3>";
 
-  // Get selected categories
-  const checkedCats = [...document.querySelectorAll('#category-checkboxes input[type="checkbox"]:checked')]
-    .map(c => c.value);
+  Object.keys(categories).forEach(cat => {
+    const catDiv = document.createElement("div");
+    catDiv.className = "category-group";
 
-  if (checkedCats.length === 0) {
-    resultsDiv.innerHTML = 'Please select at least one category.';
-    return;
-  }
+    const header = document.createElement("div");
+    header.className = "category-header";
+    header.textContent = cat;
 
-  // Gather all sites URLs from selected categories
-  let sitesToSearch = [];
-  checkedCats.forEach(cat => {
-    sitesToSearch = sitesToSearch.concat(categories[cat] || []);
-  });
+    const toggleIcon = document.createElement("span");
+    toggleIcon.className = "toggle-icon";
+    toggleIcon.textContent = "▶";
+    header.appendChild(toggleIcon);
 
-  // For demo, we will simulate searches by generating fake results
-  resultsDiv.innerHTML = '';
-  for (const site of sitesToSearch) {
-    const resultDiv = document.createElement('div');
-    resultDiv.className = 'search-result';
-    // Simulate relevance score 50-100%
-    const relevance = Math.floor(50 + Math.random() * 50);
-    resultDiv.innerHTML = `<strong>${site}</strong><br>Keyword: ${keyword}<br>Relevance: ${relevance}%<br><em>Preview snippet of matched content here...</em>`;
-    resultsDiv.appendChild(resultDiv);
-  }
-}
+    header.onclick = toggleDropdown;
 
-// Save report with current results
-function saveReport() {
-  const resultsDiv = document.getElementById('search-results');
-  if (!resultsDiv.innerHTML || resultsDiv.innerHTML === 'Searching...') {
-    alert('No results to save.');
-    return;
-  }
-  const reportID = 'rep_' + Date.now();
-  savedReports[reportID] = resultsDiv.innerHTML;
-  saveData();
-  renderSavedReports();
-  alert('Report saved.');
-}
+    const content = document.createElement("div");
+    content.className = "category-content";
 
-// Render saved reports list
-function renderSavedReports() {
-  const container = document.getElementById('saved-reports');
-  container.innerHTML = '';
-  Object.entries(savedReports).forEach(([id, content]) => {
-    const repDiv = document.createElement('div');
-    repDiv.className = 'saved-report';
-
-    const title = document.createElement('div');
-    title.textContent = `Report ID: ${id}`;
-    repDiv.appendChild(title);
-
-    const preview = document.createElement('div');
-    preview.className = 'report-preview';
-    preview.innerHTML = content;
-    repDiv.appendChild(preview);
-
-    // Delete button
-    const delBtn = document.createElement('button');
-    delBtn.textContent = 'Delete Report';
-    delBtn.onclick = () => {
-      delete savedReports[id];
-      saveData();
-      renderSavedReports();
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = cat;
+    input.style.width = "70%";
+    input.onchange = e => {
+      const newName = e.target.value.trim();
+      if (newName && newName !== cat && !categories[newName]) {
+        categories[newName] = categories[cat];
+        delete categories[cat];
+        renderManageCategories();
+        renderCategoryCheckboxes();
+        saveData();
+      } else if (categories[newName]) {
+        alert("Category name already exists.");
+        e.target.value = cat;
+      }
     };
-    repDiv.appendChild(delBtn);
 
-    container.appendChild(repDiv);
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.onclick = () => {
+      if (confirm(`Delete category "${cat}"? This will also delete all its websites.`)) {
+        delete categories[cat];
+        renderManageCategories();
+        renderCategoryCheckboxes();
+        saveData();
+      }
+    };
+
+    content.appendChild(input);
+    content.appendChild(delBtn);
+    catDiv.appendChild(header);
+    catDiv.appendChild(content);
+    container.appendChild(catDiv);
+  });
+
+  // Add new category input
+  const addDiv = document.createElement("div");
+  addDiv.style.marginTop = "10px";
+  const newCatInput = document.createElement("input");
+  newCatInput.type = "text";
+  newCatInput.placeholder = "New category name";
+  newCatInput.style.width = "70%";
+
+  const addCatBtn = document.createElement("button");
+  addCatBtn.textContent = "Add Category";
+  addCatBtn.onclick = () => {
+    const val = newCatInput.value.trim();
+    if (val && !categories[val]) {
+      categories[val] = [];
+      renderManageCategories();
+      renderCategoryCheckboxes();
+      saveData();
+      newCatInput.value = "";
+    } else {
+      alert("Invalid or duplicate category name.");
+    }
+  };
+
+  addDiv.appendChild(newCatInput);
+  addDiv.appendChild(addCatBtn);
+  container.appendChild(addDiv);
+}
+
+// Render manage websites panel
+function renderManageWebsites() {
+  const container = document.getElementById("manage-websites");
+  container.innerHTML = "<h3>Websites</h3>";
+
+  Object.keys(categories).forEach(cat => {
+    const catDiv = document.createElement("div");
+    catDiv.className = "category-group";
+
+    const header = document.createElement("div");
+    header.className = "category-header";
+    header.textContent = cat;
+
+    const toggleIcon = document.createElement("span");
+    toggleIcon.className = "toggle-icon";
+    toggleIcon.textContent = "▶";
+    header.appendChild(toggleIcon);
+
+    header.onclick = toggleDropdown;
+
+    const content = document.createElement("div");
+    content.className = "category-content";
+
+    categories[cat].forEach((site, idx) => {
+      const siteDiv = document.createElement("div");
+      siteDiv.className = "website-item";
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.value = site.name;
+
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.value = site.url;
+
+      nameInput.onchange = () => {
+        categories[cat][idx].name = nameInput.value.trim();
+        saveData();
+      };
+
+      urlInput.onchange = () => {
+        categories[cat][idx].url = urlInput.value.trim();
+        saveData();
+      };
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.onclick = () => {
+        if (confirm(`Delete website "${site.name}"?`)) {
+          categories[cat].splice(idx, 1);
+          renderManageWebsites();
+          saveData();
+        }
+      };
+
+      siteDiv.appendChild(nameInput);
+      siteDiv.appendChild(urlInput);
+      siteDiv.appendChild(delBtn);
+
+      content.appendChild(siteDiv);
+    });
+
+    // Add new website input for this category
+    const addDiv = document.createElement("div");
+    addDiv.style.marginTop = "10px";
+
+    const newNameInput = document.createElement("input");
+    newNameInput.type = "text";
+    newNameInput.placeholder = "Website name";
+    newNameInput.style.width = "30%";
+    newNameInput.style.marginRight = "10px";
+
+    const newUrlInput = document.createElement("input");
+    newUrlInput.type = "text";
+    newUrlInput.placeholder = "Website URL";
+    newUrlInput.style.width = "50%";
+    newUrlInput.style.marginRight = "10px";
+
+    const addSiteBtn = document.createElement("button");
+    addSiteBtn.textContent = "Add Website";
+    addSiteBtn.onclick = () => {
+      const n = newNameInput.value.trim();
+      const u = newUrlInput.value.trim();
+      if (n && u) {
+        categories[cat].push({ name: n, url: u });
+        renderManageWebsites();
+        saveData();
+        newNameInput.value = "";
+        newUrlInput.value = "";
+      } else {
+        alert("Please enter both website name and URL.");
+      }
+    };
+
+    addDiv.appendChild(newNameInput);
+    addDiv.appendChild(newUrlInput);
+    addDiv.appendChild(addSiteBtn);
+
+    content.appendChild(addDiv);
+
+    catDiv.appendChild(header);
+    catDiv.appendChild(content);
+    container.appendChild(catDiv);
   });
 }
 
-// Image upload & reverse image search (simplified)
-function setupImageUpload() {
-  const input = document.getElementById('image-upload');
-  input.onchange = () => {
-    if (input.files.length === 0) return;
-    const file = input.files[0];
-    // For demo, open reverse image search links in new tabs
-    const blobURL = URL.createObjectURL(file);
-    window.open(`https://images.google.com/searchbyimage?image_url=${blobURL}`, '_blank');
-    window.open(`https://tineye.com/search?url=${blobURL}`, '_blank');
+// Perform search based on keyword and checked categories
+function performSearch() {
+  const keyword = document.getElementById("keyword").value.trim().toLowerCase();
+  const checkedCats = Array.from(document.querySelectorAll("#category-checkboxes input[type='checkbox']:checked")).map(cb => cb.value);
+
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = "";
+
+  if (!keyword) {
+    resultsContainer.textContent = "Please enter a keyword to search.";
+    return;
+  }
+  if (checkedCats.length === 0) {
+    resultsContainer.textContent = "Please select at least one category.";
+    return;
+  }
+
+  let results = [];
+
+  checkedCats.forEach(cat => {
+    categories[cat].forEach(site => {
+      if (site.name.toLowerCase().includes(keyword) || site.url.toLowerCase().includes(keyword)) {
+        results.push({ category: cat, ...site });
+      }
+    });
+  });
+
+  if (results.length === 0) {
+    resultsContainer.textContent = "No results found.";
+    return;
+  }
+
+  // Display results
+  results.forEach(res => {
+    const div = document.createElement("div");
+    div.className = "search-result";
+    div.innerHTML = `<strong>${res.category}</strong>: <a href="${res.url}" target="_blank" rel="noopener noreferrer">${res.name}</a>`;
+    resultsContainer.appendChild(div);
+  });
+}
+
+// Initialization function
+function init() {
+  loadData();
+  renderCategoryCheckboxes();
+  renderManageCategories();
+  renderManageWebsites();
+
+  document.getElementById("search-btn").onclick = performSearch;
+  document.getElementById("save-changes").onclick = () => {
+    saveData();
+    alert("Changes saved!");
   };
 }
 
-// Init on page load
-window.onload = () => {
-  loadData();
-  renderCategories();
-  renderCategoryCheckboxes();
-  renderSavedReports();
-  setupImageUpload();
-
-  document.getElementById('search-button').onclick = performSearch;
-  document.getElementById('save-report-button').onclick = saveReport;
-};
+window.onload = init;

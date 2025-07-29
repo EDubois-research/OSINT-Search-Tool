@@ -115,7 +115,74 @@
       </div>
     </div>
   </section>
-  <!-- The rest of the app (search, filters, categories, management, results, saved cases) and all JavaScript logic will be inserted here. -->
+  <section class="search-section">
+    <input type="text" id="keywordInput" placeholder="Enter keyword(s)">
+    <button id="searchBtn" class="btn-brand">Search</button>
+  </section>
+  <section class="advanced-filters">
+    <h2>Advanced Filters</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+      <div>
+        <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
+        <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK"></label>
+        <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator"></label>
+        <label>Company: <input type="text" id="linkedinCompany" placeholder="e.g., Microsoft"></label>
+        <label>School: <input type="text" id="linkedinSchool" placeholder="e.g., Harvard University"></label>
+      </div>
+      <div>
+        <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">📘 Facebook Filters</h3>
+        <label>Location: <input type="text" id="facebookLocation" placeholder="e.g., London, UK"></label>
+        <label>Education: <input type="text" id="facebookEducation" placeholder="e.g., Harvard University"></label>
+        <label>Workplace: <input type="text" id="facebookWorkplace" placeholder="e.g., Microsoft"></label>
+        <label>Relationship: <select id="facebookRelationship">
+          <option value="">Any</option>
+          <option value="single">Single</option>
+          <option value="relationship">In a relationship</option>
+          <option value="married">Married</option>
+        </select></label>
+      </div>
+    </div>
+    <div style="background: #f0f8ff; padding: 8px; border-radius: 4px; font-size: 0.85em; color: #0066cc;">
+      💡 <strong>Note:</strong> Filters are automatically applied to LinkedIn and Facebook searches when those categories are selected.
+    </div>
+  </section>
+  <section class="categories-section">
+    <h2>Search Categories</h2>
+    <div style="margin-bottom: 15px;">
+      <button id="selectAllBtn" class="btn-small">Select All</button>
+      <button id="deselectAllBtn" class="btn-small">Deselect All</button>
+    </div>
+    <div id="categoriesContainer"></div>
+  </section>
+  <section class="manage-section">
+    <h2>Manage Categories & Websites</h2>
+    <div class="manage-categories">
+      <h3>Categories</h3>
+      <div id="manageCategoriesContainer"></div>
+      <input type="text" id="newCategoryInput" placeholder="New category name">
+      <button id="addCategoryBtn" class="btn-brand">Add Category</button>
+    </div>
+    <div class="manage-websites">
+      <h3>Add Website</h3>
+      <select id="categorySelectForWebsites"></select>
+      <input type="text" id="newWebsiteName" placeholder="Website name">
+      <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)">
+      <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
+    </div>
+  </section>
+  <section class="results-section">
+    <h2>Search Results</h2>
+    <div id="resultsContainer">
+      <p style="color: #666;">Enter keywords and select websites to search.</p>
+    </div>
+    <button id="exportReportBtn" class="btn-brand">Export Report</button>
+  </section>
+  <section class="saved-cases-section">
+    <h2>Saved Cases</h2>
+    <input type="text" id="searchSavedCases" placeholder="Search saved cases...">
+    <div id="savedCasesContainer"></div>
+    <button id="clearSavedCasesBtn" class="btn-brand" style="background:#555;">Clear All Saved Cases</button>
+  </section>
 </div>
 <script>
 // The full JavaScript logic for all features will be inserted here.

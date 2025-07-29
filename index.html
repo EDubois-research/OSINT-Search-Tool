@@ -1,10 +1,8 @@
-
-=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OSINT Search Tool</title>
   <style>
     /* Reset & basics */
@@ -14,7 +12,8 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 20px;
+      margin: 0; 
+      padding: 20px;
       background: #f9f9f9;
       color: #222;
     }
@@ -93,28 +92,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 8px;
+      padding: 8px 5px;
       cursor: pointer;
       font-weight: 600;
       user-select: none;
-      transition: all 0.3s ease;
-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      margin-bottom: 4px;
-      position: relative;
+      transition: background-color 0.2s;
     }
 
     .category-header:hover {
-      background: linear-gradient(135deg, #f0e6e1 0%, #e8ddd8 100%);
-      border-color: #B13F17;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(177, 63, 23, 0.2);
-    }
-
-    /* Category title styling for search section */
-    .category-title {
-      font-weight: 600;
+      background: #f0e6e1;
+      border-radius: 4px;
     }
 
     .category-websites {
@@ -208,185 +195,11 @@
       margin-top: 15px;
     }
 
-    /* Enhanced Image Upload Button */
-    .image-upload-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      border: 2px dashed #B13F17;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      min-height: 80px;
-      margin-bottom: 15px;
-    }
-
-    .image-upload-btn:hover {
-      border-color: #8a2e11;
-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.2);
-    }
-
-    .upload-icon {
-      font-size: 2rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .upload-text {
-      font-weight: 600;
-      color: #B13F17;
-      font-size: 1rem;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .upload-hint {
-      font-size: 0.85rem;
-      color: #666;
-      display: block;
-    }
-
-    /* Image Preview */
-    .image-preview {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      background: white;
-      margin-bottom: 15px;
-    }
-
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .preview-title {
-      font-weight: 600;
-      color: #B13F17;
-    }
-
-    .remove-btn {
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: auto;
-      padding: 0;
-    }
-
-    .remove-btn:hover {
-      background: #c82333;
-    }
-
-    #previewImg {
-      max-width: 200px;
-      max-height: 150px;
-      border-radius: 4px;
-      display: block;
-      margin: 0 auto 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .image-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #666;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    /* Enhanced Search Engines */
     .image-engines {
       margin-top: 10px;
-      padding: 20px;
-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
-    }
-
-    .search-engines-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .search-engine-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      min-width: auto;
-    }
-
-    .search-engine-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .google-btn:hover { border-color: #4285f4; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3); }
-    .bing-btn:hover { border-color: #0078d4; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3); }
-    .yandex-btn:hover { border-color: #fc3f1d; box-shadow: 0 4px 12px rgba(252, 63, 29, 0.3); }
-    .tineye-btn:hover { border-color: #4c9be8; box-shadow: 0 4px 12px rgba(76, 155, 232, 0.3); }
-
-    .engine-icon {
-      font-size: 1.5rem;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .engine-name {
-      font-weight: 600;
-      color: #333;
-      font-size: 0.9rem;
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .engine-hint {
-      font-size: 0.75rem;
-      color: #666;
-      display: block;
-    }
-
-    .search-all-container {
-      text-align: center;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-
-    .search-all-btn {
-      font-size: 1rem;
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #B13F17 0%, #8a2e11 100%);
-    }
-
-    .search-all-btn:hover {
-      background: linear-gradient(135deg, #8a2e11 0%, #6b2209 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.4);
+      padding: 10px;
+      background: #f8f8f8;
+      border-radius: 6px;
     }
 
     .engine-btn {
@@ -396,19 +209,9 @@
 
     /* Advanced filters */
     .advanced-filters label {
-      display: block;
-      margin-bottom: 10px;
-    }
-    
-    .advanced-filters select {
-      width: 100%;
-      max-width: 200px;
-    }
-    
-    @media (max-width: 768px) {
-      .advanced-filters > div {
-        grid-template-columns: 1fr !important;
-      }
+      display: inline-block;
+      margin-right: 15px;
+      margin-bottom: 8px;
     }
 
     .saved-cases-section input {
@@ -483,163 +286,44 @@
         align-items: flex-start;
         gap: 8px;
       }
-      
-      /* Mobile image upload improvements */
-      .image-upload-btn {
-        padding: 15px;
-        min-height: 70px;
-      }
-      
-      .upload-icon {
-        font-size: 1.5rem;
-      }
-      
-      .upload-text {
-        font-size: 0.9rem;
-      }
-      
-      .search-engines-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-      
-      .search-engine-btn {
-        padding: 12px 8px;
-      }
-      
-      .engine-name {
-        font-size: 0.8rem;
-      }
-      
-      .engine-hint {
-        font-size: 0.7rem;
-      }
-      
-      #previewImg {
-        max-width: 150px;
-        max-height: 120px;
-      }
-      
-      .image-info {
-        flex-direction: column;
-        gap: 5px;
-      }
-      
-      /* Mobile category improvements */
-      .category {
-        padding: 10px !important;
-        margin-bottom: 6px !important;
-      }
-      
-      .category label div {
-        font-size: 0.9rem !important;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-
     <header>
       <h1>OSINT Search Tool</h1>
     </header>
 
     <section class="search-section">
-      <input type="text" id="keywordInput" placeholder="Enter keyword(s)" />
+      <input type="text" id="keywordInput" placeholder="Enter keyword(s)">
       <button id="searchBtn" class="btn-brand">Search</button>
 
       <div class="image-search">
-        <label for="imageUpload" class="image-upload-btn">
-          <span class="upload-icon">📷</span>
-          <span class="upload-text">Upload Image for Reverse Search</span>
-          <span class="upload-hint">Click to browse or drag & drop</span>
-        </label>
-        <input type="file" id="imageUpload" accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp" style="display:none" />
-        
-        <div id="imagePreview" class="image-preview" style="display:none;">
-          <div class="preview-header">
-            <span class="preview-title">📸 Image Ready for Search</span>
-            <button id="removeImage" class="remove-btn" title="Remove image">×</button>
-          </div>
-          <img id="previewImg" src="" alt="Preview" />
-          <div class="image-info">
-            <span id="imageFileName"></span>
-            <span id="imageFileSize"></span>
-          </div>
-        </div>
+        <label for="imageUpload" class="btn-brand" style="cursor:pointer;">Upload Image for Reverse Search</label>
+        <input type="file" id="imageUpload" accept="image/*" style="display:none">
       </div>
 
       <div id="imageSearchEngines" class="image-engines" style="display:none;">
-        <p><strong>🔍 Choose a reverse image search engine:</strong></p>
-        <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Your image is ready! Click any search engine below to open it in a new tab.</p>
-        <div class="search-engines-grid">
-          <button data-engine="google" class="search-engine-btn google-btn">
-            <span class="engine-icon">🔍</span>
-            <span class="engine-name">Google Images</span>
-            <span class="engine-hint">Most comprehensive</span>
-          </button>
-          <button data-engine="bing" class="search-engine-btn bing-btn">
-            <span class="engine-icon">🔎</span>
-            <span class="engine-name">Bing Visual</span>
-            <span class="engine-hint">Good for objects</span>
-          </button>
-          <button data-engine="yandex" class="search-engine-btn yandex-btn">
-            <span class="engine-icon">🌐</span>
-            <span class="engine-name">Yandex Images</span>
-            <span class="engine-hint">Great for faces</span>
-          </button>
-          <button data-engine="tineye" class="search-engine-btn tineye-btn">
-            <span class="engine-icon">👁️</span>
-            <span class="engine-name">TinEye</span>
-            <span class="engine-hint">Find exact matches</span>
-          </button>
-        </div>
-        <div class="search-all-container">
-          <button id="searchAllEngines" class="btn-brand search-all-btn">
-            🚀 Search All Engines
-          </button>
-        </div>
+        <p><strong>Reverse image search:</strong></p>
+        <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Upload your image, then click a search engine. You'll need to manually upload the image on the search site.</p>
+        <button data-engine="google" class="btn-brand engine-btn">Google Images</button>
+        <button data-engine="bing" class="btn-brand engine-btn">Bing Visual</button>
+        <button data-engine="yandex" class="btn-brand engine-btn">Yandex Images</button>
+        <button data-engine="tineye" class="btn-brand engine-btn">TinEye</button>
       </div>
     </section>
 
     <section class="advanced-filters">
       <h2>Advanced Filters</h2>
-      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for LinkedIn and Facebook:</p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
-        <div>
-          <h3 style="color: #0077b5; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
-          <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
-          <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
-          <label>Company: <input type="text" id="linkedinCompany" placeholder="e.g., Microsoft" /></label>
-          <label>School: <input type="text" id="linkedinSchool" placeholder="e.g., Harvard University" /></label>
-        </div>
-        <div>
-          <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">📘 Facebook Filters</h3>
-          <label>Location: <input type="text" id="facebookLocation" placeholder="e.g., London, UK" /></label>
-          <label>Education: <input type="text" id="facebookEducation" placeholder="e.g., Harvard University" /></label>
-          <label>Workplace: <input type="text" id="facebookWorkplace" placeholder="e.g., Microsoft" /></label>
-          <label>Relationship: <select id="facebookRelationship">
-            <option value="">Any</option>
-            <option value="single">Single</option>
-            <option value="relationship">In a relationship</option>
-            <option value="married">Married</option>
-          </select></label>
-        </div>
-      </div>
-      <div style="background: #f0f8ff; padding: 8px; border-radius: 4px; font-size: 0.85em; color: #0066cc;">
-        💡 <strong>Note:</strong> Filters are automatically applied to LinkedIn and Facebook searches when those categories are selected.
-      </div>
+      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
+      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK"></label>
+      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator"></label>
     </section>
 
     <section class="categories-section">
       <h2>Search Categories</h2>
-      <div style="margin-bottom: 15px;">
-        <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1565c0;">
-          <p style="margin: 0; font-size: 0.9em; color: #1565c0;">
-            💡 <strong>Category Selection:</strong> Select which categories of websites to include in your search. 
-            Each category contains multiple websites that will all be searched when selected.
-          </p>
-        </div>
+      <div style="margin-bottom: 10px;">
         <button id="selectAllBtn" class="btn-small">Select All</button>
         <button id="deselectAllBtn" class="btn-small">Deselect All</button>
       </div>
@@ -647,27 +331,20 @@
     </section>
 
     <section class="manage-section">
-      <h2>Manage Categories & Websites</h2>
+      <h2>Manage Categories &amp; Websites</h2>
 
       <div class="manage-categories">
         <h3>Categories</h3>
         <div id="manageCategoriesContainer"></div>
-        <input type="text" id="newCategoryInput" placeholder="New category name" />
+        <input type="text" id="newCategoryInput" placeholder="New category name">
         <button id="addCategoryBtn" class="btn-brand">Add Category</button>
-        
-        <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #ffc107;">
-          <p style="margin: 0; font-size: 0.9em; color: #856404;">
-            🛠️ <strong>Website Management:</strong> Click on the category headers below to view and manage existing websites. 
-            You can edit or delete individual sites from each category.
-          </p>
-        </div>
       </div>
 
       <div class="manage-websites">
         <h3>Add Website</h3>
         <select id="categorySelectForWebsites"></select>
-        <input type="text" id="newWebsiteName" placeholder="Website name" />
-        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)" />
+        <input type="text" id="newWebsiteName" placeholder="Website name">
+        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)">
         <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
       </div>
     </section>
@@ -682,11 +359,10 @@
 
     <section class="saved-cases-section">
       <h2>Saved Cases</h2>
-      <input type="text" id="searchSavedCases" placeholder="Search saved cases..." />
+      <input type="text" id="searchSavedCases" placeholder="Search saved cases...">
       <div id="savedCasesContainer"></div>
       <button id="clearSavedCasesBtn" class="btn-brand" style="background:#555;">Clear All Saved Cases</button>
     </section>
-
   </div>
 
   <script>
@@ -739,12 +415,6 @@
     const clearSavedCasesBtn = document.getElementById("clearSavedCasesBtn");
     const linkedinLocationInput = document.getElementById("linkedinLocation");
     const linkedinJobTitleInput = document.getElementById("linkedinJobTitle");
-    const linkedinCompanyInput = document.getElementById("linkedinCompany");
-    const linkedinSchoolInput = document.getElementById("linkedinSchool");
-    const facebookLocationInput = document.getElementById("facebookLocation");
-    const facebookEducationInput = document.getElementById("facebookEducation");
-    const facebookWorkplaceInput = document.getElementById("facebookWorkplace");
-    const facebookRelationshipInput = document.getElementById("facebookRelationship");
     const selectAllBtn = document.getElementById("selectAllBtn");
     const deselectAllBtn = document.getElementById("deselectAllBtn");
 
@@ -797,42 +467,17 @@
       if (site.name.toLowerCase().includes('linkedin')) {
         if (searchURL.includes('/search/results/people/')) {
           searchURL += `?keywords=${encodedKeyword}`;
-          if (filters.linkedinLocation) {
-            searchURL += `&geoUrn=${encodeURIComponent(filters.linkedinLocation)}`;
+          if (filters.location) {
+            searchURL += `&geoUrn=${encodeURIComponent(filters.location)}`;
           }
-          if (filters.linkedinJobTitle) {
-            searchURL += `&title=${encodeURIComponent(filters.linkedinJobTitle)}`;
-          }
-          if (filters.linkedinCompany) {
-            searchURL += `&currentCompany=${encodeURIComponent(filters.linkedinCompany)}`;
-          }
-          if (filters.linkedinSchool) {
-            searchURL += `&school=${encodeURIComponent(filters.linkedinSchool)}`;
+          if (filters.jobTitle) {
+            searchURL += `&title=${encodeURIComponent(filters.jobTitle)}`;
           }
         }
       } else if (site.name.toLowerCase().includes('facebook')) {
-        // Facebook Graph Search approach
-        let fbSearchURL = 'https://www.facebook.com/search/people/?q=' + encodedKeyword;
-        let filters_applied = [];
-        
-        if (filters.facebookLocation) {
-          filters_applied.push(`location:${encodeURIComponent(filters.facebookLocation)}`);
+        if (searchURL.includes('/search/people/')) {
+          searchURL += `?q=${encodedKeyword}`;
         }
-        if (filters.facebookEducation) {
-          filters_applied.push(`education:${encodeURIComponent(filters.facebookEducation)}`);
-        }
-        if (filters.facebookWorkplace) {
-          filters_applied.push(`employer:${encodeURIComponent(filters.facebookWorkplace)}`);
-        }
-        if (filters.facebookRelationship) {
-          filters_applied.push(`relationship:${encodeURIComponent(filters.facebookRelationship)}`);
-        }
-        
-        if (filters_applied.length > 0) {
-          fbSearchURL += '%20' + filters_applied.join('%20');
-        }
-        
-        searchURL = fbSearchURL;
       } else if (site.name.toLowerCase().includes('twitter') || site.name.toLowerCase().includes('/x')) {
         searchURL += `?q=${encodedKeyword}`;
       } else if (site.name.toLowerCase().includes('companies house')) {
@@ -924,23 +569,18 @@
       
       // Restore advanced filters if they exist
       if (savedCase.filters) {
-              linkedinLocationInput.value = savedCase.filters.linkedinLocation || '';
-      linkedinJobTitleInput.value = savedCase.filters.linkedinJobTitle || '';
-      linkedinCompanyInput.value = savedCase.filters.linkedinCompany || '';
-      linkedinSchoolInput.value = savedCase.filters.linkedinSchool || '';
-      facebookLocationInput.value = savedCase.filters.facebookLocation || '';
-      facebookEducationInput.value = savedCase.filters.facebookEducation || '';
-      facebookWorkplaceInput.value = savedCase.filters.facebookWorkplace || '';
-      facebookRelationshipInput.value = savedCase.filters.facebookRelationship || '';
+        linkedinLocationInput.value = savedCase.filters.location || '';
+        linkedinJobTitleInput.value = savedCase.filters.jobTitle || '';
       }
       
       // Clear all checkboxes first
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
       
-      // Restore selected categories (get unique categories from selected websites)
-      const selectedCategories = [...new Set(savedCase.selectedWebsites.map(sel => sel.category))];
-      selectedCategories.forEach(category => {
-        const checkbox = categoriesContainer.querySelector(`input[data-category="${category}"]`);
+      // Restore selected websites
+      savedCase.selectedWebsites.forEach(sel => {
+        const checkbox = categoriesContainer.querySelector(
+          `input[data-category="${sel.category}"][data-index="${sel.index}"]`
+        );
         if (checkbox) checkbox.checked = true;
       });
       
@@ -991,65 +631,52 @@
       for (const catName in categories) {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
-        categoryDiv.style.cssText = `
-          display: flex;
-          align-items: center;
-          padding: 12px;
-          margin-bottom: 8px;
-          background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        `;
 
-        // Category checkbox
-        const label = document.createElement("label");
-        label.style.cssText = `
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-          flex-grow: 1;
-        `;
+        const header = document.createElement("div");
+        header.className = "category-header";
+        
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = catName;
+        
+        const toggleIcon = document.createElement("span");
+        toggleIcon.className = "toggle-icon";
+        toggleIcon.textContent = "▼";
+        
+        header.appendChild(titleSpan);
+        header.appendChild(toggleIcon);
 
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = true;
-        checkbox.dataset.category = catName;
-        checkbox.style.cssText = `
-          margin-right: 12px;
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-        `;
+        const websitesDiv = document.createElement("div");
+        websitesDiv.className = "category-websites";
 
-        const categoryInfo = document.createElement("div");
-        categoryInfo.innerHTML = `
-          <div style="font-weight: 600; color: #B13F17; font-size: 1.1rem; margin-bottom: 2px;">
-            📋 ${catName}
-          </div>
-          <div style="font-size: 0.85rem; color: #666;">
-            ${categories[catName].length} websites included
-          </div>
-        `;
+        categories[catName].forEach((site, idx) => {
+          const websiteItem = document.createElement("div");
+          websiteItem.className = "website-item";
 
-        label.appendChild(checkbox);
-        label.appendChild(categoryInfo);
-        categoryDiv.appendChild(label);
-        categoriesContainer.appendChild(categoryDiv);
+          const label = document.createElement("label");
+          
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = true;
+          checkbox.dataset.category = catName;
+          checkbox.dataset.index = idx;
 
-        // Add hover effect
-        categoryDiv.addEventListener('mouseenter', () => {
-          categoryDiv.style.background = 'linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%)';
-          categoryDiv.style.borderColor = '#B13F17';
-          categoryDiv.style.transform = 'translateY(-1px)';
-          categoryDiv.style.boxShadow = '0 2px 8px rgba(177, 63, 23, 0.15)';
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = site.name;
+          
+          label.appendChild(checkbox);
+          label.appendChild(nameSpan);
+          websiteItem.appendChild(label);
+          websitesDiv.appendChild(websiteItem);
         });
 
-        categoryDiv.addEventListener('mouseleave', () => {
-          categoryDiv.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
-          categoryDiv.style.borderColor = '#e0e0e0';
-          categoryDiv.style.transform = 'translateY(0)';
-          categoryDiv.style.boxShadow = 'none';
+        categoryDiv.appendChild(header);
+        categoryDiv.appendChild(websitesDiv);
+        categoriesContainer.appendChild(categoryDiv);
+
+        // Toggle dropdown with animation
+        header.addEventListener("click", () => {
+          const isVisible = websitesDiv.classList.toggle("visible");
+          toggleIcon.classList.toggle("rotated", isVisible);
         });
       }
     }
@@ -1102,36 +729,32 @@
       // Remove existing website lists
       document.querySelectorAll(".website-manage-list").forEach(el => el.remove());
 
-      let isFirstManageCategory = true;
-
       Object.keys(categories).forEach(catName => {
         if (categories[catName].length === 0) return;
 
         const container = document.createElement("div");
         container.className = "website-manage-list";
 
-        // Create collapsible header with improved styling
+        // Create collapsible header
         const header = document.createElement("div");
         header.className = "category-header";
         header.style.cssText = `
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 8px;
+          padding: 8px 5px;
           cursor: pointer;
           font-weight: 600;
           user-select: none;
-          transition: all 0.3s ease;
-          background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
-          border: 1px solid #e0e0e0;
-          border-radius: 6px;
+          transition: background-color 0.2s;
+          background: #f8f8f8;
+          border-radius: 4px;
           margin-bottom: 8px;
-          position: relative;
         `;
 
         const titleSpan = document.createElement("span");
-        titleSpan.innerHTML = `<span style="color: #B13F17;">🛠️</span> Websites in "${catName}" <small style="color: #666; font-weight: normal;">(${categories[catName].length} sites)</small>`;
-        titleSpan.style.color = "#333";
+        titleSpan.textContent = `Websites in "${catName}"`;
+        titleSpan.style.color = "#666";
 
         const toggleIcon = document.createElement("span");
         toggleIcon.className = "toggle-icon";
@@ -1143,15 +766,7 @@
         // Create collapsible content
         const websitesContent = document.createElement("div");
         websitesContent.className = "category-websites";
-        
-        // Start with first category open in manage section
-        if (isFirstManageCategory) {
-          websitesContent.classList.add("visible");
-          toggleIcon.classList.add("rotated");
-          isFirstManageCategory = false;
-        } else {
-          websitesContent.style.display = "none";
-        }
+        websitesContent.style.display = "none"; // Start collapsed
 
         categories[catName].forEach((site, idx) => {
           const siteDiv = document.createElement("div");
@@ -1268,14 +883,8 @@
       searchBtn.disabled = true;
 
       const filters = {
-        linkedinLocation: linkedinLocationInput.value.trim(),
-        linkedinJobTitle: linkedinJobTitleInput.value.trim(),
-        linkedinCompany: linkedinCompanyInput.value.trim(),
-        linkedinSchool: linkedinSchoolInput.value.trim(),
-        facebookLocation: facebookLocationInput.value.trim(),
-        facebookEducation: facebookEducationInput.value.trim(),
-        facebookWorkplace: facebookWorkplaceInput.value.trim(),
-        facebookRelationship: facebookRelationshipInput.value.trim()
+        location: linkedinLocationInput.value.trim(),
+        jobTitle: linkedinJobTitleInput.value.trim()
       };
 
       setTimeout(() => {
@@ -1290,11 +899,8 @@
             const lowerKeyword = keyword.toLowerCase();
             if (site.name.toLowerCase().includes(lowerKeyword)) score += 5;
             if (site.url.toLowerCase().includes(lowerKeyword)) score += 3;
-                    if (filters.linkedinLocation && site.name.toLowerCase().includes('linkedin')) score += 2;
-        if (filters.linkedinJobTitle && site.name.toLowerCase().includes('linkedin')) score += 2;
-        if (filters.linkedinCompany && site.name.toLowerCase().includes('linkedin')) score += 2;
-        if (filters.linkedinSchool && site.name.toLowerCase().includes('linkedin')) score += 2;
-        if ((filters.facebookLocation || filters.facebookEducation || filters.facebookWorkplace || filters.facebookRelationship) && site.name.toLowerCase().includes('facebook')) score += 3;
+            if (filters.location && site.name.toLowerCase().includes('linkedin')) score += 2;
+            if (filters.jobTitle && site.name.toLowerCase().includes('linkedin')) score += 2;
 
             return {
               category,
@@ -1378,14 +984,8 @@
 
       const timestamp = new Date().toLocaleString();
       const filters = [];
-      if (linkedinLocationInput.value.trim()) filters.push(`LinkedIn Location: ${linkedinLocationInput.value.trim()}`);
-      if (linkedinJobTitleInput.value.trim()) filters.push(`LinkedIn Job Title: ${linkedinJobTitleInput.value.trim()}`);
-      if (linkedinCompanyInput.value.trim()) filters.push(`LinkedIn Company: ${linkedinCompanyInput.value.trim()}`);
-      if (linkedinSchoolInput.value.trim()) filters.push(`LinkedIn School: ${linkedinSchoolInput.value.trim()}`);
-      if (facebookLocationInput.value.trim()) filters.push(`Facebook Location: ${facebookLocationInput.value.trim()}`);
-      if (facebookEducationInput.value.trim()) filters.push(`Facebook Education: ${facebookEducationInput.value.trim()}`);
-      if (facebookWorkplaceInput.value.trim()) filters.push(`Facebook Workplace: ${facebookWorkplaceInput.value.trim()}`);
-      if (facebookRelationshipInput.value.trim()) filters.push(`Facebook Relationship: ${facebookRelationshipInput.value.trim()}`);
+      if (linkedinLocationInput.value.trim()) filters.push(`Location: ${linkedinLocationInput.value.trim()}`);
+      if (linkedinJobTitleInput.value.trim()) filters.push(`Job Title: ${linkedinJobTitleInput.value.trim()}`);
       
       const filtersSection = filters.length > 0 ? 
         `<div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 20px 0;">
@@ -1493,14 +1093,12 @@
       const selectedSites = [];
       categoriesContainer.querySelectorAll("input[type=checkbox]:checked").forEach(cb => {
         const category = cb.dataset.category;
-        if (categories[category]) {
-          // Add all websites from selected categories
-          categories[category].forEach((site, index) => {
-            selectedSites.push({
-              category,
-              index,
-              site: site
-            });
+        const index = parseInt(cb.dataset.index, 10);
+        if (categories[category] && categories[category][index]) {
+          selectedSites.push({
+            category,
+            index,
+            site: categories[category][index]
           });
         }
       });
@@ -1523,12 +1121,12 @@
     // Select/Deselect all functionality
     selectAllBtn.addEventListener("click", () => {
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
-      showMessage("All categories selected", "success");
+      showMessage("All websites selected", "success");
     });
 
     deselectAllBtn.addEventListener("click", () => {
       categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
-      showMessage("All categories deselected", "success");
+      showMessage("All websites deselected", "success");
     });
 
     // Category management
@@ -1584,140 +1182,28 @@
     // Export functionality
     exportReportBtn.addEventListener("click", exportReport);
 
-    // Enhanced image upload and reverse search
-    const imagePreview = document.getElementById("imagePreview");
-    const previewImg = document.getElementById("previewImg");
-    const imageFileName = document.getElementById("imageFileName");
-    const imageFileSize = document.getElementById("imageFileSize");
-    const removeImageBtn = document.getElementById("removeImage");
-    const searchAllEnginesBtn = document.getElementById("searchAllEngines");
-    
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    function resetImageUpload() {
-      uploadedImageData = null;
-      imageUploadInput.value = "";
-      imagePreview.style.display = "none";
-      imageSearchEngines.style.display = "none";
-      previewImg.src = "";
-    }
-    
-    imageUploadInput.addEventListener("change", (e) => {
+    // Image upload and reverse search
+    imageUploadInput.addEventListener("change", () => {
       if (imageUploadInput.files.length > 0) {
         const file = imageUploadInput.files[0];
-        
-        // File size validation (10MB limit)
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
           showMessage("Image file too large. Please select a file under 10MB.", "error");
-          resetImageUpload();
-          return;
-        }
-        
-        // File type validation
-        if (!file.type.startsWith('image/')) {
-          showMessage("Please select a valid image file.", "error");
-          resetImageUpload();
+          imageUploadInput.value = "";
+          imageSearchEngines.style.display = "none";
           return;
         }
         
         uploadedImageData = file;
-        
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previewImg.src = e.target.result;
-          imageFileName.textContent = file.name;
-          imageFileSize.textContent = formatFileSize(file.size);
-          imagePreview.style.display = "block";
-          imageSearchEngines.style.display = "block";
-        };
-        reader.readAsDataURL(file);
-        
-        showMessage("Image loaded successfully! Choose a search engine below.", "success");
+        imageSearchEngines.style.display = "block";
+        showMessage("Image uploaded. Click a search engine to begin reverse search.", "success");
       } else {
-        resetImageUpload();
+        uploadedImageData = null;
+        imageSearchEngines.style.display = "none";
       }
     });
-    
-    // Remove image functionality
-    removeImageBtn.addEventListener("click", () => {
-      resetImageUpload();
-      showMessage("Image removed.", "info");
-    });
-    
-    // Search all engines functionality
-    searchAllEnginesBtn.addEventListener("click", () => {
-      if (!uploadedImageData) {
-        showMessage("Please upload an image first", "error");
-        return;
-      }
-      
-      const engines = [
-        { name: "Google Images", url: "https://images.google.com/" },
-        { name: "Bing Visual", url: "https://www.bing.com/images/search?view=detailv2&iss=sbi" },
-        { name: "Yandex Images", url: "https://yandex.com/images/search?rpt=imageview" },
-        { name: "TinEye", url: "https://tineye.com/" }
-      ];
-      
-      engines.forEach((engine, index) => {
-        setTimeout(() => {
-          window.open(engine.url, "_blank");
-        }, index * 500); // Stagger the opens by 500ms each
-      });
-      
-      showMessage("Opened all search engines! Upload your image on each site.", "success");
-    });
-    
-    // Drag and drop functionality
-    const imageUploadBtn = document.querySelector('.image-upload-btn');
-    
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      imageUploadBtn.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-      imageUploadBtn.addEventListener(eventName, highlight, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-      imageUploadBtn.addEventListener(eventName, unhighlight, false);
-    });
-    
-    function highlight(e) {
-      imageUploadBtn.style.borderColor = '#8a2e11';
-      imageUploadBtn.style.background = 'linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%)';
-    }
-    
-    function unhighlight(e) {
-      imageUploadBtn.style.borderColor = '#B13F17';
-      imageUploadBtn.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
-    }
-    
-    imageUploadBtn.addEventListener('drop', handleDrop, false);
-    
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      
-      if (files.length > 0) {
-        imageUploadInput.files = files;
-        imageUploadInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    }
 
     // Improved reverse image search
-    imageSearchEngines.querySelectorAll(".search-engine-btn").forEach(btn => {
+    imageSearchEngines.querySelectorAll(".engine-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const engine = btn.dataset.engine;
         if (!uploadedImageData) {
@@ -1793,4 +1279,3 @@
   </script>
 </body>
 </html>
->>>>>>> 94ad7e3fcae3207f58595bf5d6b136ec8033ee50

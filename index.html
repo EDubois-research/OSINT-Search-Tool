@@ -1,314 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OSINT Search Tool</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    input[type="text"], select {
-      padding: 8px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      margin: 5px 5px 5px 0;
-      padding: 6px 10px;
-      cursor: pointer;
-    }
-    .category {
-      margin-bottom: 10px;
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .results {
-      margin-top: 20px;
-      border-top: 1px solid #ccc;
-      padding-top: 10px;
-    }
-    details summary {
-      cursor: pointer;
-      padding: 5px 0;
-      font-weight: bold;
-    }
-    .checkboxes {
-      margin-bottom: 15px;
-    }
-    #advancedFilters {
-      display: none;
-      margin-top: 10px;
-      background: #eef;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .image-search-buttons button {
-      margin-right: 8px;
-      margin-top: 4px;
-    }
-    .search-result {
-      border-bottom: 1px solid #ddd;
-      padding: 5px 0;
-    }
-    .relevance-score {
-      font-weight: bold;
-      color: green;
-      margin-left: 10px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OSINT Search Tool</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 {
+    margin-bottom: 0.5em;
+  }
+  .category {
+    margin-bottom: 1em;
+  }
+  .category-header {
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  .category-websites {
+    margin-left: 20px;
+    display: none;
+    margin-top: 5px;
+  }
+  label {
+    display: block;
+    margin-bottom: 4px;
+  }
+  input[type="checkbox"] {
+    margin-right: 6px;
+  }
+  #results {
+    margin-top: 20px;
+  }
+  .result-item {
+    margin-bottom: 10px;
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+  }
+</style>
 </head>
 <body>
 
-  <h1>OSINT Search Tool</h1>
+<h1>OSINT Search Tool</h1>
 
-  <label for="keyword">Keyword Search</label>
-  <input type="text" id="keyword" placeholder="Enter keyword..." />
+<label for="keyword">Enter Keyword:</label>
+<input type="text" id="keyword" placeholder="Keyword to search..." />
 
-  <div class="checkboxes" id="categoryCheckboxes"></div>
+<h2>Categories</h2>
+<div id="categories-container"></div>
 
-  <!-- Advanced filters shown only if 'Social Media' category checked -->
-  <div id="advancedFilters">
-    <h3>Social Media Advanced Filters</h3>
-    <input type="text" id="filterWorkplace" placeholder="Workplace" />
-    <input type="text" id="filterLocation" placeholder="Location" />
-    <input type="text" id="filterEducation" placeholder="Education" />
-  </div>
+<button id="searchBtn">Search</button>
 
-  <button onclick="performSearch()">Search</button>
-
-  <h2>Reverse Image Search</h2>
-  <input type="file" id="imageUpload" accept="image/*" />
-  <div class="image-search-buttons">
-    <button onclick="reverseImageSearch('google')">Search Google Images</button>
-    <button onclick="reverseImageSearch('tineye')">Search TinEye</button>
-    <button onclick="reverseImageSearch('bing')">Search Bing</button>
-  </div>
-
-  <h2>Add New Website</h2>
-  <input type="text" id="newWebsite" placeholder="Enter website URL" />
-  <select id="categorySelect"></select>
-  <button onclick="addSite()">Add Website</button>
-
-  <h2>Add New Category</h2>
-  <input type="text" id="newCategory" placeholder="Enter category name" />
-  <button onclick="addCategory()">Add Category</button>
-
-  <h2>Categories & Sites</h2>
-  <div id="categoryContainer"></div>
-
-  <div class="results" id="searchResults"></div>
+<div id="results"></div>
 
 <script>
-  // Initial categories and sites
-  let categories = JSON.parse(localStorage.getItem('categories')) || {
-    "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
-    "Court Case Searches": ["https://www.casemine.com/"],
-    "Occupation Registers": ["https://www.gdc-uk.org/pages/searchregisters.aspx"],
-    "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
-    "Transport": ["https://cartaxcheck.co.uk/"],
-    "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
-    "Social Media": ["https://www.facebook.com/"],
-    "Offshore Companies": ["https://offshoreleaks.icij.org/"],
-    "Domain/Leaked/Cached": ["https://who.is/"]
+  // Data structure for categories and websites
+  const categories = {
+    "Company Searches": [
+      { name: "Companies House - UK", url: "https://find-and-update.company-information.service.gov.uk/" }
+    ],
+    "Court Case Searches": [
+      { name: "Casemine", url: "https://www.casemine.com/" }
+    ],
+    "Occupation Registers": [
+      { name: "General Dental Council - UK Dentist Register", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+      { name: "Care Quality Commission - Registered Providers and Services", url: "https://www.cqc.org.uk/provider-search" },
+      { name: "Financial Conduct Authority - Financial Services Register", url: "https://register.fca.org.uk/" },
+      { name: "National Association of Licensed Paralegals - Member Directory", url: "https://www.nationalparalegals.co.uk/find-a-paralegal" },
+      { name: "Royal Institute of British Architects - Chartered Architects", url: "https://www.architecture.com/find-an-architect" },
+      { name: "British Association of Social Workers - Register", url: "https://www.basw.co.uk/find-a-social-worker" },
+      { name: "Institute of Chartered Secretaries and Administrators - Directory", url: "https://www.icsa.org.uk/find-a-member" },
+      { name: "Chartered Institute of Personnel and Development - Member Directory", url: "https://www.cipd.co.uk/membership/find-a-member" },
+      { name: "Royal College of Nursing - Member Directory", url: "https://www.rcn.org.uk/membership" },
+      { name: "U.S. Securities and Exchange Commission - Investment Adviser Public Disclosure", url: "https://adviserinfo.sec.gov/" },
+      { name: "Australian Health Practitioner Regulation Agency - Register", url: "https://www.ahpra.gov.au/Registration/Registers-of-Practitioners.aspx" },
+      { name: "Canadian Professional Engineers Register", url: "https://engineerscanada.ca/find-a-professional-engineer" },
+      { name: "European Patent Office - Register of Professional Representatives", url: "https://www.epo.org/applying/representation/registered.html" },
+      { name: "International Federation of Accountants - Member Bodies", url: "https://www.ifac.org/about-ifac/membership/members" },
+      { name: "UK Information Commissioner's Office (ICO)", url: "https://ico.org.uk/" },
+      { name: "British Psychological Society - Chartered Psychologists Register", url: "https://www.bps.org.uk/member-microsites" },
+      { name: "Royal Institution of Chartered Surveyors - Members", url: "https://www.ricsfirms.com/" },
+      { name: "Institute of Public Accountants - Member Directory", url: "https://www.publicaccountants.org.au/" },
+      { name: "The Law Society - Solicitors Register (UK)", url: "https://solicitors.lawsociety.org.uk/" },
+      { name: "General Medical Council - Medical Register (UK)", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+      { name: "Bar Standards Board - Barristers Register (UK)", url: "https://www.barstandardsboard.org.uk/for-the-public/find-a-barrister.html" },
+      { name: "Nursing and Midwifery Council - Register (UK)", url: "https://www.nmc.org.uk/registration/register-of-nurses/" },
+      { name: "Health and Care Professions Council - Register (UK)", url: "https://www.hcpc-uk.org/check-the-register/" },
+      { name: "Engineering Council - Register of Chartered Engineers (UK)", url: "https://www.engc.org.uk/" },
+      { name: "Solicitors Regulation Authority - Register (UK)", url: "https://www.sra.org.uk/consumers/register/" },
+      { name: "Bar Council - Barristers Register (UK)", url: "https://www.barcouncil.org.uk/" },
+      { name: "Chartered Institute of Management Accountants (CIMA) - Member Directory", url: "https://www.cimaglobal.com/" },
+      { name: "Association of Chartered Certified Accountants (ACCA) - Member Directory", url: "https://www.accaglobal.com/gb/en/member/find-an-accountant.html" }
+    ],
+    "Genealogy": [
+      { name: "Probate Search - UK Wills", url: "https://probatesearch.service.gov.uk/#wills" }
+    ],
+    "Transport": [
+      { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" }
+    ],
+    "Sanctions, Watchlists, PEPs": [
+      { name: "Insolvency Service - Search", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" }
+    ],
+    "Social Media": [
+      { name: "Facebook", url: "https://www.facebook.com/" }
+    ],
+    "Offshore Companies": [
+      { name: "ICIJ Offshore Leaks", url: "https://offshoreleaks.icij.org/" }
+    ],
+    "Domain/Leaked/Cached": [
+      { name: "Who.is", url: "https://who.is/" }
+    ]
   };
 
-  // Save categories to localStorage
-  function saveToLocal() {
-    localStorage.setItem('categories', JSON.stringify(categories));
-  }
+  // Build category checkbox list with collapsible website lists
+  const categoriesContainer = document.getElementById('categories-container');
 
-  // Render categories list, dropdown for add-site, and checkbox list for search
-  function renderCategories() {
-    const container = document.getElementById('categoryContainer');
-    const select = document.getElementById('categorySelect');
-    const checkboxArea = document.getElementById('categoryCheckboxes');
+  Object.entries(categories).forEach(([categoryName, websites], index) => {
+    // Create category container div
+    const categoryDiv = document.createElement('div');
+    categoryDiv.className = 'category';
 
-    container.innerHTML = '';
-    select.innerHTML = '';
-    checkboxArea.innerHTML = '';
+    // Create category header (toggle button)
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.textContent = categoryName;
 
-    Object.entries(categories).forEach(([cat, urls], index) => {
-      // Dropdown with expandable site list and delete buttons
-      const catDiv = document.createElement('div');
-      catDiv.className = 'category';
-      catDiv.innerHTML = `
-        <details>
-          <summary>${cat} <button onclick="deleteCategory('${cat}')" style="float:right;">Delete Category</button></summary>
-          <ul>
-            ${urls.map(url => `<li>${url} <button onclick="deleteSite('${cat}', '${url}')" style="color:red;">x</button></li>`).join('')}
-          </ul>
-        </details>
-      `;
-      container.appendChild(catDiv);
+    // Checkbox to select entire category
+    const categoryCheckbox = document.createElement('input');
+    categoryCheckbox.type = 'checkbox';
+    categoryCheckbox.id = `cat-checkbox-${index}`;
 
-      // Add to select dropdown for adding sites
-      const option = document.createElement('option');
-      option.value = cat;
-      option.text = cat;
-      select.appendChild(option);
+    // Wrap checkbox and header text
+    const label = document.createElement('label');
+    label.htmlFor = `cat-checkbox-${index}`;
+    label.style.fontWeight = 'bold';
+    label.style.cursor = 'pointer';
 
-      // Add to checkbox list for search
-      const checkbox = document.createElement('div');
-      checkbox.innerHTML = `
-        <input type="checkbox" id="cat_${index}" value="${cat}" onchange="toggleAdvancedFilters()" />
-        <label for="cat_${index}">${cat}</label>
-      `;
-      checkboxArea.appendChild(checkbox);
+    // Add checkbox inside label before text for easy clicking
+    label.appendChild(categoryCheckbox);
+    label.appendChild(document.createTextNode(categoryName));
+
+    // Create the websites container (collapsed by default)
+    const websitesDiv = document.createElement('div');
+    websitesDiv.className = 'category-websites';
+
+    // Add websites as individual checkboxes inside the collapsible panel
+    websites.forEach((site, siteIndex) => {
+      const siteLabel = document.createElement('label');
+      siteLabel.style.fontWeight = 'normal';
+
+      const siteCheckbox = document.createElement('input');
+      siteCheckbox.type = 'checkbox';
+      siteCheckbox.className = 'site-checkbox';
+      siteCheckbox.dataset.category = categoryName;
+      siteCheckbox.id = `site-checkbox-${index}-${siteIndex}`;
+      siteCheckbox.value = site.url;
+
+      const siteText = document.createTextNode(site.name);
+
+      siteLabel.appendChild(siteCheckbox);
+      siteLabel.appendChild(siteText);
+
+      websitesDiv.appendChild(siteLabel);
     });
-  }
 
-  // Add a new category
-  function addCategory() {
-    const newCat = document.getElementById('newCategory').value.trim();
-    if (!newCat) {
-      alert('Please enter a category name.');
-      return;
-    }
-    if (categories[newCat]) {
-      alert('Category already exists.');
-      return;
-    }
-    categories[newCat] = [];
-    saveToLocal();
-    renderCategories();
-    document.getElementById('newCategory').value = '';
-  }
+    // Add toggle functionality on category header click to show/hide websites
+    label.addEventListener('click', (e) => {
+      // Only toggle if the click wasn't on the checkbox itself
+      if (e.target !== categoryCheckbox) {
+        e.preventDefault();
+        if (websitesDiv.style.display === 'block') {
+          websitesDiv.style.display = 'none';
+        } else {
+          websitesDiv.style.display = 'block';
+        }
+      }
+    });
 
-  // Delete a category
-  function deleteCategory(cat) {
-    if (confirm(`Are you sure you want to delete category "${cat}" and all its websites?`)) {
-      delete categories[cat];
-      saveToLocal();
-      renderCategories();
-    }
-  }
+    // Checkbox logic: checking category checkbox checks/unchecks all websites in that category
+    categoryCheckbox.addEventListener('change', () => {
+      const checked = categoryCheckbox.checked;
+      websitesDiv.querySelectorAll('input.site-checkbox').forEach(cb => {
+        cb.checked = checked;
+      });
+    });
 
-  // Add a new website to a category
-  function addSite() {
-    const url = document.getElementById('newWebsite').value.trim();
-    const cat = document.getElementById('categorySelect').value;
-    if (!url) {
-      alert('Please enter a website URL.');
-      return;
-    }
-    if (!cat) {
-      alert('Please select a category.');
-      return;
-    }
-    if (categories[cat].includes(url)) {
-      alert('This website already exists in the selected category.');
-      return;
-    }
-    categories[cat].push(url);
-    saveToLocal();
-    renderCategories();
-    document.getElementById('newWebsite').value = '';
-  }
+    categoryDiv.appendChild(label);
+    categoryDiv.appendChild(websitesDiv);
+    categoriesContainer.appendChild(categoryDiv);
+  });
 
-  // Delete a website from a category
-  function deleteSite(cat, url) {
-    if (confirm(`Delete website ${url} from category "${cat}"?`)) {
-      categories[cat] = categories[cat].filter(u => u !== url);
-      saveToLocal();
-      renderCategories();
-    }
-  }
-
-  // Show/hide advanced filters if Social Media category is checked
-  function toggleAdvancedFilters() {
-    const checkboxes = document.querySelectorAll('#categoryCheckboxes input[type="checkbox"]');
-    const socialChecked = Array.from(checkboxes).some(cb => cb.value === 'Social Media' && cb.checked);
-    document.getElementById('advancedFilters').style.display = socialChecked ? 'block' : 'none';
-  }
-
-  // Dummy relevance score function
-  function relevanceScore(url, keyword) {
-    const count = (url.toLowerCase().match(new RegExp(keyword.toLowerCase(), 'g')) || []).length;
-    return Math.min(100, count * 20); // max 100%
-  }
-
-  // Perform search (simple keyword filter and show results)
-  function performSearch() {
-    const keyword = document.getElementById('keyword').value.trim();
-    const selectedCats = Array.from(document.querySelectorAll('#categoryCheckboxes input[type="checkbox"]:checked'))
-                              .map(cb => cb.value);
-    const resultsDiv = document.getElementById('searchResults');
+  // Search function
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const keyword = document.getElementById('keyword').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = '';
 
     if (!keyword) {
       alert('Please enter a keyword to search.');
       return;
     }
-    if (selectedCats.length === 0) {
-      alert('Please select at least one category.');
+
+    // Gather selected websites
+    const selectedSites = Array.from(document.querySelectorAll('input.site-checkbox:checked'));
+
+    if (selectedSites.length === 0) {
+      alert('Please select at least one website to search.');
       return;
     }
 
-    let results = [];
+    // Show which sites are searched and simulate results
+    selectedSites.forEach(siteCheckbox => {
+      const siteUrl = siteCheckbox.value;
+      const siteName = siteCheckbox.parentElement.textContent.trim();
 
-    selectedCats.forEach(cat => {
-      const sites = categories[cat];
-      sites.forEach(site => {
-        if (site.toLowerCase().includes(keyword.toLowerCase())) {
-          results.push({ category: cat, url: site, score: relevanceScore(site, keyword) });
-        }
-      });
+      // Simulated result for demo:
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item';
+      resultItem.innerHTML = `<strong>${siteName}</strong><br />Searching for "<em>${keyword}</em>" at <a href="${siteUrl}" target="_blank" rel="noopener noreferrer">${siteUrl}</a>`;
+      resultsDiv.appendChild(resultItem);
     });
-
-    if (results.length === 0) {
-      resultsDiv.innerHTML = '<p>No results found.</p>';
-      return;
-    }
-
-    // Sort results by relevance score descending
-    results.sort((a,b) => b.score - a.score);
-
-   
-    // Display results
-    results.forEach(res => {
-      const div = document.createElement('div');
-      div.className = 'search-result';
-      div.innerHTML = `
-        <strong>${res.category}</strong>: <a href="${res.url}" target="_blank" rel="noopener">${res.url}</a>
-        <span class="relevance-score">${res.score}% relevance</span>
-      `;
-      resultsDiv.appendChild(div);
-    });
-  }
-
-  // Reverse image search helper
-  function reverseImageSearch(engine) {
-    const input = document.getElementById('imageUpload');
-    if (input.files.length === 0) {
-      alert('Please upload an image first.');
-      return;
-    }
-    const file = input.files[0];
-    const url = URL.createObjectURL(file);
-
-    let searchUrl = '';
-    if (engine === 'google') {
-      searchUrl = `https://www.google.com/searchbyimage?&image_url=${encodeURIComponent(url)}`;
-    } else if (engine === 'tineye') {
-      searchUrl = `https://tineye.com/search?url=${encodeURIComponent(url)}`;
-    } else if (engine === 'bing') {
-      searchUrl = `https://www.bing.com/images/search?q=imgurl:${encodeURIComponent(url)}&view=detailv2&iss=sbi`;
-    }
-
-    window.open(searchUrl, '_blank');
-    URL.revokeObjectURL(url);
-  }
-
-  // Initial render
-  renderCategories();
-
-  // Show/hide advanced filters on page load if needed
-  toggleAdvancedFilters();
-
+  });
 </script>
+
 </body>
 </html>

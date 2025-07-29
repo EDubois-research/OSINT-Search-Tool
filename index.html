@@ -1,13 +1,13 @@
 (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF'
-diff --git a/index.html.backup b/index.html.backup
---- a/index.html.backup
-+++ b/index.html.backup
-@@ -0,0 +1,1282 @@
+diff --git a/index_complete.html b/index_complete.html
+--- a/index_complete.html
++++ b/index_complete.html
+@@ -0,0 +1,1281 @@
 +<!DOCTYPE html>
 +<html lang="en">
 +<head>
-+  <meta charset="UTF-8" />
-+  <meta name="viewport" content="width=device-width, initial-scale=1" />
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 +  <title>OSINT Search Tool</title>
 +  <style>
 +    /* Reset & basics */
@@ -17,7 +17,8 @@ diff --git a/index.html.backup b/index.html.backup
 +
 +    body {
 +      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-+      margin: 0; padding: 20px;
++      margin: 0; 
++      padding: 20px;
 +      background: #f9f9f9;
 +      color: #222;
 +    }
@@ -295,18 +296,17 @@ diff --git a/index.html.backup b/index.html.backup
 +</head>
 +<body>
 +  <div class="container">
-+
 +    <header>
 +      <h1>OSINT Search Tool</h1>
 +    </header>
 +
 +    <section class="search-section">
-+      <input type="text" id="keywordInput" placeholder="Enter keyword(s)" />
++      <input type="text" id="keywordInput" placeholder="Enter keyword(s)">
 +      <button id="searchBtn" class="btn-brand">Search</button>
 +
 +      <div class="image-search">
 +        <label for="imageUpload" class="btn-brand" style="cursor:pointer;">Upload Image for Reverse Search</label>
-+        <input type="file" id="imageUpload" accept="image/*" style="display:none" />
++        <input type="file" id="imageUpload" accept="image/*" style="display:none">
 +      </div>
 +
 +      <div id="imageSearchEngines" class="image-engines" style="display:none;">
@@ -322,8 +322,8 @@ diff --git a/index.html.backup b/index.html.backup
 +    <section class="advanced-filters">
 +      <h2>Advanced Filters</h2>
 +      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
-+      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
-+      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
++      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK"></label>
++      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator"></label>
 +    </section>
 +
 +    <section class="categories-section">
@@ -336,20 +336,20 @@ diff --git a/index.html.backup b/index.html.backup
 +    </section>
 +
 +    <section class="manage-section">
-+      <h2>Manage Categories & Websites</h2>
++      <h2>Manage Categories &amp; Websites</h2>
 +
 +      <div class="manage-categories">
 +        <h3>Categories</h3>
 +        <div id="manageCategoriesContainer"></div>
-+        <input type="text" id="newCategoryInput" placeholder="New category name" />
++        <input type="text" id="newCategoryInput" placeholder="New category name">
 +        <button id="addCategoryBtn" class="btn-brand">Add Category</button>
 +      </div>
 +
 +      <div class="manage-websites">
 +        <h3>Add Website</h3>
 +        <select id="categorySelectForWebsites"></select>
-+        <input type="text" id="newWebsiteName" placeholder="Website name" />
-+        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)" />
++        <input type="text" id="newWebsiteName" placeholder="Website name">
++        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)">
 +        <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
 +      </div>
 +    </section>
@@ -364,11 +364,10 @@ diff --git a/index.html.backup b/index.html.backup
 +
 +    <section class="saved-cases-section">
 +      <h2>Saved Cases</h2>
-+      <input type="text" id="searchSavedCases" placeholder="Search saved cases..." />
++      <input type="text" id="searchSavedCases" placeholder="Search saved cases...">
 +      <div id="savedCasesContainer"></div>
 +      <button id="clearSavedCasesBtn" class="btn-brand" style="background:#555;">Clear All Saved Cases</button>
 +    </section>
-+
 +  </div>
 +
 +  <script>

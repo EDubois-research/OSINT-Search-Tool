@@ -2,7 +2,7 @@
 diff --git a/index.html b/index.html
 --- a/index.html
 +++ b/index.html
-@@ -1,1793 +1,424 @@
+@@ -1,1793 +1,985 @@
 -<!DOCTYPE html>
 -<html lang="en">
 -<head>
@@ -2216,9 +2216,570 @@ diff --git a/index.html b/index.html
 +    </section>
 +  </div>
 +  <script>
-+    // ... JavaScript logic for all features goes here ...
-+  </script>
-+</body>
-+</html>
++// --- Application State ---
++let categories = {
++  "Social Media": [
++    { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
++    { name: "Facebook", url: "https://www.facebook.com/search/people/" },
++    { name: "Twitter/X", url: "https://twitter.com/search" },
++    { name: "Instagram", url: "https://www.instagram.com/explore/tags/" }
++  ],
++  "Professional Registers": [
++    { name: "GMC (UK)", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
++    { name: "NMC (UK)", url: "https://www.nmc.org.uk/registration/search-the-register/" },
++    { name: "SRA (UK)", url: "https://www.sra.org.uk/consumers/register/" }
++  ],
++  "Company Searches": [
++    { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
++    { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
++  ],
++  "People Search": [
++    { name: "Pipl", url: "https://pipl.com/" },
++    { name: "WhitePages", url: "https://www.whitepages.com/" },
++    { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
++  ]
++};
++let uploadedImage = null;
++let savedCases = [];
++
++// --- DOM Elements ---
++const searchInput = document.getElementById('searchInput');
++const searchBtn = document.getElementById('searchBtn');
++const imageUploadArea = document.getElementById('imageUploadArea');
++const imageInput = document.getElementById('imageInput');
++const imagePreview = document.getElementById('imagePreview');
++const previewImg = document.getElementById('previewImg');
++const removeImageBtn = document.getElementById('removeImage');
++const searchEngines = document.getElementById('searchEngines');
++const searchAllEnginesBtn = document.getElementById('searchAllEngines');
++const categoriesContainer = document.getElementById('categoriesContainer');
++const selectAllBtn = document.getElementById('selectAllBtn');
++const deselectAllBtn = document.getElementById('deselectAllBtn');
++const resultsContainer = document.getElementById('resultsContainer');
++const exportBtn = document.getElementById('exportBtn');
++const casesContainer = document.getElementById('casesContainer');
++const searchCasesInput = document.getElementById('searchCases');
++const clearCasesBtn = document.getElementById('clearCasesBtn');
++const newCategoryInput = document.getElementById('newCategoryInput');
++const addCategoryBtn = document.getElementById('addCategoryBtn');
++const categorySelect = document.getElementById('categorySelect');
++const websiteName = document.getElementById('websiteName');
++const websiteURL = document.getElementById('websiteURL');
++const addWebsiteBtn = document.getElementById('addWebsiteBtn');
++const manageCategoriesContainer = document.getElementById('manageCategoriesContainer');
++
++// --- Utility Functions ---
++function showNotification(message, type = 'info') {
++  // Remove existing notification
++  document.querySelectorAll('.notification').forEach(n => n.remove());
++  const notification = document.createElement('div');
++  notification.className = `notification ${type}`;
++  notification.style = `
++    position: fixed; top: 24px; right: 24px; background: #B13F17; color: #fff; padding: 14px 22px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: none; font-size: 1rem; opacity: 0; transition: opacity 0.2s;`;
++  notification.textContent = message;
++  document.body.appendChild(notification);
++  setTimeout(() => notification.style.opacity = 1, 50);
++  setTimeout(() => {
++    notification.style.opacity = 0;
++    setTimeout(() => notification.remove(), 300);
++  }, 2500);
++}
++function formatFileSize(bytes) {
++  if (bytes === 0) return '0 Bytes';
++  const k = 1024;
++  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
++  const i = Math.floor(Math.log(bytes) / Math.log(k));
++  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
++}
++function buildSearchURL(site, keyword, filters = {}) {
++  let searchURL = site.url;
++  const encodedKeyword = encodeURIComponent(keyword);
++  if (site.name.toLowerCase().includes('linkedin')) {
++    searchURL += `?keywords=${encodedKeyword}`;
++    if (filters.linkedinLocation) searchURL += `&geoUrn=${encodeURIComponent(filters.linkedinLocation)}`;
++    if (filters.linkedinJobTitle) searchURL += `&title=${encodeURIComponent(filters.linkedinJobTitle)}`;
++    if (filters.linkedinCompany) searchURL += `&currentCompany=${encodeURIComponent(filters.linkedinCompany)}`;
++    if (filters.linkedinSchool) searchURL += `&school=${encodeURIComponent(filters.linkedinSchool)}`;
++  } else if (site.name.toLowerCase().includes('facebook')) {
++    let fbSearchURL = 'https://www.facebook.com/search/people/?q=' + encodedKeyword;
++    let filters_applied = [];
++    if (filters.facebookLocation) filters_applied.push(`location:${encodeURIComponent(filters.facebookLocation)}`);
++    if (filters.facebookEducation) filters_applied.push(`education:${encodeURIComponent(filters.facebookEducation)}`);
++    if (filters.facebookWorkplace) filters_applied.push(`employer:${encodeURIComponent(filters.facebookWorkplace)}`);
++    if (filters.facebookRelationship) filters_applied.push(`relationship:${encodeURIComponent(filters.facebookRelationship)}`);
++    if (filters_applied.length > 0) fbSearchURL += '%20' + filters_applied.join('%20');
++    searchURL = fbSearchURL;
++  } else {
++    const separator = searchURL.includes('?') ? '&' : '?';
++    searchURL += `${separator}q=${encodedKeyword}`;
++  }
++  return searchURL;
++}
++
++// --- Image Upload Functions ---
++function setupImageUpload() {
++  imageUploadArea.addEventListener('click', () => imageInput.click());
++  imageInput.addEventListener('change', handleImageSelect);
++  // Drag and drop
++  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
++    imageUploadArea.addEventListener(eventName, preventDefaults, false);
++  });
++  function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
++  ['dragenter', 'dragover'].forEach(eventName => {
++    imageUploadArea.addEventListener(eventName, () => {
++      imageUploadArea.classList.add('drag-over');
++    }, false);
++  });
++  ['dragleave', 'drop'].forEach(eventName => {
++    imageUploadArea.addEventListener(eventName, () => {
++      imageUploadArea.classList.remove('drag-over');
++    }, false);
++  });
++  imageUploadArea.addEventListener('drop', handleDrop, false);
++  removeImageBtn.addEventListener('click', removeImage);
++}
++function handleImageSelect(e) {
++  const file = e.target.files[0];
++  if (file) processImage(file);
++}
++function handleDrop(e) {
++  const files = e.dataTransfer.files;
++  if (files.length > 0) processImage(files[0]);
++}
++function processImage(file) {
++  if (!file.type.startsWith('image/')) {
++    showNotification('Please select a valid image file', 'error');
++    return;
++  }
++  if (file.size > 10 * 1024 * 1024) {
++    showNotification('Image too large. Please select a file under 10MB', 'error');
++    return;
++  }
++  uploadedImage = file;
++  const reader = new FileReader();
++  reader.onload = (e) => {
++    previewImg.src = e.target.result;
++    document.getElementById('imageInfo').innerHTML = `<div style="text-align: center; color: #888;"><strong>${file.name}</strong> • ${formatFileSize(file.size)}</div>`;
++    imagePreview.style.display = 'block';
++    searchEngines.style.display = 'block';
++    showNotification('Image loaded successfully!', 'success');
++  };
++  reader.readAsDataURL(file);
++}
++function removeImage() {
++  uploadedImage = null;
++  imageInput.value = '';
++  imagePreview.style.display = 'none';
++  searchEngines.style.display = 'none';
++  showNotification('Image removed', 'info');
++}
++
++// --- Search Engine Functions ---
++function setupSearchEngines() {
++  document.querySelectorAll('.search-engine-card').forEach(card => {
++    card.addEventListener('click', () => {
++      const engine = card.dataset.engine;
++      openSearchEngine(engine);
++    });
++  });
++  searchAllEnginesBtn.addEventListener('click', () => {
++    const engines = ['google', 'bing', 'yandex', 'tineye'];
++    engines.forEach((engine, index) => {
++      setTimeout(() => openSearchEngine(engine), index * 500);
++    });
++    showNotification('Opened all search engines!', 'success');
++  });
++}
++function openSearchEngine(engine) {
++  if (!uploadedImage) {
++    showNotification('Please upload an image first', 'error');
++    return;
++  }
++  const urls = {
++    google: 'https://images.google.com/',
++    bing: 'https://www.bing.com/images/search?view=detailv2&iss=sbi',
++    yandex: 'https://yandex.com/images/search?rpt=imageview',
++    tineye: 'https://tineye.com/'
++  };
++  window.open(urls[engine], '_blank');
++  showNotification(`Opened ${engine.charAt(0).toUpperCase() + engine.slice(1)}`, 'info');
++}
++
++// --- Categories Functions ---
++function renderCategories() {
++  categoriesContainer.innerHTML = '';
++  categorySelect.innerHTML = '<option value="">Select Category</option>';
++  Object.keys(categories).forEach(categoryName => {
++    // Main categories display
++    const categoryCard = document.createElement('div');
++    categoryCard.className = 'category-card';
++    categoryCard.innerHTML = `
++      <div class="category-header">
++        <input type="checkbox" class="category-checkbox" data-category="${categoryName}" checked>
++        <div class="category-title">${categoryName}</div>
++        <span class="website-count">${categories[categoryName].length}</span>
++        <span class="dropdown-icon">▼</span>
++      </div>
++      <div class="websites-list">
++        ${categories[categoryName].map((site, index) => `
++          <div class="website-item">
++            <span>${site.name}</span>
++            <div>
++              <button class="btn btn-small" onclick="editWebsite('${categoryName}', ${index})">Edit</button>
++              <button class="btn btn-danger btn-small" onclick="deleteWebsite('${categoryName}', ${index})">Delete</button>
++            </div>
++          </div>
++        `).join('')}
++      </div>
++    `;
++    // Toggle dropdown
++    const header = categoryCard.querySelector('.category-header');
++    const websitesList = categoryCard.querySelector('.websites-list');
++    const dropdownIcon = categoryCard.querySelector('.dropdown-icon');
++    header.addEventListener('click', (e) => {
++      if (e.target.type !== 'checkbox') {
++        websitesList.classList.toggle('visible');
++        dropdownIcon.classList.toggle('rotated');
++      }
++    });
++    // Handle category selection
++    const checkbox = categoryCard.querySelector('.category-checkbox');
++    checkbox.addEventListener('change', (e) => {
++      categoryCard.classList.toggle('selected', e.target.checked);
++    });
++    categoriesContainer.appendChild(categoryCard);
++    // Category select dropdown
++    const option = document.createElement('option');
++    option.value = categoryName;
++    option.textContent = categoryName;
++    categorySelect.appendChild(option);
++  });
++  renderManageCategories();
++}
++function renderManageCategories() {
++  manageCategoriesContainer.innerHTML = '';
++  Object.keys(categories).forEach(categoryName => {
++    const categoryDiv = document.createElement('div');
++    categoryDiv.className = 'category-card';
++    categoryDiv.style.marginBottom = '12px';
++    categoryDiv.innerHTML = `
++      <div class="dropdown-toggle" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
++        <span>${categoryName}</span>
++        <span class="dropdown-icon">▼</span>
++      </div>
++      <div class="websites-list" style="display:none;">
++        ${categories[categoryName].map((site, idx) => `
++          <div class="website-item">
++            <span>${site.name} <span style='color:#888;font-size:0.9em;'>(${site.url})</span></span>
++            <span>
++              <button class="btn btn-small" onclick="editWebsite('${categoryName}',${idx})">Edit</button>
++              <button class="btn btn-danger btn-small" onclick="deleteWebsite('${categoryName}',${idx})">Delete</button>
++            </span>
++          </div>
++        `).join('')}
++      </div>
++    `;
++    // Toggle logic
++    const header = categoryDiv.querySelector('.dropdown-toggle');
++    const list = categoryDiv.querySelector('.websites-list');
++    const icon = categoryDiv.querySelector('.dropdown-icon');
++    header.addEventListener('click', () => {
++      const open = list.style.display === 'flex';
++      list.style.display = open ? 'none' : 'flex';
++      icon.classList.toggle('rotated', !open);
++    });
++    manageCategoriesContainer.appendChild(categoryDiv);
++  });
++}
++window.editWebsite = function(categoryName, idx) {
++  const site = categories[categoryName][idx];
++  const newName = prompt('Edit website name:', site.name);
++  if (!newName) return;
++  const newUrl = prompt('Edit website URL:', site.url);
++  if (!newUrl) return;
++  categories[categoryName][idx] = { name: newName, url: newUrl };
++  renderCategories();
++};
++window.deleteWebsite = function(categoryName, idx) {
++  if (!confirm('Delete this website?')) return;
++  categories[categoryName].splice(idx, 1);
++  renderCategories();
++};
++
++// --- Search Functions ---
++function performSearch() {
++  const keyword = searchInput.value.trim();
++  if (!keyword) {
++    showNotification('Please enter a search keyword', 'error');
++    return;
++  }
++  const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.dataset.category);
++  if (selectedCategories.length === 0) {
++    showNotification('Please select at least one category', 'error');
++    return;
++  }
++  const filters = {
++    linkedinLocation: document.getElementById('linkedinLocation').value.trim(),
++    linkedinJobTitle: document.getElementById('linkedinJobTitle').value.trim(),
++    linkedinCompany: document.getElementById('linkedinCompany').value.trim(),
++    linkedinSchool: document.getElementById('linkedinSchool').value.trim(),
++    facebookLocation: document.getElementById('facebookLocation').value.trim(),
++    facebookEducation: document.getElementById('facebookEducation').value.trim(),
++    facebookWorkplace: document.getElementById('facebookWorkplace').value.trim(),
++    facebookRelationship: document.getElementById('facebookRelationship').value
++  };
++  resultsContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 2rem;">🔍</div><div>Searching...</div></div>';
++  setTimeout(() => {
++    const results = [];
++    selectedCategories.forEach(categoryName => {
++      categories[categoryName].forEach(site => {
++        const searchURL = buildSearchURL(site, keyword, filters);
++        const relevanceScore = Math.floor(Math.random() * 10) + 1;
++        results.push({
++          category: categoryName,
++          site: site,
++          searchURL: searchURL,
++          relevanceScore: relevanceScore
++        });
++      });
++    });
++    results.sort((a, b) => b.relevanceScore - a.relevanceScore);
++    resultsContainer.innerHTML = '';
++    results.forEach(result => {
++      const resultDiv = document.createElement('div');
++      resultDiv.className = 'result-item';
++      resultDiv.innerHTML = `
++        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
++          <div>
++            <h4 style="color: #B13F17; margin: 0 0 5px 0;">${result.site.name}</h4>
++            <div style="color: #888; font-size: 0.9rem; margin-bottom: 10px;">
++              Category: ${result.category} • Relevance: ${result.relevanceScore}/10
++            </div>
++            <div style="margin-bottom: 15px;">
++              <strong>Search Query:</strong> "${keyword}"
++            </div>
++            ${Object.values(filters).some(f => f) ? `
++              <div style="background: #f0e6e1; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
++                <strong>Applied Filters:</strong><br>
++                ${Object.entries(filters).filter(([k, v]) => v).map(([k, v]) => `${k.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: ${v}`).join('<br>')}
++              </div>
++            ` : ''}
++          </div>
++        </div>
++        <a href="${result.searchURL}" target="_blank" class="btn btn-small">
++          🔗 Open Search
++        </a>
++      `;
++      resultsContainer.appendChild(resultDiv);
++    });
++    // Save case
++    saveCase(keyword, selectedCategories, filters, results);
++    showNotification(`Search completed! Found ${results.length} sources`, 'success');
++  }, 1200);
++}
++
++// --- Cases Management ---
++function saveCase(keyword, categoriesArr, filters, results) {
++  const caseData = {
++    id: Date.now(),
++    keyword: keyword,
++    categories: categoriesArr,
++    filters: filters,
++    results: results,
++    timestamp: new Date().toISOString(),
++    date: new Date().toLocaleDateString()
++  };
++  savedCases.unshift(caseData);
++  if (savedCases.length > 50) savedCases = savedCases.slice(0, 50);
++  renderCases();
++}
++function renderCases(filterText = '') {
++  const filteredCases = savedCases.filter(c =>
++    c.keyword.toLowerCase().includes(filterText.toLowerCase()) ||
++    c.date.includes(filterText)
++  );
++  casesContainer.innerHTML = '';
++  if (filteredCases.length === 0) {
++    casesContainer.innerHTML = '<p style="text-align: center; color: #888; padding: 40px;">No saved cases found</p>';
++    return;
++  }
++  filteredCases.forEach(caseData => {
++    const caseDiv = document.createElement('div');
++    caseDiv.className = 'case-item';
++    caseDiv.innerHTML = `
++      <div>
++        <div style="font-weight: 600; color: #B13F17; margin-bottom: 5px;">"${caseData.keyword}"</div>
++        <div style="color: #888; font-size: 0.9rem;">${caseData.date} • ${caseData.categories.length} categories • ${caseData.results.length} results</div>
++      </div>
++      <div>
++        <button class="btn btn-small" onclick="loadCase(${caseData.id})">Load</button>
++        <button class="btn btn-danger btn-small" onclick="deleteCase(${caseData.id})">Delete</button>
++      </div>
++    `;
++    casesContainer.appendChild(caseDiv);
++  });
++}
++window.loadCase = function(caseId) {
++  const caseData = savedCases.find(c => c.id === caseId);
++  if (!caseData) return;
++  searchInput.value = caseData.keyword;
++  // Restore filters
++  Object.entries(caseData.filters).forEach(([key, value]) => {
++    const element = document.getElementById(key);
++    if (element) element.value = value || '';
++  });
++  // Restore category selections
++  document.querySelectorAll('.category-checkbox').forEach(cb => {
++    cb.checked = caseData.categories.includes(cb.dataset.category);
++    cb.closest('.category-card').classList.toggle('selected', cb.checked);
++  });
++  // Restore results
++  resultsContainer.innerHTML = '';
++  caseData.results.forEach(result => {
++    const resultDiv = document.createElement('div');
++    resultDiv.className = 'result-item';
++    resultDiv.innerHTML = `
++      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
++        <div>
++          <h4 style="color: #B13F17; margin: 0 0 5px 0;">${result.site.name}</h4>
++          <div style="color: #888; font-size: 0.9rem; margin-bottom: 10px;">Category: ${result.category} • Relevance: ${result.relevanceScore}/10</div>
++        </div>
++      </div>
++      <a href="${result.searchURL}" target="_blank" class="btn btn-small">🔗 Open Search</a>
++    `;
++    resultsContainer.appendChild(resultDiv);
++  });
++  showNotification('Case loaded successfully', 'success');
++};
++window.deleteCase = function(caseId) {
++  if (!confirm('Delete this case?')) return;
++  savedCases = savedCases.filter(c => c.id !== caseId);
++  renderCases(searchCasesInput.value);
++  showNotification('Case deleted', 'success');
++};
++
++// --- Export Functions ---
++function exportReport() {
++  if (!resultsContainer.innerHTML.trim() || resultsContainer.innerHTML.includes('Enter keywords')) {
++    showNotification('No results to export', 'error');
++    return;
++  }
++  const timestamp = new Date().toLocaleString();
++  const keyword = searchInput.value.trim();
++  const htmlContent = `
++    <!DOCTYPE html>
++    <html>
++    <head>
++      <title>OSINT Report - ${keyword}</title>
++      <meta charset="UTF-8">
++      <style>
++        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 30px; max-width: 800px; margin: 0 auto; }
++        h1 { color: #B13F17; border-bottom: 3px solid #B13F17; padding-bottom: 10px; }
++        .result-item { margin-bottom: 25px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; }
++        a { color: #B13F17; text-decoration: none; }
++        .header-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
++      </style>
++    </head>
++    <body>
++      <div class="header-info">
++        <h1>🔍 OSINT Search Report</h1>
++        <h2>Search Query: "${keyword}"</h2>
++        <p>Generated: ${timestamp}</p>
++      </div>
++      ${resultsContainer.innerHTML}
++      <div style="margin-top: 40px; color: #666; font-size: 0.9em;">
++        <p>Report generated by Modern OSINT Search Tool</p>
++        <p>⚠️ Verify all information through multiple sources</p>
++      </div>
++    </body>
++    </html>
++  `;
++  const blob = new Blob([htmlContent], { type: 'text/html' });
++  const url = URL.createObjectURL(blob);
++  const a = document.createElement('a');
++  a.href = url;
++  a.download = `OSINT_Report_${keyword.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
++  document.body.appendChild(a);
++  a.click();
++  document.body.removeChild(a);
++  URL.revokeObjectURL(url);
++  showNotification('Report exported successfully', 'success');
++}
++
++// --- Event Listeners ---
++function setupEventListeners() {
++  searchBtn.addEventListener('click', performSearch);
++  searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
++  selectAllBtn.addEventListener('click', () => {
++    document.querySelectorAll('.category-checkbox').forEach(cb => {
++      cb.checked = true;
++      cb.closest('.category-card').classList.add('selected');
++    });
++    showNotification('All categories selected', 'success');
++  });
++  deselectAllBtn.addEventListener('click', () => {
++    document.querySelectorAll('.category-checkbox').forEach(cb => {
++      cb.checked = false;
++      cb.closest('.category-card').classList.remove('selected');
++    });
++    showNotification('All categories deselected', 'info');
++  });
++  addCategoryBtn.addEventListener('click', () => {
++    const name = newCategoryInput.value.trim();
++    if (!name) {
++      showNotification('Please enter a category name', 'error');
++      return;
++    }
++    if (categories[name]) {
++      showNotification('Category already exists', 'error');
++      return;
++    }
++    categories[name] = [];
++    newCategoryInput.value = '';
++    renderCategories();
++    showNotification('Category added successfully', 'success');
++  });
++  addWebsiteBtn.addEventListener('click', () => {
++    const category = categorySelect.value;
++    const name = websiteName.value.trim();
++    const url = websiteURL.value.trim();
++    if (!category || !name || !url) {
++      showNotification('Please fill all fields', 'error');
++      return;
++    }
++    try {
++      new URL(url);
++      categories[category].push({ name, url });
++      websiteName.value = '';
++      websiteURL.value = '';
++      renderCategories();
++      showNotification('Website added successfully', 'success');
++    } catch {
++      showNotification('Please enter a valid URL', 'error');
++    }
++  });
++  exportBtn.addEventListener('click', exportReport);
++  searchCasesInput.addEventListener('input', (e) => {
++    renderCases(e.target.value);
++  });
++  clearCasesBtn.addEventListener('click', () => {
++    if (!confirm('Clear all saved cases?')) return;
++    savedCases = [];
++    renderCases();
++    showNotification('All cases cleared', 'success');
++  });
++}
++
++// --- Initialize Application ---
++function init() {
++  setupImageUpload();
++  setupSearchEngines();
++  setupEventListeners();
++  renderCategories();
++  renderCases();
++  showNotification('Modern OSINT Tool loaded successfully!', 'success');
++}
++document.addEventListener('DOMContentLoaded', init);
++</script>
 EOF
 )

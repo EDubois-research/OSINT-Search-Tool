@@ -194,11 +194,185 @@
       margin-top: 15px;
     }
 
+    /* Enhanced Image Upload Button */
+    .image-upload-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      border: 2px dashed #B13F17;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      min-height: 80px;
+      margin-bottom: 15px;
+    }
+
+    .image-upload-btn:hover {
+      border-color: #8a2e11;
+      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.2);
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .upload-text {
+      font-weight: 600;
+      color: #B13F17;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .upload-hint {
+      font-size: 0.85rem;
+      color: #666;
+      display: block;
+    }
+
+    /* Image Preview */
+    .image-preview {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background: white;
+      margin-bottom: 15px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .preview-title {
+      font-weight: 600;
+      color: #B13F17;
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: auto;
+      padding: 0;
+    }
+
+    .remove-btn:hover {
+      background: #c82333;
+    }
+
+    #previewImg {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 4px;
+      display: block;
+      margin: 0 auto 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #666;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Enhanced Search Engines */
     .image-engines {
       margin-top: 10px;
-      padding: 10px;
-      background: #f8f8f8;
-      border-radius: 6px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .search-engines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-engine-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      min-width: auto;
+    }
+
+    .search-engine-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .google-btn:hover { border-color: #4285f4; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3); }
+    .bing-btn:hover { border-color: #0078d4; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3); }
+    .yandex-btn:hover { border-color: #fc3f1d; box-shadow: 0 4px 12px rgba(252, 63, 29, 0.3); }
+    .tineye-btn:hover { border-color: #4c9be8; box-shadow: 0 4px 12px rgba(76, 155, 232, 0.3); }
+
+    .engine-icon {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .engine-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .engine-hint {
+      font-size: 0.75rem;
+      color: #666;
+      display: block;
+    }
+
+    .search-all-container {
+      text-align: center;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+    }
+
+    .search-all-btn {
+      font-size: 1rem;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #B13F17 0%, #8a2e11 100%);
+    }
+
+    .search-all-btn:hover {
+      background: linear-gradient(135deg, #8a2e11 0%, #6b2209 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.4);
     }
 
     .engine-btn {
@@ -285,6 +459,47 @@
         align-items: flex-start;
         gap: 8px;
       }
+      
+      /* Mobile image upload improvements */
+      .image-upload-btn {
+        padding: 15px;
+        min-height: 70px;
+      }
+      
+      .upload-icon {
+        font-size: 1.5rem;
+      }
+      
+      .upload-text {
+        font-size: 0.9rem;
+      }
+      
+      .search-engines-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      
+      .search-engine-btn {
+        padding: 12px 8px;
+      }
+      
+      .engine-name {
+        font-size: 0.8rem;
+      }
+      
+      .engine-hint {
+        font-size: 0.7rem;
+      }
+      
+      #previewImg {
+        max-width: 150px;
+        max-height: 120px;
+      }
+      
+      .image-info {
+        flex-direction: column;
+        gap: 5px;
+      }
     }
   </style>
 </head>
@@ -300,17 +515,56 @@
       <button id="searchBtn" class="btn-brand">Search</button>
 
       <div class="image-search">
-        <label for="imageUpload" class="btn-brand" style="cursor:pointer;">Upload Image for Reverse Search</label>
-        <input type="file" id="imageUpload" accept="image/*" style="display:none" />
+        <label for="imageUpload" class="image-upload-btn">
+          <span class="upload-icon">📷</span>
+          <span class="upload-text">Upload Image for Reverse Search</span>
+          <span class="upload-hint">Click to browse or drag & drop</span>
+        </label>
+        <input type="file" id="imageUpload" accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp" style="display:none" />
+        
+        <div id="imagePreview" class="image-preview" style="display:none;">
+          <div class="preview-header">
+            <span class="preview-title">📸 Image Ready for Search</span>
+            <button id="removeImage" class="remove-btn" title="Remove image">×</button>
+          </div>
+          <img id="previewImg" src="" alt="Preview" />
+          <div class="image-info">
+            <span id="imageFileName"></span>
+            <span id="imageFileSize"></span>
+          </div>
+        </div>
       </div>
 
       <div id="imageSearchEngines" class="image-engines" style="display:none;">
-        <p><strong>Reverse image search:</strong></p>
-        <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Upload your image, then click a search engine. You'll need to manually upload the image on the search site.</p>
-        <button data-engine="google" class="btn-brand engine-btn">Google Images</button>
-        <button data-engine="bing" class="btn-brand engine-btn">Bing Visual</button>
-        <button data-engine="yandex" class="btn-brand engine-btn">Yandex Images</button>
-        <button data-engine="tineye" class="btn-brand engine-btn">TinEye</button>
+        <p><strong>🔍 Choose a reverse image search engine:</strong></p>
+        <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Your image is ready! Click any search engine below to open it in a new tab.</p>
+        <div class="search-engines-grid">
+          <button data-engine="google" class="search-engine-btn google-btn">
+            <span class="engine-icon">🔍</span>
+            <span class="engine-name">Google Images</span>
+            <span class="engine-hint">Most comprehensive</span>
+          </button>
+          <button data-engine="bing" class="search-engine-btn bing-btn">
+            <span class="engine-icon">🔎</span>
+            <span class="engine-name">Bing Visual</span>
+            <span class="engine-hint">Good for objects</span>
+          </button>
+          <button data-engine="yandex" class="search-engine-btn yandex-btn">
+            <span class="engine-icon">🌐</span>
+            <span class="engine-name">Yandex Images</span>
+            <span class="engine-hint">Great for faces</span>
+          </button>
+          <button data-engine="tineye" class="search-engine-btn tineye-btn">
+            <span class="engine-icon">👁️</span>
+            <span class="engine-name">TinEye</span>
+            <span class="engine-hint">Find exact matches</span>
+          </button>
+        </div>
+        <div class="search-all-container">
+          <button id="searchAllEngines" class="btn-brand search-all-btn">
+            🚀 Search All Engines
+          </button>
+        </div>
       </div>
     </section>
 
@@ -1183,28 +1437,140 @@
     // Export functionality
     exportReportBtn.addEventListener("click", exportReport);
 
-    // Image upload and reverse search
-    imageUploadInput.addEventListener("change", () => {
+    // Enhanced image upload and reverse search
+    const imagePreview = document.getElementById("imagePreview");
+    const previewImg = document.getElementById("previewImg");
+    const imageFileName = document.getElementById("imageFileName");
+    const imageFileSize = document.getElementById("imageFileSize");
+    const removeImageBtn = document.getElementById("removeImage");
+    const searchAllEnginesBtn = document.getElementById("searchAllEngines");
+    
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function resetImageUpload() {
+      uploadedImageData = null;
+      imageUploadInput.value = "";
+      imagePreview.style.display = "none";
+      imageSearchEngines.style.display = "none";
+      previewImg.src = "";
+    }
+    
+    imageUploadInput.addEventListener("change", (e) => {
       if (imageUploadInput.files.length > 0) {
         const file = imageUploadInput.files[0];
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        
+        // File size validation (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
           showMessage("Image file too large. Please select a file under 10MB.", "error");
-          imageUploadInput.value = "";
-          imageSearchEngines.style.display = "none";
+          resetImageUpload();
+          return;
+        }
+        
+        // File type validation
+        if (!file.type.startsWith('image/')) {
+          showMessage("Please select a valid image file.", "error");
+          resetImageUpload();
           return;
         }
         
         uploadedImageData = file;
-        imageSearchEngines.style.display = "block";
-        showMessage("Image uploaded. Click a search engine to begin reverse search.", "success");
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          imageFileName.textContent = file.name;
+          imageFileSize.textContent = formatFileSize(file.size);
+          imagePreview.style.display = "block";
+          imageSearchEngines.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+        
+        showMessage("Image loaded successfully! Choose a search engine below.", "success");
       } else {
-        uploadedImageData = null;
-        imageSearchEngines.style.display = "none";
+        resetImageUpload();
       }
     });
+    
+    // Remove image functionality
+    removeImageBtn.addEventListener("click", () => {
+      resetImageUpload();
+      showMessage("Image removed.", "info");
+    });
+    
+    // Search all engines functionality
+    searchAllEnginesBtn.addEventListener("click", () => {
+      if (!uploadedImageData) {
+        showMessage("Please upload an image first", "error");
+        return;
+      }
+      
+      const engines = [
+        { name: "Google Images", url: "https://images.google.com/" },
+        { name: "Bing Visual", url: "https://www.bing.com/images/search?view=detailv2&iss=sbi" },
+        { name: "Yandex Images", url: "https://yandex.com/images/search?rpt=imageview" },
+        { name: "TinEye", url: "https://tineye.com/" }
+      ];
+      
+      engines.forEach((engine, index) => {
+        setTimeout(() => {
+          window.open(engine.url, "_blank");
+        }, index * 500); // Stagger the opens by 500ms each
+      });
+      
+      showMessage("Opened all search engines! Upload your image on each site.", "success");
+    });
+    
+    // Drag and drop functionality
+    const imageUploadBtn = document.querySelector('.image-upload-btn');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      imageUploadBtn.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      imageUploadBtn.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      imageUploadBtn.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight(e) {
+      imageUploadBtn.style.borderColor = '#8a2e11';
+      imageUploadBtn.style.background = 'linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%)';
+    }
+    
+    function unhighlight(e) {
+      imageUploadBtn.style.borderColor = '#B13F17';
+      imageUploadBtn.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
+    }
+    
+    imageUploadBtn.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        imageUploadInput.files = files;
+        imageUploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
 
     // Improved reverse image search
-    imageSearchEngines.querySelectorAll(".engine-btn").forEach(btn => {
+    imageSearchEngines.querySelectorAll(".search-engine-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const engine = btn.dataset.engine;
         if (!uploadedImageData) {

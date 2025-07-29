@@ -63,6 +63,62 @@
   </style>
 </head>
 <body>
-  <!-- The full HTML and JS will be inserted here -->
+<div class="container">
+  <header>
+    <h1>OSINT Search Tool</h1>
+  </header>
+  <section class="image-upload-section">
+    <label for="imageUpload" class="image-upload-btn" id="imageUploadBtn">
+      <span class="upload-icon">📷</span>
+      <span class="upload-text">Upload Image for Reverse Search</span>
+      <span class="upload-hint">Click to browse or drag & drop</span>
+    </label>
+    <input type="file" id="imageUpload" accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp" style="display:none">
+    <div id="imagePreview" class="image-preview" style="display:none;">
+      <div class="preview-header">
+        <span class="preview-title">📸 Image Ready for Search</span>
+        <button id="removeImage" class="remove-btn" title="Remove image">×</button>
+      </div>
+      <img id="previewImg" src="" alt="Preview">
+      <div class="image-info">
+        <span id="imageFileName"></span>
+        <span id="imageFileSize"></span>
+      </div>
+    </div>
+    <div id="imageSearchEngines" class="image-engines" style="display:none;">
+      <p><strong>🔍 Choose a reverse image search engine:</strong></p>
+      <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Your image is ready! Click any search engine below to open it in a new tab.</p>
+      <div class="search-engines-grid">
+        <button data-engine="google" class="search-engine-btn google-btn">
+          <span class="engine-icon">🔍</span>
+          <span class="engine-name">Google Images</span>
+          <span class="engine-hint">Most comprehensive</span>
+        </button>
+        <button data-engine="bing" class="search-engine-btn bing-btn">
+          <span class="engine-icon">🔎</span>
+          <span class="engine-name">Bing Visual</span>
+          <span class="engine-hint">Good for objects</span>
+        </button>
+        <button data-engine="yandex" class="search-engine-btn yandex-btn">
+          <span class="engine-icon">🌐</span>
+          <span class="engine-name">Yandex Images</span>
+          <span class="engine-hint">Great for faces</span>
+        </button>
+        <button data-engine="tineye" class="search-engine-btn tineye-btn">
+          <span class="engine-icon">👁️</span>
+          <span class="engine-name">TinEye</span>
+          <span class="engine-hint">Find exact matches</span>
+        </button>
+      </div>
+      <div class="search-all-container">
+        <button id="searchAllEngines" class="btn-brand search-all-btn">🚀 Search All Engines</button>
+      </div>
+    </div>
+  </section>
+  <!-- The rest of the app (search, filters, categories, management, results, saved cases) and all JavaScript logic will be inserted here. -->
+</div>
+<script>
+// The full JavaScript logic for all features will be inserted here.
+</script>
 </body>
 </html>

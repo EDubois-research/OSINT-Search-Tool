@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Search Tool</title>
+  <style>
+    /* Reset & basics */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; 
+      padding: 20px;
+      background: #f9f9f9;
+      color: #222;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3 {
+      color: #B13F17;
+      margin-bottom: 10px;
+    }
+
+    input, select, button {
+      padding: 8px 10px;
+      margin: 5px 0;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input[type="url"], input[type="text"], select {
+      width: 100%;
+      max-width: 350px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background-color: #B13F17;
+      color: white;
+      transition: background-color 0.3s ease;
+      border-radius: 4px;
+      min-width: 110px;
+    }
+
+    button:hover {
+      background-color: #8a2e11;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-brand {
+      min-width: 120px;
+    }
+
+    .btn-small {
+      min-width: 80px;
+      padding: 5px 8px;
+      font-size: 0.9rem;
+    }
+
+    section {
+      margin-bottom: 30px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    /* Categories with dropdown */
+    .category {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+
+    .category:last-child {
+      border-bottom: none;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 5px;
+      cursor: pointer;
+      font-weight: 600;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .category-header:hover {
+      background: #f0e6e1;
+      border-radius: 4px;
+    }
+
+    .category-websites {
+      padding-left: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .category-websites.visible {
+      display: flex;
+    }
+
+    .website-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .website-item label {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .website-item input[type="checkbox"] {
+      margin-right: 8px;
+      width: auto;
+    }
+
+    .website-item a {
+      color: #B13F17;
+      text-decoration: none;
+      flex-grow: 1;
+    }
+
+    .website-item a:hover {
+      text-decoration: underline;
+    }
+
+    .edit-btn, .delete-btn {
+      background: transparent;
+      border: none;
+      color: #B13F17;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-left: 8px;
+      min-width: auto;
+      padding: 4px 6px;
+    }
+
+    .edit-btn:hover, .delete-btn:hover {
+      color: #8a2e11;
+      background: #f0f0f0;
+    }
+
+    /* Results */
+    .result-item {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 0;
+      margin-bottom: 8px;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item strong {
+      color: #B13F17;
+    }
+
+    /* Manage section styling */
+    .manage-categories, .manage-websites {
+      margin-top: 15px;
+    }
+
+    .manage-categories input, .manage-websites input, .manage-websites select {
+      width: calc(100% - 130px);
+      display: inline-block;
+    }
+
+    .manage-websites input, .manage-websites select {
+      margin-right: 10px;
+      max-width: 300px;
+    }
+
+    .image-search {
+      margin-top: 15px;
+    }
+
+    .image-engines {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f8f8;
+      border-radius: 6px;
+    }
+
+    .engine-btn {
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+
+    /* Advanced filters */
+    .advanced-filters label {
+      display: inline-block;
+      margin-right: 15px;
+      margin-bottom: 8px;
+    }
+
+    .saved-cases-section input {
+      width: 100%;
+      max-width: 350px;
+      margin-bottom: 10px;
+    }
+
+    .saved-case-item {
+      padding: 8px;
+      margin: 8px 0;
+      background: #f8f8f8;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .website-manage-list {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f8f8;
+      border-radius: 6px;
+    }
+
+    .website-manage-list h4 {
+      margin-top: 0;
+      color: #666;
+    }
+
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+
+    .error {
+      color: #cc4444;
+      background: #ffe6e6;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+
+    .success {
+      color: #228B22;
+      background: #e6ffe6;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+
+    .toggle-icon {
+      transition: transform 0.2s;
+    }
+
+    .toggle-icon.rotated {
+      transform: rotate(180deg);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .manage-categories input, .manage-websites input, .manage-websites select {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+      
+      .saved-case-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OSINT Search Tool</h1>
+    </header>
+
+    <section class="search-section">
+      <input type="text" id="keywordInput" placeholder="Enter keyword(s)">
+      <button id="searchBtn" class="btn-brand">Search</button>
+
+      <div class="image-search">
+        <label for="imageUpload" class="btn-brand" style="cursor:pointer;">Upload Image for Reverse Search</label>
+        <input type="file" id="imageUpload" accept="image/*" style="display:none">
+      </div>
+
+      <div id="imageSearchEngines" class="image-engines" style="display:none;">
+        <p><strong>Reverse image search:</strong></p>
+        <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Upload your image, then click a search engine. You'll need to manually upload the image on the search site.</p>
+        <button data-engine="google" class="btn-brand engine-btn">Google Images</button>
+        <button data-engine="bing" class="btn-brand engine-btn">Bing Visual</button>
+        <button data-engine="yandex" class="btn-brand engine-btn">Yandex Images</button>
+        <button data-engine="tineye" class="btn-brand engine-btn">TinEye</button>
+      </div>
+    </section>
+
+    <section class="advanced-filters">
+      <h2>Advanced Filters</h2>
+      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
+      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK"></label>
+      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator"></label>
+    </section>
+
+    <section class="categories-section">
+      <h2>Search Categories</h2>
+      <div style="margin-bottom: 10px;">
+        <button id="selectAllBtn" class="btn-small">Select All</button>
+        <button id="deselectAllBtn" class="btn-small">Deselect All</button>
+      </div>
+      <div id="categoriesContainer"></div>
+    </section>
+
+    <section class="manage-section">
+      <h2>Manage Categories &amp; Websites</h2>
+
+      <div class="manage-categories">
+        <h3>Categories</h3>
+        <div id="manageCategoriesContainer"></div>
+        <input type="text" id="newCategoryInput" placeholder="New category name">
+        <button id="addCategoryBtn" class="btn-brand">Add Category</button>
+      </div>
+
+      <div class="manage-websites">
+        <h3>Add Website</h3>
+        <select id="categorySelectForWebsites"></select>
+        <input type="text" id="newWebsiteName" placeholder="Website name">
+        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)">
+        <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <h2>Search Results</h2>
+      <div id="resultsContainer">
+        <p style="color: #666;">Enter keywords and select websites to search.</p>
+      </div>
+      <button id="exportReportBtn" class="btn-brand">Export Report</button>
+    </section>
+
+    <section class="saved-cases-section">
+      <h2>Saved Cases</h2>
+      <input type="text" id="searchSavedCases" placeholder="Search saved cases...">
+      <div id="savedCasesContainer"></div>
+      <button id="clearSavedCasesBtn" class="btn-brand" style="background:#555;">Clear All Saved Cases</button>
+    </section>
+  </div>
+
+  <script>
+    // Data structure with improved default categories
+    let categories = {
+      "Company Searches": [
+        { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
+        { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
+      ],
+      "Court Case Searches": [
+        { name: "CaseMine", url: "https://www.casemine.com/search" },
+        { name: "Justia", url: "https://dockets.justia.com/" }
+      ],
+      "Professional Registers": [
+        { name: "GDC UK", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+        { name: "NMC", url: "https://www.nmc.org.uk/registration/search-the-register/" },
+        { name: "GMC", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+        { name: "SRA (Solicitors)", url: "https://www.sra.org.uk/consumers/register/" },
+        { name: "ICO", url: "https://ico.org.uk/about-the-ico/contact-us/register-of-data-controllers/" }
+      ],
+      "Social Media": [
+        { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
+        { name: "Facebook", url: "https://www.facebook.com/search/people/" },
+        { name: "Twitter/X", url: "https://twitter.com/search" }
+      ],
+      "People Search": [
+        { name: "Pipl", url: "https://pipl.com/" },
+        { name: "WhitePages", url: "https://www.whitepages.com/" },
+        { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
+      ]
+    };
+
+    // DOM elements
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    const manageCategoriesContainer = document.getElementById("manageCategoriesContainer");
+    const categorySelectForWebsites = document.getElementById("categorySelectForWebsites");
+    const newCategoryInput = document.getElementById("newCategoryInput");
+    const addCategoryBtn = document.getElementById("addCategoryBtn");
+    const newWebsiteName = document.getElementById("newWebsiteName");
+    const newWebsiteURL = document.getElementById("newWebsiteURL");
+    const addWebsiteBtn = document.getElementById("addWebsiteBtn");
+    const searchBtn = document.getElementById("searchBtn");
+    const keywordInput = document.getElementById("keywordInput");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const exportReportBtn = document.getElementById("exportReportBtn");
+    const imageUploadInput = document.getElementById("imageUpload");
+    const imageSearchEngines = document.getElementById("imageSearchEngines");
+    const savedCasesContainer = document.getElementById("savedCasesContainer");
+    const searchSavedCasesInput = document.getElementById("searchSavedCases");
+    const clearSavedCasesBtn = document.getElementById("clearSavedCasesBtn");
+    const linkedinLocationInput = document.getElementById("linkedinLocation");
+    const linkedinJobTitleInput = document.getElementById("linkedinJobTitle");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const deselectAllBtn = document.getElementById("deselectAllBtn");
+
+    // Store saved cases
+    const SAVED_CASES_KEY = "osint_saved_cases";
+    let uploadedImageData = null;
+
+    // Initialize the application when DOM is ready
+    function initializeApp() {
+      try {
+        renderCategories();
+        renderManageCategories();
+        renderSavedCases();
+        console.log("OSINT Search Tool loaded successfully");
+      } catch (error) {
+        console.error("Error initializing application:", error);
+      }
+    }
+
+    // Run initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
+
+    // Placeholder functions - you'll need to implement the full functionality
+    function renderCategories() {
+      // Implementation needed
+    }
+
+    function renderManageCategories() {
+      // Implementation needed
+    }
+
+    function renderSavedCases() {
+      // Implementation needed
+    }
+  </script>
+</body>
+</html>

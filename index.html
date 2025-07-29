@@ -110,19 +110,9 @@
       box-shadow: 0 2px 8px rgba(177, 63, 23, 0.2);
     }
 
-    .category-header:before {
-      content: "👆 Click to expand";
-      position: absolute;
-      right: 50px;
-      font-size: 0.7rem;
-      color: #888;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .category-header:hover:before {
-      opacity: 1;
+    /* Category title styling for search section */
+    .category-title {
+      font-weight: 600;
     }
 
     .category-websites {
@@ -524,12 +514,13 @@
       }
       
       /* Mobile category improvements */
-      .category-header:before {
-        display: none; /* Hide tooltip on mobile */
+      .category-title {
+        font-size: 0.9rem;
+        padding: 6px 0;
       }
       
-      .category-header {
-        padding: 10px 6px;
+      .websites-list {
+        padding-left: 15px !important;
       }
     }
   </style>
@@ -611,8 +602,8 @@
       <div style="margin-bottom: 15px;">
         <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1565c0;">
           <p style="margin: 0; font-size: 0.9em; color: #1565c0;">
-            💡 <strong>Tip:</strong> Click on any category header below to expand and see the available websites. 
-            All sites are selected by default.
+            💡 <strong>Search Selection:</strong> All websites are listed below with checkboxes. 
+            Uncheck any sites you don't want to include in your search. All sites are selected by default.
           </p>
         </div>
         <button id="selectAllBtn" class="btn-small">Select All</button>
@@ -927,49 +918,67 @@
     function renderCategories() {
       categoriesContainer.innerHTML = "";
       
-      let isFirstCategory = true;
-      
       for (const catName in categories) {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
 
+        // Simple category header (no dropdown functionality)
         const header = document.createElement("div");
-        header.className = "category-header";
-        
-        const titleSpan = document.createElement("span");
-        titleSpan.innerHTML = `<span style="color: #B13F17;">📁</span> ${catName} <small style="color: #666; font-weight: normal;">(${categories[catName].length} sites)</small>`;
-        
-        const toggleIcon = document.createElement("span");
-        toggleIcon.className = "toggle-icon";
-        toggleIcon.textContent = "▼";
-        
-        header.appendChild(titleSpan);
-        header.appendChild(toggleIcon);
+        header.className = "category-title";
+        header.innerHTML = `<strong style="color: #B13F17;">📋 ${catName}</strong> <small style="color: #666;">(${categories[catName].length} sites)</small>`;
+        header.style.cssText = `
+          padding: 8px 0;
+          margin-bottom: 8px;
+          border-bottom: 1px solid #eee;
+          font-size: 1rem;
+        `;
 
+        categoryDiv.appendChild(header);
+
+        // Create flat list of websites with checkboxes
         const websitesDiv = document.createElement("div");
-        websitesDiv.className = "category-websites";
-        
-        // Start with first category open
-        if (isFirstCategory) {
-          websitesDiv.classList.add("visible");
-          toggleIcon.classList.add("rotated");
-          isFirstCategory = false;
-        }
+        websitesDiv.className = "websites-list";
+        websitesDiv.style.cssText = `
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-bottom: 15px;
+          padding-left: 20px;
+        `;
 
         categories[catName].forEach((site, idx) => {
           const websiteItem = document.createElement("div");
           websiteItem.className = "website-item";
+          websiteItem.style.cssText = `
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+          `;
 
           const label = document.createElement("label");
+          label.style.cssText = `
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            flex-grow: 1;
+          `;
           
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = true;
           checkbox.dataset.category = catName;
           checkbox.dataset.index = idx;
+          checkbox.style.cssText = `
+            margin-right: 8px;
+            width: auto;
+          `;
 
           const nameSpan = document.createElement("span");
           nameSpan.textContent = site.name;
+          nameSpan.style.cssText = `
+            color: #333;
+            font-size: 0.95rem;
+          `;
           
           label.appendChild(checkbox);
           label.appendChild(nameSpan);
@@ -977,22 +986,8 @@
           websitesDiv.appendChild(websiteItem);
         });
 
-        categoryDiv.appendChild(header);
         categoryDiv.appendChild(websitesDiv);
         categoriesContainer.appendChild(categoryDiv);
-
-        // Toggle dropdown with animation
-        header.addEventListener("click", () => {
-          const isVisible = websitesDiv.classList.toggle("visible");
-          toggleIcon.classList.toggle("rotated", isVisible);
-          
-          // Update the tooltip
-          if (isVisible) {
-            header.style.setProperty('--tooltip-text', '"👆 Click to collapse"');
-          } else {
-            header.style.setProperty('--tooltip-text', '"👆 Click to expand"');
-          }
-        });
       }
     }
 

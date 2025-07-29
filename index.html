@@ -3,30 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OSINT Search Tool</title>
+<title>OSINT Search Tool with Manage Categories</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fa; color: #333; }
-  h1 { text-align: center; }
+  h1, h2 { text-align: center; }
   .category { background: #005f73; color: white; padding: 10px; cursor: pointer; margin-top: 15px; border-radius: 5px; user-select: none; }
   .category:hover { background: #0a9396; }
   .websites { margin-left: 20px; margin-top: 5px; display: none; }
   label { display: block; margin: 6px 0; cursor: pointer; }
-  .search-section, .upload-section, .report-section { margin-top: 20px; padding: 15px; background: white; border-radius: 5px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+  .search-section, .upload-section, .report-section, .manage-section { margin-top: 20px; padding: 15px; background: white; border-radius: 5px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
   button { background: #0a9396; color: white; border: none; padding: 10px 15px; margin-top: 10px; cursor: pointer; border-radius: 5px; }
   button:hover { background: #005f73; }
-  input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+  input[type="text"], input[type="url"] { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 5px; }
   #results { margin-top: 15px; max-height: 300px; overflow-y: auto; background: #e9f1f5; padding: 10px; border-radius: 5px; }
   .result-item { background: white; margin-bottom: 8px; padding: 8px; border-radius: 4px; border-left: 5px solid #0a9396; }
   .relevance { float: right; font-weight: bold; color: #005f73; }
-  .advanced-filters { margin-top: 10px; background: #edf6f9; padding: 10px; border-radius: 5px; display: none; }
-  .upload-section input[type=file] { margin-top: 8px; }
-  .hidden { display: none !important; }
+  .manage-category { margin-top: 10px; background: #e0f2f1; border-radius: 5px; padding: 10px; }
+  .manage-category-header { background: #00796b; color: white; padding: 8px; cursor: pointer; border-radius: 5px; user-select: none; }
+  .manage-websites { margin-left: 20px; margin-top: 5px; display: none; }
+  .manage-website-item { margin-bottom: 6px; background: #b2dfdb; padding: 6px; border-radius: 4px; position: relative; }
+  .manage-website-item button { position: absolute; right: 5px; top: 5px; background: #004d40; font-size: 12px; padding: 3px 6px; }
+  .form-group { margin-top: 10px; }
+  .inline-flex { display: flex; gap: 10px; align-items: flex-end; }
+  .inline-flex > div { flex: 1; }
+  small { color: #555; }
 </style>
 </head>
 <body>
 
 <h1>OSINT Search Tool</h1>
 
+<!-- Search Section -->
 <div class="search-section">
   <label for="keyword">Keyword Search:</label>
   <input type="text" id="keyword" placeholder="Enter keyword..." />
@@ -35,11 +42,10 @@
     <!-- Categories & sites checkboxes inserted here dynamically -->
   </div>
 
-  <div id="advancedFiltersContainer"></div>
-
   <button id="searchBtn">Search Selected</button>
 </div>
 
+<!-- Upload Section -->
 <div class="upload-section">
   <h3>Reverse Image Search</h3>
   <input type="file" id="imageUpload" accept="image/*" />
@@ -47,14 +53,40 @@
   <button id="tineyeSearchBtn">Search TinEye</button>
 </div>
 
+<!-- Report Section -->
 <div class="report-section">
   <h3>Search Results</h3>
   <div id="results"></div>
   <button id="exportReportBtn">Export Report</button>
 </div>
 
+<!-- Manage Categories Section -->
+<div class="manage-section">
+  <h2>Manage Categories & Websites</h2>
+
+  <div id="manage-categories-container">
+    <!-- Manage categories + websites will be dynamically rendered here -->
+  </div>
+
+  <div class="form-group">
+    <h3>Add New Category</h3>
+    <input type="text" id="newCategoryName" placeholder="Category name" />
+    <button id="addCategoryBtn">Add Category</button>
+  </div>
+
+  <div class="form-group">
+    <h3>Add Website to Category</h3>
+    <select id="categorySelectForSite">
+      <!-- Populated dynamically -->
+    </select>
+    <input type="text" id="newWebsiteName" placeholder="Website name" />
+    <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)" />
+    <button id="addWebsiteBtn">Add Website</button>
+  </div>
+</div>
+
 <script>
-  // Data: Categories with websites
+  // Categories data structure with initial data
   let categories = {
     "Company Searches": [
       { name: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/" }
@@ -82,109 +114,86 @@
       { name: "Office of the Immigration Services Commissioner (OISC)", url: "https://www.gov.uk/find-an-immigration-adviser" },
       { name: "British Association of Social Workers", url: "https://www.basw.co.uk/membership-directory" },
       { name: "Royal College of Veterinary Surgeons", url: "https://www.rcvs.org.uk/find-a-vet/" },
-      { name: "General Optical Council", url: "https://www.optical.org/en/contact_us/registers.cfm" },
-      { name: "General Teaching Council for Northern Ireland", url: "https://www.gtcni.org.uk/" }
+      { name: "Association of Chartered Certified Accountants", url: "https://www.accaglobal.com/an/en/member/find-a-member.html" }
     ],
     "Genealogy": [
-      { name: "Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
+      { name: "UK Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
     ],
     "Transport": [
       { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" }
     ],
     "Sanctions, Watchlists, PEPs": [
-      { name: "Insolvency Service EIIR", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" }
+      { name: "Insolvency Register", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" }
     ],
     "Social Media": [
-      { name: "Facebook", url: "https://www.facebook.com/" },
-      { name: "LinkedIn", url: "https://www.linkedin.com/" }
+      { name: "Facebook", url: "https://www.facebook.com/" }
     ],
     "Offshore Companies": [
-      { name: "ICIJ Offshore Leaks", url: "https://offshoreleaks.icij.org/" }
+      { name: "Offshore Leaks", url: "https://offshoreleaks.icij.org/" }
     ],
     "Domain/Leaked/Cached": [
       { name: "Who.is", url: "https://who.is/" }
     ]
   };
 
-  // Keep track of selected categories & websites
+  // State: which categories and sites are selected for search
   let selectedCategories = new Set();
   let selectedWebsites = new Set();
 
-  // For advanced filters per category
-  const advancedFilterTemplates = {
-    "Social Media": `
-      <div id="socialMediaFilters" class="advanced-filters">
-        <label>Workplace: <input type="text" id="smWorkplace" placeholder="e.g. Company name"/></label>
-        <label>Location: <input type="text" id="smLocation" placeholder="e.g. London"/></label>
-      </div>
-    `,
-    "Company Searches": `
-      <div id="companyFilters" class="advanced-filters">
-        <label>Company Number: <input type="text" id="companyNumber" placeholder="Company Number"/></label>
-      </div>
-    `
-  };
+  // Helper: escape HTML for safe text display
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s]);
+  }
 
-  // Render categories and websites with dropdowns and checkboxes
+  // Render categories and sites with dropdown toggle and checkboxes for search section
   function renderCategories() {
     const container = document.getElementById('categories-container');
     container.innerHTML = '';
-    for (const [catName, websites] of Object.entries(categories)) {
+
+    Object.entries(categories).forEach(([catName, websites]) => {
+      // Create category div as clickable toggle
       const catDiv = document.createElement('div');
-      catDiv.classList.add('category');
+      catDiv.className = 'category';
       catDiv.textContent = catName;
 
-      // Add category checkbox
+      // Checkbox for category - toggles all sites
       const catCheckbox = document.createElement('input');
       catCheckbox.type = 'checkbox';
-      catCheckbox.style.marginRight = '10px';
-      catCheckbox.id = `cat-${catName}`;
+      catCheckbox.style.marginRight = '8px';
       catCheckbox.checked = selectedCategories.has(catName);
 
       catCheckbox.addEventListener('change', () => {
         if (catCheckbox.checked) {
           selectedCategories.add(catName);
-          // Select all websites in this category
-          websites.forEach(site => selectedWebsites.add(site.url));
-          // Also check all website checkboxes in UI
-          const boxes = catDiv.querySelectorAll('input[type=checkbox].site-checkbox');
-          boxes.forEach(box => box.checked = true);
+          websites.forEach(w => selectedWebsites.add(w.url));
         } else {
           selectedCategories.delete(catName);
-          // Deselect all websites in this category
-          websites.forEach(site => selectedWebsites.delete(site.url));
-          const boxes = catDiv.querySelectorAll('input[type=checkbox].site-checkbox');
-          boxes.forEach(box => box.checked = false);
+          websites.forEach(w => selectedWebsites.delete(w.url));
         }
-        updateAdvancedFilters();
+        renderCategories(); // re-render to sync checkboxes
       });
 
       catDiv.prepend(catCheckbox);
 
-      // Toggle for dropdown
+      // Websites container (dropdown)
+      const wsDiv = document.createElement('div');
+      wsDiv.className = 'websites';
+
+      if (selectedCategories.has(catName)) wsDiv.style.display = 'block';
+
+      // Clicking category name toggles dropdown
       catDiv.addEventListener('click', (e) => {
-        if (e.target.tagName.toLowerCase() === 'input') return; // avoid toggle when clicking checkbox
-        const wsDiv = catDiv.nextElementSibling;
-        if (wsDiv.style.display === 'block') {
-          wsDiv.style.display = 'none';
-        } else {
-          wsDiv.style.display = 'block';
+        if (e.target !== catCheckbox) {
+          wsDiv.style.display = wsDiv.style.display === 'block' ? 'none' : 'block';
         }
       });
 
-      container.appendChild(catDiv);
-
-      // Websites dropdown div
-      const wsDiv = document.createElement('div');
-      wsDiv.classList.add('websites');
-      wsDiv.style.display = 'none';
-
+      // Add website checkboxes
       websites.forEach(site => {
         const label = document.createElement('label');
         const cb = document.createElement('input');
         cb.type = 'checkbox';
-        cb.classList.add('site-checkbox');
-        cb.dataset.category = catName;
+        cb.className = 'site-checkbox';
         cb.value = site.url;
         cb.checked = selectedWebsites.has(site.url);
 
@@ -194,8 +203,8 @@
           } else {
             selectedWebsites.delete(site.url);
           }
-          // If all sites checked, check category, else uncheck category
-          const allChecked = websites.every(s => selectedWebsites.has(s.url));
+          // Update category checkbox status:
+          const allChecked = websites.every(w => selectedWebsites.has(w.url));
           if (allChecked) {
             selectedCategories.add(catName);
             catCheckbox.checked = true;
@@ -203,29 +212,35 @@
             selectedCategories.delete(catName);
             catCheckbox.checked = false;
           }
-          updateAdvancedFilters();
+          renderCategories();
         });
 
         label.appendChild(cb);
-        label.appendChild(document.createTextNode(` ${site.name}`));
+        label.appendChild(document.createTextNode(' ' + site.name));
         wsDiv.appendChild(label);
       });
+
+      container.appendChild(catDiv);
       container.appendChild(wsDiv);
-    }
+    });
+
+    // Update category selection dropdown for adding websites
+    updateCategorySelect();
   }
 
-  // Show relevant advanced filters based on selected categories
-  function updateAdvancedFilters() {
-    const container = document.getElementById('advancedFiltersContainer');
-    container.innerHTML = '';
-    selectedCategories.forEach(cat => {
-      if (advancedFilterTemplates[cat]) {
-        container.innerHTML += advancedFilterTemplates[cat];
-      }
+  // Update category dropdown for "Add Website to Category"
+  function updateCategorySelect() {
+    const select = document.getElementById('categorySelectForSite');
+    select.innerHTML = '';
+    Object.keys(categories).forEach(catName => {
+      const opt = document.createElement('option');
+      opt.value = catName;
+      opt.textContent = catName;
+      select.appendChild(opt);
     });
   }
 
-  // Simple relevance scoring placeholder (counts keyword occurrences in URL + site name)
+  // Search: build fake URLs with keyword appended and relevance score
   function relevanceScore(text, keyword) {
     if (!keyword) return 0;
     const lowerText = text.toLowerCase();
@@ -238,7 +253,6 @@
     return count;
   }
 
-  // Search function: generates search URLs based on keyword and selected websites
   function performSearch() {
     const keyword = document.getElementById('keyword').value.trim();
     if (!keyword) {
@@ -249,68 +263,59 @@
       alert('Please select at least one category or website.');
       return;
     }
+
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = '';
-    // Build results with fake search URLs (using site URLs + keyword appended for demo)
+
     const results = [];
     selectedWebsites.forEach(siteUrl => {
-      // For real usage, adapt URLs or use API calls
       let searchUrl = siteUrl;
-      if (!siteUrl.endsWith('/')) searchUrl += '/';
+      if (!searchUrl.endsWith('/')) searchUrl += '/';
       searchUrl += `search?q=${encodeURIComponent(keyword)}`;
       const score = relevanceScore(siteUrl, keyword);
       results.push({ url: searchUrl, score });
     });
-    // Sort by score descending
+
     results.sort((a,b) => b.score - a.score);
 
     if(results.length === 0) {
-      resultsDiv.innerHTML = '<p>No results found for the selected sites.</p>';
+      resultsDiv.textContent = 'No results found for the selected sites.';
       return;
     }
 
     results.forEach(r => {
       const div = document.createElement('div');
-      div.classList.add('result-item');
+      div.className = 'result-item';
       const a = document.createElement('a');
       a.href = r.url;
       a.target = '_blank';
       a.textContent = r.url;
       div.appendChild(a);
       const span = document.createElement('span');
-      span.classList.add('relevance');
+      span.className = 'relevance';
       span.textContent = `Score: ${r.score}`;
       div.appendChild(span);
       resultsDiv.appendChild(div);
     });
   }
 
-  // Reverse image search URLs
+  // Reverse Image Search handlers
   function reverseImageSearch(service) {
     const fileInput = document.getElementById('imageUpload');
     if (!fileInput.files.length) {
       alert('Please upload an image first.');
       return;
     }
-    const file = fileInput.files[0];
-    // Read file as data URL for upload
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result;
-      // Unfortunately, direct POST to Google/TinEye not feasible client-side
-      // So we open service homepage and alert user to upload manually
-      if(service === 'google') {
-        alert('Google Images reverse image search does not support direct uploads via URL. You will be redirected to upload manually.');
-        window.open('https://images.google.com/', '_blank');
-      } else if(service === 'tineye') {
-        alert('TinEye reverse image search does not support direct uploads via URL. You will be redirected to upload manually.');
-        window.open('https://tineye.com/', '_blank');
-      }
-    };
-    reader.readAsDataURL(file);
+    if(service === 'google') {
+      alert('You will be redirected to Google Images. Please upload manually.');
+      window.open('https://images.google.com/', '_blank');
+    } else if(service === 'tineye') {
+      alert('You will be redirected to TinEye. Please upload manually.');
+      window.open('https://tineye.com/', '_blank');
+    }
   }
 
-  // Export results to text file
+  // Export search results as .txt
   function exportReport() {
     const resultsDiv = document.getElementById('results');
     if (!resultsDiv.innerHTML.trim()) {
@@ -333,15 +338,197 @@
     URL.revokeObjectURL(url);
   }
 
-  // Initialization
+  // === Manage Categories and Websites Functions ===
+
+  // Render management UI with categories and websites, with edit and delete buttons
+  function renderManageCategories() {
+    const container = document.getElementById('manage-categories-container');
+    container.innerHTML = '';
+
+    Object.entries(categories).forEach(([catName, websites]) => {
+      const catDiv = document.createElement('div');
+      catDiv.className = 'manage-category';
+
+      // Category header with toggle and edit/delete buttons
+      const header = document.createElement('div');
+      header.className = 'manage-category-header';
+      header.textContent = catName;
+
+      // Toggle websites list visibility
+      header.addEventListener('click', () => {
+        wsDiv.style.display = wsDiv.style.display === 'block' ? 'none' : 'block';
+      });
+
+      // Edit category button
+      const editCatBtn = document.createElement('button');
+      editCatBtn.textContent = 'Edit';
+      editCatBtn.style.float = 'right';
+      editCatBtn.style.marginLeft = '5px';
+      editCatBtn.title = 'Edit Category Name';
+      editCatBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const newName = prompt('Edit category name:', catName);
+        if(newName && newName.trim() && newName !== catName) {
+          // Rename category while preserving websites
+          categories[newName.trim()] = categories[catName];
+          delete categories[catName];
+          // Update selections if needed
+          if(selectedCategories.has(catName)) {
+            selectedCategories.delete(catName);
+            selectedCategories.add(newName.trim());
+          }
+          renderCategories();
+          renderManageCategories();
+        }
+      });
+      header.appendChild(editCatBtn);
+
+      // Delete category button
+      const delCatBtn = document.createElement('button');
+      delCatBtn.textContent = 'Delete';
+      delCatBtn.style.float = 'right';
+      delCatBtn.title = 'Delete Category and all its websites';
+      delCatBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(confirm(`Delete category "${catName}" and all its websites?`)) {
+          delete categories[catName];
+          selectedCategories.delete(catName);
+          // Remove any websites under this category from selectedWebsites
+          websites.forEach(w => selectedWebsites.delete(w.url));
+          renderCategories();
+          renderManageCategories();
+        }
+      });
+      header.appendChild(delCatBtn);
+
+      catDiv.appendChild(header);
+
+      // Websites list
+      const wsDiv = document.createElement('div');
+      wsDiv.className = 'manage-websites';
+
+      websites.forEach((site, idx) => {
+        const siteDiv = document.createElement('div');
+        siteDiv.className = 'manage-website-item';
+
+        const siteText = document.createElement('span');
+        siteText.textContent = `${site.name} — ${site.url}`;
+
+        // Edit website button
+        const editSiteBtn = document.createElement('button');
+        editSiteBtn.textContent = 'Edit';
+        editSiteBtn.title = 'Edit Website';
+        editSiteBtn.style.right = '40px';
+        editSiteBtn.addEventListener('click', () => {
+          const newSiteName = prompt('Edit website name:', site.name);
+          if(!newSiteName || !newSiteName.trim()) return;
+          const newSiteUrl = prompt('Edit website URL:', site.url);
+          if(!newSiteUrl || !newSiteUrl.trim()) return;
+
+          categories[catName][idx] = { name: newSiteName.trim(), url: newSiteUrl.trim() };
+
+          // Update selections if url changed
+          if(selectedWebsites.has(site.url)) {
+            selectedWebsites.delete(site.url);
+            selectedWebsites.add(newSiteUrl.trim());
+          }
+
+          renderCategories();
+          renderManageCategories();
+        });
+
+        // Delete website button
+        const delSiteBtn = document.createElement('button');
+        delSiteBtn.textContent = 'Delete';
+        delSiteBtn.title = 'Delete Website';
+        delSiteBtn.addEventListener('click', () => {
+          if(confirm(`Delete website "${site.name}"?`)) {
+            categories[catName].splice(idx, 1);
+            selectedWebsites.delete(site.url);
+            renderCategories();
+            renderManageCategories();
+          }
+        });
+
+        siteDiv.appendChild(siteText);
+        siteDiv.appendChild(editSiteBtn);
+        siteDiv.appendChild(delSiteBtn);
+        wsDiv.appendChild(siteDiv);
+      });
+
+      catDiv.appendChild(wsDiv);
+      container.appendChild(catDiv);
+    });
+  }
+
+  // Add category handler
+  document.getElementById('addCategoryBtn').addEventListener('click', () => {
+    const input = document.getElementById('newCategoryName');
+    const val = input.value.trim();
+    if(!val) {
+      alert('Please enter a category name.');
+      return;
+    }
+    if(categories[val]) {
+      alert('Category already exists.');
+      return;
+    }
+    categories[val] = [];
+    input.value = '';
+    renderCategories();
+    renderManageCategories();
+  });
+
+  // Add website handler
+  document.getElementById('addWebsiteBtn').addEventListener('click', () => {
+    const catSelect = document.getElementById('categorySelectForSite');
+    const websiteNameInput = document.getElementById('newWebsiteName');
+    const websiteUrlInput = document.getElementById('newWebsiteURL');
+
+    const catName = catSelect.value;
+    const siteName = websiteNameInput.value.trim();
+    const siteUrl = websiteUrlInput.value.trim();
+
+    if(!siteName || !siteUrl) {
+      alert('Please enter both website name and URL.');
+      return;
+    }
+
+    // Validate URL format (basic)
+    if(!siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
+      alert('Website URL must start with http:// or https://');
+      return;
+    }
+
+    if(!categories[catName]) {
+      alert('Selected category not found.');
+      return;
+    }
+
+    // Check for duplicates in that category by URL
+    if(categories[catName].some(site => site.url === siteUrl)) {
+      alert('This website URL already exists in the selected category.');
+      return;
+    }
+
+    categories[catName].push({ name: siteName, url: siteUrl });
+
+    websiteNameInput.value = '';
+    websiteUrlInput.value = '';
+
+    renderCategories();
+    renderManageCategories();
+  });
+
+  // Initialize UI
+  renderCategories();
+  renderManageCategories();
+
+  // Attach event listeners for search buttons
   document.getElementById('searchBtn').addEventListener('click', performSearch);
   document.getElementById('googleImageSearchBtn').addEventListener('click', () => reverseImageSearch('google'));
   document.getElementById('tineyeSearchBtn').addEventListener('click', () => reverseImageSearch('tineye'));
   document.getElementById('exportReportBtn').addEventListener('click', exportReport);
-
-  // Initial render
-  renderCategories();
-  updateAdvancedFilters();
 
 </script>
 

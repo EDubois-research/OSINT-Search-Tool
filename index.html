@@ -5,157 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OSINT Search Tool</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #333; }
-    .section { margin-bottom: 30px; }
-    .category, .site { padding: 5px; }
-    .site-input, .category-input { margin: 5px 0; }
-    .site-list { margin-top: 10px; }
-    button { margin-left: 5px; }
-    input[type="text"] { padding: 5px; width: 300px; }
-    .hidden { display: none; }
-    .checkbox-list { margin-left: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    input[type="text"], select {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin: 5px;
+      padding: 6px 10px;
+    }
+
+    .category {
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .results {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+
+    details summary {
+      cursor: pointer;
+      padding: 5px 0;
+      font-weight: bold;
+    }
+
+    .checkboxes {
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
+
   <h1>OSINT Search Tool</h1>
 
-  <div class="section">
-    <label><strong>Enter Keyword:</strong></label><br/>
-    <input type="text" id="keywordInput" placeholder="e.g. John Smith" />
-    <button onclick="runSearch()">Search</button>
-  </div>
+  <label for="keyword">Keyword Search</label>
+  <input type="text" id="keyword" placeholder="Enter keyword..." />
 
-  <div class="section">
-    <h2>Categories & Sites</h2>
-    <div id="categoryContainer"></div>
-    <button onclick="showAddCategory()">+ Add Category</button>
-    <div id="addCategoryForm" class="hidden">
-      <input type="text" id="newCategoryName" placeholder="Category name" />
-      <button onclick="addCategory()">Save</button>
-    </div>
-  </div>
+  <div class="checkboxes" id="categoryCheckboxes"></div>
 
-  <div class="section">
-    <h2>Add Website</h2>
-    <input type="text" id="siteName" placeholder="Website name" class="site-input" />
-    <input type="text" id="siteURL" placeholder="Website URL (https://...)" class="site-input" />
-    <label>Select Categories:</label><br/>
-    <div id="categoryCheckboxes" class="checkbox-list"></div>
-    <button onclick="addWebsite()">Add Website</button>
-  </div>
+  <button onclick="performSearch()">Search</button>
 
-  <div class="section">
-    <h2>Search Results</h2>
-    <div id="results"></div>
-  </div>
+  <h2>Add New Website</h2>
+  <input type="text" id="newWebsite" placeholder="Enter website URL" />
+  <select id="categorySelect"></select>
+  <button onclick="addSite()">Add Website</button>
 
-<script>
-let categories = JSON.parse(localStorage.getItem('osintCategories')) || {
-  "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
-  "Court Case Searches": ["https://www.casemine.com/"],
-  "Occupation Registers": ["https://www.gdc-uk.org/pages/searchregisters.aspx"],
-  "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
-  "Transport": ["https://cartaxcheck.co.uk/"],
-  "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
-  "Social Media": ["https://www.facebook.com/"],
-  "Offshore Companies": ["https://offshoreleaks.icij.org/"],
-  "Domain/Leaked/Cached": ["https://who.is/"]
-};
+  <h2>Add New Category</h2>
+  <input type="text" id="newCategory" placeholder="Enter category name" />
+  <button onclick="addCategory()">Add Category</button>
 
-function saveCategories() {
-  localStorage.setItem('osintCategories', JSON.stringify(categories));
-}
+  <h2>Categories & Sites</h2>
+  <div id="categoryContainer"></div>
 
-function renderCategories() {
-  const container = document.getElementById('categoryContainer');
-  const checkboxArea = document.getElementById('categoryCheckboxes');
-  container.innerHTML = '';
-  checkboxArea.innerHTML = '';
-  Object.entries(categories).forEach(([cat, urls]) => {
-    const catDiv = document.createElement('div');
-    catDiv.className = 'category';
-    catDiv.innerHTML = `
-      <strong>${cat}</strong>
-      <button onclick="deleteCategory('${cat}')">Delete</button>
-      <ul>
-        ${urls.map(url => `<li>${url} <button onclick="deleteSite('${cat}', '${url}')">x</button></li>`).join('')}
-      </ul>
-    `;
-    container.appendChild(catDiv);
+  <div class="results" id="searchResults"></div>
 
-    const checkbox = document.createElement('div');
-    checkbox.innerHTML = `
-      <input type="checkbox" id="cat_${cat}" value="${cat}" />
-      <label for="cat_${cat}">${cat}</label>
-    `;
-    checkboxArea.appendChild(checkbox);
-  });
-}
+  <script>
+    let categories = JSON.parse(localStorage.getItem('categories')) || {
+      "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
+      "Court Case Searches": ["https://www.casemine.com/"],
+      "Occupation Registers": ["https://www.gdc-uk.org/pages/searchregisters.aspx"],
+      "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
+      "Transport": ["https://cartaxcheck.co.uk/"],
+      "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
+      "Social Media": ["https://www.facebook.com/"],
+      "Offshore Companies": ["https://offshoreleaks.icij.org/"],
+      "Domain/Leaked/Cached": ["https://who.is/"]
+    };
 
-function showAddCategory() {
-  document.getElementById('addCategoryForm').classList.remove('hidden');
-}
-
-function addCategory() {
-  const name = document.getElementById('newCategoryName').value.trim();
-  if (name && !categories[name]) {
-    categories[name] = [];
-    saveCategories();
-    renderCategories();
-    document.getElementById('newCategoryName').value = '';
-    document.getElementById('addCategoryForm').classList.add('hidden');
-  }
-}
-
-function deleteCategory(cat) {
-  if (confirm('Delete category and all associated websites?')) {
-    delete categories[cat];
-    saveCategories();
-    renderCategories();
-  }
-}
-
-function deleteSite(cat, url) {
-  categories[cat] = categories[cat].filter(u => u !== url);
-  saveCategories();
-  renderCategories();
-}
-
-function addWebsite() {
-  const name = document.getElementById('siteName').value.trim();
-  const url = document.getElementById('siteURL').value.trim();
-  const checkboxes = document.querySelectorAll('#categoryCheckboxes input:checked');
-  if (!url || checkboxes.length === 0) return alert('Enter URL and select category');
-
-  checkboxes.forEach(cb => {
-    if (categories[cb.value] && !categories[cb.value].includes(url)) {
-      categories[cb.value].push(url);
+    function saveToLocal() {
+      localStorage.setItem('categories', JSON.stringify(categories));
     }
-  });
-  saveCategories();
-  renderCategories();
-  document.getElementById('siteName').value = '';
-  document.getElementById('siteURL').value = '';
-  document.querySelectorAll('#categoryCheckboxes input').forEach(i => i.checked = false);
-}
 
-function runSearch() {
-  const keyword = document.getElementById('keywordInput').value.trim();
-  const checked = [...document.querySelectorAll('#categoryCheckboxes input:checked')].map(i => i.value);
-  let results = '';
-  checked.forEach(cat => {
-    categories[cat].forEach(site => {
-      const encoded = encodeURIComponent(keyword);
-      results += `<div><a href="${site}" target="_blank">${site}</a> [${cat}]</div>`;
-    });
-  });
-  document.getElementById('results').innerHTML = results || '<em>No results – enter keyword and select categories.</em>';
-}
+    function renderCategories() {
+      const container = document.getElementById('categoryContainer');
+      const select = document.getElementById('categorySelect');
+      const checkboxArea = document.getElementById('categoryCheckboxes');
 
-// Initial render
-renderCategories();
-</script>
+      container.innerHTML = '';
+      select.innerHTML = '';
+      checkboxArea.innerHTML = '';
 
+      Object.entries(categories).forEach(([cat, urls], index) => {
+        // Add dropdown category
+        const catDiv = document.createElement('div');
+        catDiv.className = 'category';
+        catDiv.innerHTML = `
+          <details>
+            <summary>${cat} <button onclick="deleteCategory('${cat}')">Delete</button></summary>
+            <ul>
+              ${urls.map(url => `<li>${url} <button onclick="deleteSite('${cat}', '${url}')">x</button></li>`).join('')}
+            </ul>
+          </details>
+        `;
+        container.appendChild(catDiv);
+
+        // Add to select dropdown
+        const option = document.createElement('option');
+        option.value = cat;
+        option.text = cat;
+        select.appendChild(option);
+
+        // Add checkbox
+        const checkbox = document.createElement('div');
+        checkbox.innerHTML = `
+          <input type="checkbox" id="cat_${index}" value="${cat}" />
+          <label for="cat_${index}">${cat}</label>
+        `;
+        checkboxArea.appendChild(checkbox);
+      });
+    }
+
+    function addCategory() {
+      const newCat = document.getElementById('newCategory').value.trim();
+      if (newCat && !categories[newCat]) {
+        categories[newCat] = [];
+        saveToLocal();
+        renderCategories();
+        document.getElementById('newCategory').value = '';
+      }
+    }
+
+    function deleteCategory(cat) {
+      if (confirm(`Delete category "${cat}"?`)) {
+        delete categories[cat];
+        saveToLocal();
+        renderCategories();
+      }
+    }
+
+    function addSite() {
+      const url = document.getElementById('newWebsite').value.trim();
+      const cat = document.getElementById('categorySelect').value;
+      if (url && cat && categories[cat] && !categories[cat].includes(url)) {
+        categories[cat].push(url);
+        saveToLocal();
+        renderCategories();
+        document.getElementById('newWebsite').value = '';
+      }
+    }
+
+    function deleteSite(cat, url) {
+      categories[cat] = categories[cat].filter(item => item !== url);
+      saveToLocal();
+      renderCategories();
+    }
+
+    function performSearch() {
+      const keyword = document.getElementById('keyword').value.trim();
+      const selected = Array.from(document.querySelectorAll('#categoryCheckboxes input:checked'))
+                            .map(cb => cb.value);
+      const resultsDiv = document.getElementById('searchResults');
+      resultsDiv.innerHTML = '';
+
+      if (!keyword || selected.length === 0) {
+        resultsDiv.innerHTML = "<p>Please enter a keyword and select at least one category.</p>";
+        return;
+      }
+
+      selected.forEach(cat => {
+        if (categories[cat]) {
+          categories[cat].forEach(url => {
+            const fullUrl = `${url}?q=${encodeURIComponent(keyword)}`;
+            resultsDiv.innerHTML += `<p><strong>${cat}</strong>: <a href="${fullUrl}" target="_blank">${fullUrl}</a></p>`;
+          });
+        }
+      });
+    }
+
+    // Initialise
+    renderCategories();
+  </script>
 </body>
 </html>

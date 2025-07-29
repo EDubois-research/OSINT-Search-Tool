@@ -1,651 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OSINT Search Tool</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #222;
-    color: #eee;
-    margin: 0;
-    padding: 20px;
-  }
-  h1, h2 {
-    color: #eee;
-  }
-  input[type="text"], select {
-    padding: 8px;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: none;
-    margin-right: 8px;
-    width: 250px;
-  }
-  button {
-    padding: 8px 14px;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: none;
-    background: #4caf50;
-    color: white;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #45a049;
-  }
-  label {
-    margin-right: 10px;
-  }
-  .category-checkboxes label {
-    display: inline-block;
-    margin-right: 15px;
-    cursor: pointer;
-  }
-  .search-results {
-    margin-top: 20px;
-  }
-  .result-item {
-    background: #333;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-  }
-  .result-item strong {
-    display: block;
-    margin-bottom: 5px;
-  }
-  /* Manage section */
-  #manageSection {
-    margin-top: 40px;
-    border-top: 2px solid #555;
-    padding-top: 20px;
-  }
-  #manageSection h2 {
-    margin-bottom: 15px;
-  }
-  #manageCategoriesContainer .manage-category {
-    margin-bottom: 10px;
-    background: #333;
-    border-radius: 6px;
-  }
-  .manage-category-header {
-    cursor: pointer;
-    background: #444;
-    padding: 8px 12px;
-    margin: 0;
-    color: #fff;
-    user-select: none;
-    position: relative;
-    font-weight: bold;
-    font-size: 1.1rem;
-  }
-  .manage-category-header::after {
-    content: "▼";
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease;
-  }
-  .manage-category-header.collapsed::after {
-    transform: translateY(-50%) rotate(-90deg);
-  }
-  .manage-websites {
-    display: none;
-    background: #555;
-    padding: 10px 15px;
-    border-radius: 0 0 6px 6px;
-  }
-  .manage-websites.show {
-    display: block;
-  }
-  .manage-website-item {
-    margin-bottom: 8px;
-    color: #ddd;
-  }
-  .manage-website-item span {
-    display: inline-block;
-    max-width: 75%;
-    word-break: break-word;
-  }
-  .manage-website-item button {
-    margin-left: 8px;
-    padding: 3px 8px;
-    font-size: 0.9rem;
-    background: #f44336;
-  }
-  .manage-website-item button:hover {
-    background: #d32f2f;
-  }
-  /* Add/Edit forms */
-  #addCategoryInput, #addWebsiteNameInput, #addWebsiteURLInput, #addWebsiteCategorySelect {
-    margin: 4px 8px 12px 0;
-  }
-  /* Image upload */
-  #imageUpload {
-    margin-top: 15px;
-  }
-  /* Saved reports */
-  #savedReports {
-    margin-top: 30px;
-  }
-  #savedReports div.report-item {
-    background: #333;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-  }
-  #savedReports div.report-item button {
-    background: #2196F3;
-    margin-left: 12px;
-    padding: 4px 10px;
-    font-size: 0.9rem;
-  }
-  #savedReports div.report-item button:hover {
-    background: #1976d2;
-  }
-  /* Misc */
-  .small-label {
-    font-size: 0.9rem;
-    color: #aaa;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OSINT Search Tool</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f7f9fc;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    label, input, select, button, textarea {
+      font-size: 1rem;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+
+    ul {
+      padding-left: 1rem;
+      list-style: none;
+    }
+
+    .dropdown-section {
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .site-link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .site-link a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .site-link a:hover {
+      text-decoration: underline;
+    }
+
+    .inline-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .small-button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      background: #e5e7eb;
+      color: #333;
+    }
+
+    .small-button:hover {
+      background: #d1d5db;
+    }
+
+  </style>
 </head>
 <body>
 
-<h1>OSINT Search Tool</h1>
+  <h1>OSINT Search Tool</h1>
 
-<!-- Keyword search -->
-<div>
-  <label for="keywordInput"><strong>Keyword Search:</strong></label>
-  <input id="keywordInput" type="text" placeholder="Enter keyword(s)" />
-</div>
-
-<!-- Categories -->
-<div class="category-checkboxes" id="categoriesCheckboxes">
-  <strong>Categories:</strong>
-  <!-- Categories checkboxes dynamically populated here -->
-</div>
-
-<button id="searchBtn">Search</button>
-
-<!-- Image upload for reverse search -->
-<div id="imageUpload">
-  <label><strong>Upload Image for Reverse Search:</strong></label>
-  <input type="file" id="imageFileInput" accept="image/*" />
-  <button id="reverseImageBtn">Search Image</button>
-</div>
-
-<!-- Search Results -->
-<div class="search-results" id="searchResults"></div>
-
-<!-- Save / Export report -->
-<div style="margin-top:20px;">
-  <button id="saveReportBtn">Save Report</button>
-  <button id="exportReportBtn">Export Report (JSON)</button>
-</div>
-
-<!-- Saved Reports -->
-<div id="savedReportsSection">
-  <h2>Saved Reports</h2>
-  <div id="savedReports"></div>
-</div>
-
-<!-- Manage Categories & Websites -->
-<div id="manageSection">
-  <h2>Manage Categories & Websites</h2>
-
-  <!-- Add Category -->
-  <div>
-    <input type="text" id="addCategoryInput" placeholder="New category name" />
-    <button id="addCategoryBtn">Add Category</button>
+  <div class="section">
+    <label for="keyword">🔍 Enter Keyword:</label>
+    <input type="text" id="keyword" placeholder="e.g. John Smith, Acme Ltd" />
+    <button onclick="search()">Search</button>
   </div>
 
-  <!-- Add Website -->
-  <div style="margin-top: 15px;">
-    <input type="text" id="addWebsiteNameInput" placeholder="Website name" />
-    <input type="text" id="addWebsiteURLInput" placeholder="Website URL (https://...)" />
-    <select id="addWebsiteCategorySelect">
-      <!-- Populated dynamically -->
+  <div class="section">
+    <h2>🔧 Manage Categories & Websites</h2>
+
+    <label for="categoryName">Add New Category:</label>
+    <input type="text" id="categoryName" placeholder="e.g. Social Media" />
+    <button onclick="addCategory()">Add Category</button>
+
+    <label for="websiteName">Add New Website:</label>
+    <input type="text" id="websiteName" placeholder="Website URL" />
+    <select id="websiteCategory">
+      <option value="">Select Category</option>
     </select>
-    <button id="addWebsiteBtn">Add Website</button>
+    <button onclick="addWebsite()">Add Website</button>
+
+    <div id="categoryList"></div>
   </div>
 
-  <div id="manageCategoriesContainer" style="margin-top:20px;">
-    <!-- Categories with dropdown websites will appear here -->
-  </div>
-</div>
-
-<script>
-(() => {
-  // Data structure for categories & websites
-  let categories = {
-    "Company Searches": [
-      { name: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/" }
-    ],
-    "Court Case Searches": [
-      { name: "CaseMine", url: "https://www.casemine.com/" }
-    ],
-    "Occupation Registers": [
-      { name: "General Dental Council", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
-      { name: "Nursing and Midwifery Council", url: "https://www.nmc.org.uk/registration/search-the-register/" },
-      { name: "Health and Care Professions Council", url: "https://www.hcpc-uk.org/check-the-register/" },
-      { name: "The General Pharmaceutical Council", url: "https://www.pharmacyregulation.org/registers/pharmacists" },
-      { name: "Medical Council", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
-      { name: "Social Work England", url: "https://www.socialworkengland.org.uk/registration/register-search/" },
-      { name: "Engineering Council", url: "https://www.engc.org.uk/" },
-      { name: "Bar Standards Board", url: "https://www.barstandardsboard.org.uk/for-the-public/search-the-register/" },
-      { name: "Solicitors Regulation Authority (SRA)", url: "https://www.sra.org.uk/consumers/register/" },
-      { name: "Teachers' Regulation Agency", url: "https://teacherservices.education.gov.uk/"},
-      { name: "Charity Commission", url: "https://register-of-charities.charitycommission.gov.uk/" }
-    ],
-    "Genealogy": [
-      { name: "UK Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
-    ],
-    "Transport": [
-      { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" }
-    ],
-    "Sanctions, Watchlists, PEPs": [
-      { name: "Insolvency Register", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" }
-    ],
-    "Social Media": [
-      { name: "Facebook", url: "https://www.facebook.com/" },
-      { name: "LinkedIn", url: "https://www.linkedin.com/" },
-      { name: "Twitter", url: "https://twitter.com/" }
-    ],
-    "Offshore Companies": [
-      { name: "Offshore Leaks", url: "https://offshoreleaks.icij.org/" }
-    ],
-    "Domain/Leaked/Cached": [
-      { name: "Who.is", url: "https://who.is/" }
-    ]
-  };
-
-  // Selected categories and websites
-  const selectedCategories = new Set(Object.keys(categories));
-  const selectedWebsites = new Set();
-
-  // Elements
-  const categoriesCheckboxes = document.getElementById('categoriesCheckboxes');
-  const keywordInput = document.getElementById('keywordInput');
-  const searchBtn = document.getElementById('searchBtn');
-  const searchResults = document.getElementById('searchResults');
-
-  const addCategoryInput = document.getElementById('addCategoryInput');
-  const addCategoryBtn = document.getElementById('addCategoryBtn');
-  const addWebsiteNameInput = document.getElementById('addWebsiteNameInput');
-  const addWebsiteURLInput = document.getElementById('addWebsiteURLInput');
-  const addWebsiteCategorySelect = document.getElementById('addWebsiteCategorySelect');
-  const addWebsiteBtn = document.getElementById('addWebsiteBtn');
-
-  const manageCategoriesContainer = document.getElementById('manageCategoriesContainer');
-
-  const saveReportBtn = document.getElementById('saveReportBtn');
-  const exportReportBtn = document.getElementById('exportReportBtn');
-  const savedReportsDiv = document.getElementById('savedReports');
-
-  const imageFileInput = document.getElementById('imageFileInput');
-  const reverseImageBtn = document.getElementById('reverseImageBtn');
-
-  // --- Render categories checkboxes ---
-  function renderCategories() {
-    categoriesCheckboxes.innerHTML = '<strong>Categories:</strong> ';
-    Object.keys(categories).forEach(catName => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = catName;
-      checkbox.checked = selectedCategories.has(catName);
-
-      checkbox.addEventListener('change', () => {
-        if (checkbox.checked) selectedCategories.add(catName);
-        else selectedCategories.delete(catName);
-      });
-
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(' ' + catName));
-      categoriesCheckboxes.appendChild(label);
-    });
-    // Update website category select in manage section
-    renderWebsiteCategorySelect();
-  }
-
-  // --- Render category options in the Add Website dropdown ---
-  function renderWebsiteCategorySelect() {
-    addWebsiteCategorySelect.innerHTML = '';
-    Object.keys(categories).forEach(catName => {
-      const option = document.createElement('option');
-      option.value = catName;
-      option.textContent = catName;
-      addWebsiteCategorySelect.appendChild(option);
-    });
-  }
-
-  // --- Render Manage Categories and Websites ---
-  function renderManageCategories() {
-    manageCategoriesContainer.innerHTML = '';
-
-    Object.keys(categories).forEach(catName => {
-      const websites = categories[catName];
-
-      const catDiv = document.createElement('div');
-      catDiv.className = 'manage-category';
-
-      // Category header with toggle
-      const header = document.createElement('div');
-      header.className = 'manage-category-header collapsed';
-      header.textContent = catName;
-
-      // Delete category button
-      const delCatBtn = document.createElement('button');
-      delCatBtn.textContent = 'Delete';
-      delCatBtn.title = 'Delete Category and all its websites';
-      delCatBtn.style.position = 'absolute';
-      delCatBtn.style.right = '12px';
-      delCatBtn.style.top = '8px';
-      delCatBtn.style.backgroundColor = '#f44336';
-      delCatBtn.style.color = '#fff';
-      delCatBtn.style.border = 'none';
-      delCatBtn.style.borderRadius = '4px';
-      delCatBtn.style.padding = '3px 7px';
-      delCatBtn.style.cursor = 'pointer';
-      delCatBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(confirm(`Delete category "${catName}" and all its websites?`)) {
-          delete categories[catName];
-          selectedCategories.delete(catName);
-          // Remove any websites under this category from selectedWebsites
-          websites.forEach(w => selectedWebsites.delete(w.url));
-          renderCategories();
-          renderManageCategories();
-        }
-      });
-
-      header.appendChild(delCatBtn);
-
-      // Toggle websites list on header click
-      header.addEventListener('click', () => {
-        header.classList.toggle('collapsed');
-        wsDiv.classList.toggle('show');
-      });
-
-      catDiv.appendChild(header);
-
-      // Websites list container (initially hidden)
-      const wsDiv = document.createElement('div');
-      wsDiv.className = 'manage-websites';
-
-      websites.forEach((site, idx) => {
-        const siteDiv = document.createElement('div');
-        siteDiv.className = 'manage-website-item';
-
-        const siteText = document.createElement('span');
-        siteText.textContent = `${site.name} — ${site.url}`;
-
-        // Edit website button
-        const editSiteBtn = document.createElement('button');
-        editSiteBtn.textContent = 'Edit';
-        editSiteBtn.title = 'Edit Website';
-        editSiteBtn.style.marginLeft = '10px';
-        editSiteBtn.style.backgroundColor = '#2196F3';
-        editSiteBtn.style.color = '#fff';
-        editSiteBtn.style.border = 'none';
-        editSiteBtn.style.borderRadius = '4px';
-        editSiteBtn.style.cursor = 'pointer';
-        editSiteBtn.addEventListener('click', () => {
-          const newSiteName = prompt('Edit website name:', site.name);
-          if (!newSiteName || !newSiteName.trim()) return;
-          const newSiteUrl = prompt('Edit website URL:', site.url);
-          if (!newSiteUrl || !newSiteUrl.trim()) return;
-
-          categories[catName][idx] = { name: newSiteName.trim(), url: newSiteUrl.trim() };
-
-          // Update selections if url changed
-          if (selectedWebsites.has(site.url)) {
-            selectedWebsites.delete(site.url);
-            selectedWebsites.add(newSiteUrl.trim());
-          }
-
-          renderCategories();
-          renderManageCategories();
-        });
-
-        // Delete website button
-        const delSiteBtn = document.createElement('button');
-        delSiteBtn.textContent = 'Delete';
-        delSiteBtn.title = 'Delete Website';
-        delSiteBtn.style.marginLeft = '5px';
-        delSiteBtn.style.backgroundColor = '#f44336';
-        delSiteBtn.style.color = '#fff';
-        delSiteBtn.style.border = 'none';
-        delSiteBtn.style.borderRadius = '4px';
-        delSiteBtn.style.cursor = 'pointer';
-        delSiteBtn.addEventListener('click', () => {
-          if (confirm(`Delete website "${site.name}"?`)) {
-            categories[catName].splice(idx, 1);
-            selectedWebsites.delete(site.url);
-            renderCategories();
-            renderManageCategories();
-          }
-        });
-
-        siteDiv.appendChild(siteText);
-        siteDiv.appendChild(editSiteBtn);
-        siteDiv.appendChild(delSiteBtn);
-        wsDiv.appendChild(siteDiv);
-      });
-
-      catDiv.appendChild(wsDiv);
-      manageCategoriesContainer.appendChild(catDiv);
-    });
-  }
-
-  // --- Add new category ---
-  addCategoryBtn.addEventListener('click', () => {
-    const newCat = addCategoryInput.value.trim();
-    if (!newCat) {
-      alert('Please enter a category name');
-      return;
-    }
-    if (categories[newCat]) {
-      alert('Category already exists');
-      return;
-    }
-    categories[newCat] = [];
-    selectedCategories.add(newCat);
-    addCategoryInput.value = '';
-    renderCategories();
-    renderManageCategories();
-  });
-
-  // --- Add new website ---
-  addWebsiteBtn.addEventListener('click', () => {
-    const name = addWebsiteNameInput.value.trim();
-    const url = addWebsiteURLInput.value.trim();
-    const cat = addWebsiteCategorySelect.value;
-
-    if (!name || !url) {
-      alert('Please enter website name and URL');
-      return;
-    }
-    if (!url.startsWith('http')) {
-      alert('Please enter a valid URL starting with http or https');
-      return;
-    }
-    if (!categories[cat]) {
-      alert('Selected category does not exist');
-      return;
-    }
-
-    // Check for duplicates
-    const existing = categories[cat].find(w => w.url === url);
-    if (existing) {
-      alert('Website already exists in this category');
-      return;
-    }
-
-    categories[cat].push({ name, url });
-    addWebsiteNameInput.value = '';
-    addWebsiteURLInput.value = '';
-    renderManageCategories();
-  });
-
-  // --- Perform search ---
-  searchBtn.addEventListener('click', () => {
-    const keyword = keywordInput.value.trim().toLowerCase();
-    if (!keyword) {
-      alert('Please enter a keyword');
-      return;
-    }
-
-    searchResults.innerHTML = '';
-
-    // Gather selected websites across selected categories
-    let results = [];
-    selectedCategories.forEach(catName => {
-      const sites = categories[catName] || [];
-      sites.forEach(site => {
-        // Simple keyword match on site name or URL
-        if (site.name.toLowerCase().includes(keyword) || site.url.toLowerCase().includes(keyword)) {
-          results.push({ category: catName, name: site.name, url: site.url });
-        }
-      });
-    });
-
-    if (results.length === 0) {
-      searchResults.textContent = 'No matching websites found.';
-      return;
-    }
-
-    results.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'result-item';
-      div.innerHTML = `<strong>${r.name}</strong><a href="${r.url}" target="_blank" rel="noopener noreferrer">${r.url}</a><div class="small-label">Category: ${r.category}</div>`;
-      searchResults.appendChild(div);
-    });
-  });
-
-  // --- Reverse image search ---
-  reverseImageBtn.addEventListener('click', () => {
-    const file = imageFileInput.files[0];
-    if (!file) {
-      alert('Please upload an image first.');
-      return;
-    }
-
-    // We'll use a placeholder approach: upload image to URL and then open reverse search
-    // Since no backend, simulate by opening Google Reverse Image Search URL with uploaded image
-    // This requires uploading image to a server or using data URL, which Google does not support directly
-    // So here we just open Google Images to prompt user to upload manually
-    alert('Due to browser restrictions, please upload the image manually to the reverse image search sites opened.');
-
-    const sites = [
-      "https://images.google.com/",
-      "https://www.tineye.com/",
-      "https://www.bing.com/images/trending?form=Z9LH"
-    ];
-
-    sites.forEach(site => window.open(site, '_blank'));
-  });
-
-  // --- Save report ---
-  saveReportBtn.addEventListener('click', () => {
-    const reportName = prompt('Enter a name for this report:');
-    if (!reportName) return;
-    const keyword = keywordInput.value.trim();
-    if (!keyword) {
-      alert('Please enter a keyword before saving a report.');
-      return;
-    }
-
-    // Create report data
-    const reportData = {
-      name: reportName,
-      keyword,
-      categories: Array.from(selectedCategories),
-      timestamp: Date.now()
+  <script>
+    const categories = {
+      "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
+      "Court Case Searches": ["https://www.casemine.com/"],
+      "Occupation Registers": [
+        "https://www.gmc-uk.org/registration-and-licensing/the-medical-register",
+        "https://www.gdc-uk.org/pages/searchregisters.aspx",
+        "https://www.nmc.org.uk/registration/search-the-register/",
+        "https://www.hcpc-uk.org/check-the-register/",
+        "https://www.lawscot.org.uk/members/membership-and-registrations/member-directory/",
+        "https://solicitors.lawsociety.org.uk/",
+        "https://www.sra.org.uk/consumers/register/",
+        "https://www.barstandardsboard.org.uk/",
+        "https://www.architecture.com/education-cpd-and-careers/registers",
+        "https://www.rics.org/uk/find-a-member/",
+        "https://www.arb.org.uk/public-register/",
+        "https://www.psa.org.uk/check-a-practitioner",
+        "https://www.optical.org/en/public-register",
+        "https://www.pharmacyregulation.org/registers",
+        "https://www.nursing-midwifery.register-search.org/",
+        "https://www.socialworkengland.org.uk/"
+      ],
+      "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
+      "Transport": ["https://cartaxcheck.co.uk/"],
+      "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
+      "Social Media": ["https://www.facebook.com/"],
+      "Offshore Companies": ["https://offshoreleaks.icij.org/"],
+      "Domain/Leaked/Cached": ["https://who.is/"]
     };
 
-    // Save to localStorage (using reportName as key with timestamp)
-    const key = 'osint_report_' + reportData.timestamp;
-    localStorage.setItem(key, JSON.stringify(reportData));
-    alert('Report saved.');
-    loadSavedReports();
-  });
+    function refreshUI() {
+      const listDiv = document.getElementById("categoryList");
+      const dropdown = document.getElementById("websiteCategory");
 
-  // --- Export report ---
-  exportReportBtn.addEventListener('click', () => {
-    const keyword = keywordInput.value.trim();
-    if (!keyword) {
-      alert('Please enter a keyword before exporting.');
-      return;
+      listDiv.innerHTML = "";
+      dropdown.innerHTML = '<option value="">Select Category</option>';
+
+      for (const [category, websites] of Object.entries(categories)) {
+        dropdown.innerHTML += `<option value="${category}">${category}</option>`;
+
+        const section = document.createElement("details");
+        section.className = "dropdown-section";
+        section.innerHTML = `<summary>${category} <button class="small-button" onclick="deleteCategory('${category}')">Delete</button></summary>`;
+
+        const ul = document.createElement("ul");
+        websites.forEach((site, idx) => {
+          const li = document.createElement("li");
+          li.className = "site-link";
+          li.innerHTML = `
+            <a href="${site}" target="_blank">${site}</a>
+            <div class="inline-buttons">
+              <button class="small-button" onclick="editWebsite('${category}', ${idx})">Edit</button>
+              <button class="small-button" onclick="deleteWebsite('${category}', ${idx})">Delete</button>
+            </div>`;
+          ul.appendChild(li);
+        });
+
+        section.appendChild(ul);
+        listDiv.appendChild(section);
+      }
     }
-    const exportData = {
-      keyword,
-      categories: Array.from(selectedCategories),
-      timestamp: Date.now()
-    };
-    const jsonStr = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `osint_report_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+    function addCategory() {
+      const name = document.getElementById("categoryName").value.trim();
+      if (name && !categories[name]) {
+        categories[name] = [];
+        refreshUI();
+        document.getElementById("categoryName").value = "";
+      }
+    }
 
-  // --- Load saved reports ---
-  function loadSavedReports() {
-    savedReportsDiv.innerHTML = '';
-    Object.keys(localStorage)
-      .filter(key => key.startsWith('osint_report_'))
-      .sort((a,b) => Number(b.split('_')[2]) - Number(a.split('_')[2]))
-      .forEach(key => {
-        const report = JSON.parse(localStorage.getItem(key));
-        const div = document.createElement('div');
-        div.className = 'report-item';
-        div.textContent = `${report.name} (Keyword: "${report.keyword}") - ${new Date(report.timestamp).toLocaleString()}`;
+    function addWebsite() {
+      const url = document.getElementById("websiteName").value.trim();
+      const category = document.getElementById("websiteCategory").value;
+      if (url && category && categories[category]) {
+        categories[category].push(url);
+        refreshUI();
+        document.getElementById("websiteName").value = "";
+      }
+    }
 
-        const loadBtn = document.createElement('button');
-        loadBtn.textContent = 'Load';
-        loadBtn.title = 'Load this report';
-        loadBtn.addEventListener('click', () => {
-          keywordInput.value = report.keyword;
-          selectedCategories.clear();
-          report.categories.forEach(cat => selectedCategories.add(cat));
-          renderCategories();
-          alert(`Loaded report "${report.name}". Now you can run the search.`);
-        });
+    function deleteWebsite(category, index) {
+      categories[category].splice(index, 1);
+      refreshUI();
+    }
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.title = 'Delete this report';
-        deleteBtn.style.backgroundColor = '#f44336';
-        deleteBtn.style.color = '#fff';
-        deleteBtn.addEventListener('click', () => {
-          if (confirm(`Delete report "${report.name}"?`)) {
-            localStorage.removeItem(key);
-            loadSavedReports();
-          }
-        });
+    function editWebsite(category, index) {
+      const newUrl = prompt("Enter new URL:", categories[category][index]);
+      if (newUrl) {
+        categories[category][index] = newUrl;
+        refreshUI();
+      }
+    }
 
-        div.appendChild(loadBtn);
-        div.appendChild(deleteBtn);
-        savedReportsDiv.appendChild(div);
-      });
-  }
+    function deleteCategory(category) {
+      if (confirm(`Are you sure you want to delete the category "${category}"?`)) {
+        delete categories[category];
+        refreshUI();
+      }
+    }
 
-  // Initial rendering
-  renderCategories();
-  renderManageCategories();
-  loadSavedReports();
+    function search() {
+      const keyword = document.getElementById("keyword").value.trim();
+      if (!keyword) return alert("Please enter a keyword first.");
 
-})();
-</script>
+      let resultWindow = window.open("", "_blank");
+      resultWindow.document.write(`<h2>Search Results for "${keyword}"</h2><ul>`);
 
+      for (const [cat, sites] of Object.entries(categories)) {
+        for (const url of sites) {
+          const searchUrl = `${url}?q=${encodeURIComponent(keyword)}`;
+          resultWindow.document.write(`<li><a href="${searchUrl}" target="_blank">${cat}: ${url}</a></li>`);
+        }
+      }
+
+      resultWindow.document.write("</ul>");
+    }
+
+    refreshUI();
+  </script>
 </body>
 </html>

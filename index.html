@@ -1,771 +1,1868 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OSINT Search Tool</title>
-  <style>
-    /* --- Basic Reset & Fonts --- */
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #fff;
-      color: #333;
-      margin: 0; padding: 20px;
-      max-width: 900px;
-      margin-left: auto; margin-right: auto;
-    }
-    h1, h2, h3 {
-      color: #B13F17;
-      margin-top: 0;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    a {
-      color: #B13F17;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    button {
-      cursor: pointer;
-      background: #B13F17;
-      border: none;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 4px;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    button:hover:not(:disabled) {
-      background: #8e2d10;
-    }
-    button:disabled {
-      background: #d18b75;
-      cursor: not-allowed;
-    }
-    input[type=text], select {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1em;
-      margin-right: 8px;
-      margin-bottom: 10px;
-    }
-    label {
-      font-weight: 600;
-      margin-right: 10px;
-    }
-    .container {
-      margin-bottom: 30px;
-    }
-    .category-list, .manage-category-list, .saved-cases-list {
-      max-height: 220px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-      border-radius: 6px;
-      background: #fafafa;
-    }
-    .category-list label, .manage-category-list label {
-      display: block;
-      margin-bottom: 6px;
-      cursor: pointer;
-    }
-    .result-item {
-      border: 1px solid #e9ecef;
-      background: #fafafa;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 25px;
-    }
-    .result-item strong {
-      font-size: 1.1em;
-    }
-    .btn-small {
-      font-size: 0.8em;
-      padding: 4px 10px;
-      border-radius: 4px;
-      background: #B13F17;
-      border: none;
-      color: #fff;
-      font-weight: 600;
-    }
-    .btn-small:hover {
-      background: #8e2d10;
-    }
-    .btn-small.delete-case-btn {
-      background: #dc3545;
-    }
-    .btn-small.delete-case-btn:hover {
-      background: #b02a37;
-    }
-    .message {
-      margin-bottom: 20px;
-      padding: 12px 15px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 1em;
-    }
-    .message.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .message.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    .filters-group > div {
-      margin-bottom: 12px;
-    }
-    .filters-group label {
-      min-width: 150px;
-      display: inline-block;
-    }
-    .header-info {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-    .timestamp {
-      color: #6c757d;
-      font-size: 0.9em;
-      margin-top: 10px;
-    }
-    /* Scrollbar for overflow lists */
-    .category-list::-webkit-scrollbar,
-    .manage-category-list::-webkit-scrollbar,
-    .saved-cases-list::-webkit-scrollbar {
-      width: 8px;
-    }
-    .category-list::-webkit-scrollbar-thumb,
-    .manage-category-list::-webkit-scrollbar-thumb,
-    .saved-cases-list::-webkit-scrollbar-thumb {
-      background: #B13F17;
-      border-radius: 6px;
-    }
-    /* Responsive */
-    @media (max-width: 600px) {
-      input[type=text], select, button {
-        width: 100%;
-        margin-bottom: 12px;
-      }
-      .filters-group label {
-        display: block;
-        margin-bottom: 4px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <h1>🔍 OSINT Search Tool</h1>
-
-  <div class="container">
-    <label for="keywordInput"><strong>Keyword Search:</strong></label><br />
-    <input type="text" id="keywordInput" placeholder="Enter keyword(s) to search" />
-    <button id="searchBtn">Search</button>
-  </div>
-
-  <div class="container filters-group">
-    <h3>Advanced Filters</h3>
-    <div>
-      <label for="linkedinLocationInput">LinkedIn Location:</label>
-      <input type="text" id="linkedinLocationInput" placeholder="e.g. London" />
-    </div>
-    <div>
-      <label for="linkedinJobTitleInput">LinkedIn Job Title:</label>
-      <input type="text" id="linkedinJobTitleInput" placeholder="e.g. Analyst" />
-    </div>
-    <div>
-      <label for="linkedinCompanyInput">LinkedIn Company:</label>
-      <input type="text" id="linkedinCompanyInput" placeholder="e.g. OpenAI" />
-    </div>
-    <div>
-      <label for="linkedinSchoolInput">LinkedIn School:</label>
-      <input type="text" id="linkedinSchoolInput" placeholder="e.g. Oxford" />
-    </div>
-    <div>
-      <label for="facebookLocationInput">Facebook Location:</label>
-      <input type="text" id="facebookLocationInput" placeholder="e.g. Manchester" />
-    </div>
-    <div>
-      <label for="facebookEducationInput">Facebook Education:</label>
-      <input type="text" id="facebookEducationInput" placeholder="e.g. University" />
-    </div>
-    <div>
-      <label for="facebookWorkplaceInput">Facebook Workplace:</label>
-      <input type="text" id="facebookWorkplaceInput" placeholder="e.g. Company name" />
-    </div>
-    <div>
-      <label for="facebookRelationshipInput">Facebook Relationship:</label>
-      <input type="text" id="facebookRelationshipInput" placeholder="e.g. Single" />
-    </div>
-  </div>
-
-  <div class="container">
-    <h3>Select Categories to Search</h3>
-    <button id="selectAllBtn">Select All</button>
-    <button id="deselectAllBtn">Deselect All</button>
-    <div class="category-list" id="categoriesContainer"></div>
-  </div>
-
-  <div class="container">
-    <h3>Manage Categories & Websites</h3>
-    <div>
-      <input type="text" id="newCategoryInput" placeholder="New Category Name" />
-      <button id="addCategoryBtn">Add Category</button>
-    </div>
-    <div class="manage-category-list" id="manageCategoriesContainer"></div>
-  </div>
-
-  <div class="container">
-    <h3>Add Website to Category</h3>
-    <select id="categorySelectForWebsites"></select><br />
-    <input type="text" id="newWebsiteName" placeholder="Website Name" />
-    <input type="text" id="newWebsiteURL" placeholder="https://example.com/search?q=%s" />
-    <button id="addWebsiteBtn">Add Website</button>
-  </div>
-
-  <div class="container">
-    <h3>Search Results</h3>
-    <div id="resultsContainer" style="min-height: 150px; font-style: italic; color: #666;">
-      Enter keyword(s) and select categories to search.
-    </div>
-  </div>
-
-  <div class="container">
-    <button id="exportReportBtn">Export Report</button>
-  </div>
-
-  <div class="container">
-    <h3>Saved Cases</h3>
-    <input type="text" id="searchSavedCasesInput" placeholder="Filter saved cases..." />
-    <button id="clearSavedCasesBtn" style="background:#dc3545;">Clear All Saved Cases</button>
-    <div class="saved-cases-list" id="savedCasesContainer"></div>
-  </div>
-
-  <div id="messageContainer"></div>
-
-  <script>
-    // --- Constants ---
-    const SAVED_CASES_KEY = "osint_saved_cases";
-
-    // --- Elements ---
-    const keywordInput = document.getElementById("keywordInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const categoriesContainer = document.getElementById("categoriesContainer");
-    const manageCategoriesContainer = document.getElementById("manageCategoriesContainer");
-    const categorySelectForWebsites = document.getElementById("categorySelectForWebsites");
-    const newCategoryInput = document.getElementById("newCategoryInput");
-    const addCategoryBtn = document.getElementById("addCategoryBtn");
-    const newWebsiteName = document.getElementById("newWebsiteName");
-    const newWebsiteURL = document.getElementById("newWebsiteURL");
-    const addWebsiteBtn = document.getElementById("addWebsiteBtn");
-    const exportReportBtn = document.getElementById("exportReportBtn");
-    const savedCasesContainer = document.getElementById("savedCasesContainer");
-    const searchSavedCasesInput = document.getElementById("searchSavedCasesInput");
-    const clearSavedCasesBtn = document.getElementById("clearSavedCasesBtn");
-
-    // Advanced filters inputs
-    const linkedinLocationInput = document.getElementById("linkedinLocationInput");
-    const linkedinJobTitleInput = document.getElementById("linkedinJobTitleInput");
-    const linkedinCompanyInput = document.getElementById("linkedinCompanyInput");
-    const linkedinSchoolInput = document.getElementById("linkedinSchoolInput");
-    const facebookLocationInput = document.getElementById("facebookLocationInput");
-    const facebookEducationInput = document.getElementById("facebookEducationInput");
-    const facebookWorkplaceInput = document.getElementById("facebookWorkplaceInput");
-    const facebookRelationshipInput = document.getElementById("facebookRelationshipInput");
-
-    // --- Data ---
-    let categories = {
-      "Social Media": [
-        { name: "LinkedIn", url: "https://www.linkedin.com/search/results/all/?keywords=%s" },
-        { name: "Facebook", url: "https://www.facebook.com/search/top/?q=%s" }
-      ],
-      "News": [
-        { name: "Google News", url: "https://news.google.com/search?q=%s" },
-        { name: "Bing News", url: "https://www.bing.com/news/search?q=%s" }
-      ],
-      "General": [
-        { name: "Google", url: "https://www.google.com/search?q=%s" },
-        { name: "Bing", url: "https://www.bing.com/search?q=%s" }
-      ]
-    };
-
-    let searchResults = []; // will store search results objects
-
-    // --- Utility Functions ---
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function saveCategoriesToLocalStorage() {
-      localStorage.setItem("osint_categories", JSON.stringify(categories));
-    }
-
-    function loadCategoriesFromLocalStorage() {
-      const saved = localStorage.getItem("osint_categories");
-      if (saved) {
-        try {
-          categories = JSON.parse(saved);
-        } catch {
-          categories = {};
-        }
-      }
-    }
-
-    function saveCasesToLocalStorage(cases) {
-      localStorage.setItem(SAVED_CASES_KEY, JSON.stringify(cases));
-    }
-
-    function loadCasesFromLocalStorage() {
-      const saved = localStorage.getItem(SAVED_CASES_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          return [];
-        }
-      }
-      return [];
-    }
-
-    // --- Rendering Functions ---
-    function renderCategoriesList() {
-      categoriesContainer.innerHTML = "";
-      for (const category in categories) {
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = "cat_" + category;
-        checkbox.value = category;
-
-        const label = document.createElement("label");
-        label.htmlFor = checkbox.id;
-        label.textContent = category;
-
-        const wrapper = document.createElement("div");
-        wrapper.appendChild(checkbox);
-        wrapper.appendChild(label);
-
-        categoriesContainer.appendChild(wrapper);
-      }
-    }
-
-    function renderManageCategories() {
-      manageCategoriesContainer.innerHTML = "";
-      for (const category in categories) {
-        const catDiv = document.createElement("div");
-        catDiv.style.marginBottom = "15px";
-
-        // Editable category name input
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = category;
-        input.style.fontWeight = "bold";
-        input.style.marginRight = "10px";
-        input.style.width = "160px";
-
-        // Save button for rename
-        const renameBtn = document.createElement("button");
-        renameBtn.textContent = "Rename";
-        renameBtn.style.marginRight = "10px";
-
-        renameBtn.addEventListener("click", () => {
-          const newName = input.value.trim();
-          if (!newName) {
-            alert("Category name cannot be empty");
-            input.value = category;
-            return;
-          }
-          if (newName !== category && categories[newName]) {
-            alert("Category with that name already exists.");
-            input.value = category;
-            return;
-          }
-          // Rename category
-          categories[newName] = categories[category];
-          delete categories[category];
-          saveCategoriesToLocalStorage();
-          renderCategoriesList();
-          renderManageCategories();
-          renderCategorySelectForWebsites();
-          showMessage(`Category renamed to "${newName}"`, "success");
-        });
-
-        // Delete category button
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.style.backgroundColor = "#dc3545";
-        deleteBtn.style.color = "white";
-
-        deleteBtn.addEventListener("click", () => {
-          if (confirm(`Delete category "${category}" and all its websites?`)) {
-            delete categories[category];
-            saveCategoriesToLocalStorage();
-            renderCategoriesList();
-            renderManageCategories();
-            renderCategorySelectForWebsites();
-            showMessage(`Category "${category}" deleted`, "success");
-          }
-        });
-
-        catDiv.appendChild(input);
-        catDiv.appendChild(renameBtn);
-        catDiv.appendChild(deleteBtn);
-
-        // Websites list with delete option
-        const ul = document.createElement("ul");
-        ul.style.paddingLeft = "20px";
-        if (categories[category].length === 0) {
-          const liEmpty = document.createElement("li");
-          liEmpty.textContent = "(No websites)";
-          ul.appendChild(liEmpty);
-        } else {
-          categories[category].forEach((site, i) => {
-            const li = document.createElement("li");
-            li.textContent = `${site.name} (${site.url}) `;
-
-            const delSiteBtn = document.createElement("button");
-            delSiteBtn.textContent = "Remove";
-            delSiteBtn.className = "btn-small";
-            delSiteBtn.style.marginLeft = "10px";
-            delSiteBtn.addEventListener("click", () => {
-              if (confirm(`Remove website "${site.name}" from category "${category}"?`)) {
-                categories[category].splice(i, 1);
-                saveCategoriesToLocalStorage();
-                renderManageCategories();
-                renderCategoriesList();
-                renderCategorySelectForWebsites();
-                showMessage(`Website "${site.name}" removed from "${category}"`, "success");
-              }
-            });
-            li.appendChild(delSiteBtn);
-            ul.appendChild(li);
-          });
-        }
-        catDiv.appendChild(ul);
-
-        manageCategoriesContainer.appendChild(catDiv);
-      }
-    }
-
-    function renderCategorySelectForWebsites() {
-      categorySelectForWebsites.innerHTML = "";
-      for (const cat in categories) {
-        const option = document.createElement("option");
-        option.value = cat;
-        option.textContent = cat;
-        categorySelectForWebsites.appendChild(option);
-      }
-    }
-
-    function renderSavedCases(filter = "") {
-      const cases = loadCasesFromLocalStorage();
-      savedCasesContainer.innerHTML = "";
-      if (cases.length === 0) {
-        savedCasesContainer.textContent = "No saved cases.";
-        return;
-      }
-      const filteredCases = cases.filter(c => c.keyword.toLowerCase().includes(filter.toLowerCase()));
-      if (filteredCases.length === 0) {
-        savedCasesContainer.textContent = "No saved cases matching filter.";
-        return;
-      }
-      filteredCases.forEach((c, idx) => {
-        const div = document.createElement("div");
-        div.className = "result-item";
-        div.innerHTML = `
-          <strong>Keyword:</strong> ${escapeHtml(c.keyword)}<br />
-          <strong>Categories:</strong> ${c.categories.map(escapeHtml).join(", ")}<br />
-          <strong>Timestamp:</strong> ${new Date(c.timestamp).toLocaleString()}<br />
-          <button class="btn-small load-case-btn" data-index="${idx}">Load Case</button>
-          <button class="btn-small delete-case-btn" data-index="${idx}">Delete Case</button>
-        `;
-        savedCasesContainer.appendChild(div);
-      });
-      // Add event listeners
-      savedCasesContainer.querySelectorAll(".load-case-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const i = Number(btn.dataset.index);
-          loadSavedCase(i);
-        });
-      });
-      savedCasesContainer.querySelectorAll(".delete-case-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const i = Number(btn.dataset.index);
-          deleteSavedCase(i);
-        });
-      });
-    }
-
-    // --- Message UI ---
-    function showMessage(msg, type = "success", duration = 4000) {
-      const container = document.getElementById("messageContainer");
-      container.innerHTML = `<div class="message ${type}">${escapeHtml(msg)}</div>`;
-      if (duration > 0) {
-        setTimeout(() => {
-          container.innerHTML = "";
-        }, duration);
-      }
-    }
-
-    // --- Search Logic ---
-    async function runSearch() {
-      const keyword = keywordInput.value.trim();
-      if (!keyword) {
-        showMessage("Please enter keyword(s) to search.", "error");
-        return;
-      }
-      // Gather selected categories
-      const selectedCategories = Array.from(categoriesContainer.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
-      if (selectedCategories.length === 0) {
-        showMessage("Please select at least one category to search.", "error");
-        return;
-      }
-
-      resultsContainer.innerHTML = "Searching...";
-      searchResults = [];
-
-      // Prepare advanced filters object
-      const filters = {
-        linkedinLocation: linkedinLocationInput.value.trim().toLowerCase(),
-        linkedinJobTitle: linkedinJobTitleInput.value.trim().toLowerCase(),
-        linkedinCompany: linkedinCompanyInput.value.trim().toLowerCase(),
-        linkedinSchool: linkedinSchoolInput.value.trim().toLowerCase(),
-        facebookLocation: facebookLocationInput.value.trim().toLowerCase(),
-        facebookEducation: facebookEducationInput.value.trim().toLowerCase(),
-        facebookWorkplace: facebookWorkplaceInput.value.trim().toLowerCase(),
-        facebookRelationship: facebookRelationshipInput.value.trim().toLowerCase(),
-      };
-
-      // Simulate search (replace with real fetches or API calls as needed)
-      const promises = [];
-
-      selectedCategories.forEach(category => {
-        const sites = categories[category];
-        sites.forEach(site => {
-          // Compose the search URL for this site with keyword encoded
-          let url = site.url.replace("%s", encodeURIComponent(keyword));
-          promises.push(
-            new Promise(resolve => {
-              // For demo, simulate a delay and fake results
-              setTimeout(() => {
-                // Simulate results as an array of objects
-                // Here we create fake results with a simple template
-                const fakeResults = [];
-                for (let i = 1; i <= 3; i++) {
-                  // Fake title and snippet using keyword and site name
-                  const title = `${keyword} result ${i} on ${site.name}`;
-                  const snippet = `Snippet for ${keyword} from ${site.name}, possibly filtered by your criteria.`;
-                  // Fake relevance score between 0-100
-                  const score = Math.floor(Math.random() * 100);
-                  fakeResults.push({
-                    title, snippet, url, siteName: site.name, category,
-                    score,
-                    filtersMatched: evaluateFilters(site.name, filters),
-                  });
-                }
-                resolve(fakeResults);
-              }, 500 + Math.random() * 1000);
-            })
-          );
-        });
-      });
-
-      try {
-        const resultsArrays = await Promise.all(promises);
-        searchResults = resultsArrays.flat();
-
-        // Filter results based on filtersMatched (true = passed filters)
-        searchResults = searchResults.filter(r => r.filtersMatched);
-
-        // Sort results by score descending
-        searchResults.sort((a, b) => b.score - a.score);
-
-        if (searchResults.length === 0) {
-          resultsContainer.innerHTML = "<em>No results found with the applied filters.</em>";
-        } else {
-          renderSearchResults();
-        }
-
-        // Save this case automatically
-        saveSearchCase(keyword, selectedCategories);
-
-      } catch (err) {
-        resultsContainer.innerHTML = "<em>Error during search.</em>";
-        console.error(err);
-      }
-    }
-
-    // --- Filter evaluation (simplified demo) ---
-    // Returns true if the fake filters for the given site pass user inputs
-    function evaluateFilters(siteName, filters) {
-      // Since this is a demo with fake results, we'll simulate filter checking by
-      // returning false if filter inputs exist but siteName doesn't match expected platform
-      const siteLower = siteName.toLowerCase();
-      // LinkedIn filters only apply to LinkedIn site
-      if (filters.linkedinLocation || filters.linkedinJobTitle || filters.linkedinCompany || filters.linkedinSchool) {
-        if (!siteLower.includes("linkedin")) return false;
-      }
-      // Facebook filters only apply to Facebook site
-      if (filters.facebookLocation || filters.facebookEducation || filters.facebookWorkplace || filters.facebookRelationship) {
-        if (!siteLower.includes("facebook")) return false;
-      }
-      return true;
-    }
-
-    // --- Render search results ---
-    function renderSearchResults() {
-      resultsContainer.innerHTML = "";
-      searchResults.forEach(r => {
-        const div = document.createElement("div");
-        div.className = "result-item";
-        div.innerHTML = `
-          <strong>${escapeHtml(r.title)}</strong><br />
-          <em>Site: ${escapeHtml(r.siteName)} | Category: ${escapeHtml(r.category)} | Score: ${r.score}</em><br />
-          <p>${escapeHtml(r.snippet)}</p>
-          <a href="${r.url}" target="_blank" rel="noopener noreferrer">Open Search Page</a>
-        `;
-        resultsContainer.appendChild(div);
-      });
-    }
-
-    // --- Save search case ---
-    function saveSearchCase(keyword, categoriesSelected) {
-      let cases = loadCasesFromLocalStorage();
-      const timestamp = Date.now();
-      // Avoid duplicates for same keyword + categories - but for demo, just add new
-      cases.push({ keyword, categories: categoriesSelected, timestamp });
-      saveCasesToLocalStorage(cases);
-      renderSavedCases(searchSavedCasesInput.value.trim());
-    }
-
-    // --- Load saved case ---
-    function loadSavedCase(index) {
-      const cases = loadCasesFromLocalStorage();
-      if (!cases[index]) return;
-      const c = cases[index];
-      keywordInput.value = c.keyword;
-      // Set checkboxes for categories
-      const allCheckboxes = categoriesContainer.querySelectorAll("input[type=checkbox]");
-      allCheckboxes.forEach(cb => {
-        cb.checked = c.categories.includes(cb.value);
-      });
-      showMessage(`Loaded saved case for "${c.keyword}"`, "success");
-      runSearch();
-    }
-
-    // --- Delete saved case ---
-    function deleteSavedCase(index) {
-      let cases = loadCasesFromLocalStorage();
-      if (!cases[index]) return;
-      if (!confirm(`Delete saved case "${cases[index].keyword}"?`)) return;
-      cases.splice(index, 1);
-      saveCasesToLocalStorage(cases);
-      renderSavedCases(searchSavedCasesInput.value.trim());
-      showMessage("Saved case deleted", "success");
-    }
-
-    // --- Add new category ---
-    addCategoryBtn.addEventListener("click", () => {
-      const newCat = newCategoryInput.value.trim();
-      if (!newCat) {
-        alert("Please enter a category name.");
-        return;
-      }
-      if (categories[newCat]) {
-        alert("Category already exists.");
-        return;
-      }
-      categories[newCat] = [];
-      saveCategoriesToLocalStorage();
-      renderCategoriesList();
-      renderManageCategories();
-      renderCategorySelectForWebsites();
-      newCategoryInput.value = "";
-      showMessage(`Category "${newCat}" added`, "success");
-    });
-
-    // --- Add new website ---
-    addWebsiteBtn.addEventListener("click", () => {
-      const cat = categorySelectForWebsites.value;
-      const siteName = newWebsiteName.value.trim();
-      let siteURL = newWebsiteURL.value.trim();
-
-      if (!siteName || !siteURL) {
-        alert("Please enter both website name and URL.");
-        return;
-      }
-      if (!siteURL.includes("%s")) {
-        alert('Website URL must include "%s" as placeholder for the keyword.');
-        return;
-      }
-      // Add to category
-      categories[cat].push({ name: siteName, url: siteURL });
-      saveCategoriesToLocalStorage();
-      renderManageCategories();
-      renderCategoriesList();
-      newWebsiteName.value = "";
-      newWebsiteURL.value = "";
-      showMessage(`Website "${siteName}" added to category "${cat}"`, "success");
-    });
-
-    // --- Select all / Deselect all categories ---
-    document.getElementById("selectAllBtn").addEventListener("click", () => {
-      categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
-    });
-    document.getElementById("deselectAllBtn").addEventListener("click", () => {
-      categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
-    });
-
-    // --- Search button ---
-    searchBtn.addEventListener("click", () => {
-      runSearch();
-    });
-
-    // --- Export report ---
-    exportReportBtn.addEventListener("click", () => {
-      if (searchResults.length === 0) {
-        alert("No search results to export.");
-        return;
-      }
-      const keyword = keywordInput.value.trim();
-      let report = `OSINT Search Report\nKeyword: ${keyword}\nDate: ${new Date().toLocaleString()}\n\nResults:\n\n`;
-      searchResults.forEach((r, i) => {
-        report += `${i + 1}. [${r.category}] ${r.title}\nSite: ${r.siteName}\nURL: ${r.url}\nScore: ${r.score}\nSnippet: ${r.snippet}\n\n`;
-      });
-      const blob = new Blob([report], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `osint_report_${Date.now()}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-
-    // --- Saved cases filter input ---
-    searchSavedCasesInput.addEventListener("input", () => {
-      renderSavedCases(searchSavedCasesInput.value.trim());
-    });
-
-    // --- Initial load ---
-    loadCategoriesFromLocalStorage();
-    renderCategoriesList();
-    renderManageCategories();
-    renderCategorySelectForWebsites();
-    renderSavedCases();
-
-  });
-</script>
-
-</body>
-</html>
+(cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF'
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@ -1,1793 +1,68 @@
+-<!DOCTYPE html>
+-<html lang="en">
+-<head>
+-  <meta charset="UTF-8" />
+-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+-  <title>OSINT Search Tool</title>
+-  <style>
+-    /* Reset & basics */
+-    * {
+-      box-sizing: border-box;
+-    }
+-
+-    body {
+-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+-      margin: 0; padding: 20px;
+-      background: #f9f9f9;
+-      color: #222;
+-    }
+-
+-    .container {
+-      max-width: 900px;
+-      margin: 0 auto;
+-    }
+-
+-    h1, h2, h3 {
+-      color: #B13F17;
+-      margin-bottom: 10px;
+-    }
+-
+-    input, select, button {
+-      padding: 8px 10px;
+-      margin: 5px 0;
+-      font-size: 1rem;
+-      border: 1px solid #ccc;
+-      border-radius: 4px;
+-    }
+-
+-    input[type="url"], input[type="text"], select {
+-      width: 100%;
+-      max-width: 350px;
+-    }
+-
+-    button {
+-      cursor: pointer;
+-      border: none;
+-      background-color: #B13F17;
+-      color: white;
+-      transition: background-color 0.3s ease;
+-      border-radius: 4px;
+-      min-width: 110px;
+-    }
+-
+-    button:hover {
+-      background-color: #8a2e11;
+-    }
+-
+-    button:disabled {
+-      background-color: #ccc;
+-      cursor: not-allowed;
+-    }
+-
+-    .btn-brand {
+-      min-width: 120px;
+-    }
+-
+-    .btn-small {
+-      min-width: 80px;
+-      padding: 5px 8px;
+-      font-size: 0.9rem;
+-    }
+-
+-    section {
+-      margin-bottom: 30px;
+-      background: white;
+-      padding: 15px 20px;
+-      border-radius: 8px;
+-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+-    }
+-
+-    /* Categories with dropdown */
+-    .category {
+-      border-bottom: 1px solid #eee;
+-      padding: 8px 0;
+-    }
+-
+-    .category:last-child {
+-      border-bottom: none;
+-    }
+-
+-    .category-header {
+-      display: flex;
+-      justify-content: space-between;
+-      align-items: center;
+-      padding: 12px 8px;
+-      cursor: pointer;
+-      font-weight: 600;
+-      user-select: none;
+-      transition: all 0.3s ease;
+-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+-      border: 1px solid #e0e0e0;
+-      border-radius: 6px;
+-      margin-bottom: 4px;
+-      position: relative;
+-    }
+-
+-    .category-header:hover {
+-      background: linear-gradient(135deg, #f0e6e1 0%, #e8ddd8 100%);
+-      border-color: #B13F17;
+-      transform: translateY(-1px);
+-      box-shadow: 0 2px 8px rgba(177, 63, 23, 0.2);
+-    }
+-
+-    /* Category title styling for search section */
+-    .category-title {
+-      font-weight: 600;
+-    }
+-
+-    .category-websites {
+-      padding-left: 20px;
+-      display: none;
+-      flex-direction: column;
+-      gap: 6px;
+-      margin-top: 8px;
+-    }
+-
+-    .category-websites.visible {
+-      display: flex;
+-    }
+-
+-    .website-item {
+-      display: flex;
+-      justify-content: space-between;
+-      align-items: center;
+-      padding: 4px 0;
+-    }
+-
+-    .website-item label {
+-      display: flex;
+-      align-items: center;
+-      flex-grow: 1;
+-      cursor: pointer;
+-    }
+-
+-    .website-item input[type="checkbox"] {
+-      margin-right: 8px;
+-      width: auto;
+-    }
+-
+-    .website-item a {
+-      color: #B13F17;
+-      text-decoration: none;
+-      flex-grow: 1;
+-    }
+-
+-    .website-item a:hover {
+-      text-decoration: underline;
+-    }
+-
+-    .edit-btn, .delete-btn {
+-      background: transparent;
+-      border: none;
+-      color: #B13F17;
+-      cursor: pointer;
+-      font-size: 0.9rem;
+-      margin-left: 8px;
+-      min-width: auto;
+-      padding: 4px 6px;
+-    }
+-
+-    .edit-btn:hover, .delete-btn:hover {
+-      color: #8a2e11;
+-      background: #f0f0f0;
+-    }
+-
+-    /* Results */
+-    .result-item {
+-      border-bottom: 1px solid #ddd;
+-      padding: 12px 0;
+-      margin-bottom: 8px;
+-    }
+-
+-    .result-item:last-child {
+-      border-bottom: none;
+-    }
+-
+-    .result-item strong {
+-      color: #B13F17;
+-    }
+-
+-    /* Manage section styling */
+-    .manage-categories, .manage-websites {
+-      margin-top: 15px;
+-    }
+-
+-    .manage-categories input, .manage-websites input, .manage-websites select {
+-      width: calc(100% - 130px);
+-      display: inline-block;
+-    }
+-
+-    .manage-websites input, .manage-websites select {
+-      margin-right: 10px;
+-      max-width: 300px;
+-    }
+-
+-    .image-search {
+-      margin-top: 15px;
+-    }
+-
+-    /* Enhanced Image Upload Button */
+-    .image-upload-btn {
+-      display: flex;
+-      flex-direction: column;
+-      align-items: center;
+-      justify-content: center;
+-      padding: 20px;
+-      border: 2px dashed #B13F17;
+-      border-radius: 8px;
+-      background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+-      cursor: pointer;
+-      transition: all 0.3s ease;
+-      text-align: center;
+-      min-height: 80px;
+-      margin-bottom: 15px;
+-    }
+-
+-    .image-upload-btn:hover {
+-      border-color: #8a2e11;
+-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+-      transform: translateY(-2px);
+-      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.2);
+-    }
+-
+-    .upload-icon {
+-      font-size: 2rem;
+-      margin-bottom: 8px;
+-      display: block;
+-    }
+-
+-    .upload-text {
+-      font-weight: 600;
+-      color: #B13F17;
+-      font-size: 1rem;
+-      display: block;
+-      margin-bottom: 4px;
+-    }
+-
+-    .upload-hint {
+-      font-size: 0.85rem;
+-      color: #666;
+-      display: block;
+-    }
+-
+-    /* Image Preview */
+-    .image-preview {
+-      border: 1px solid #ddd;
+-      border-radius: 8px;
+-      padding: 15px;
+-      background: white;
+-      margin-bottom: 15px;
+-    }
+-
+-    .preview-header {
+-      display: flex;
+-      justify-content: space-between;
+-      align-items: center;
+-      margin-bottom: 10px;
+-    }
+-
+-    .preview-title {
+-      font-weight: 600;
+-      color: #B13F17;
+-    }
+-
+-    .remove-btn {
+-      background: #dc3545;
+-      color: white;
+-      border: none;
+-      border-radius: 50%;
+-      width: 24px;
+-      height: 24px;
+-      cursor: pointer;
+-      font-size: 14px;
+-      display: flex;
+-      align-items: center;
+-      justify-content: center;
+-      min-width: auto;
+-      padding: 0;
+-    }
+-
+-    .remove-btn:hover {
+-      background: #c82333;
+-    }
+-
+-    #previewImg {
+-      max-width: 200px;
+-      max-height: 150px;
+-      border-radius: 4px;
+-      display: block;
+-      margin: 0 auto 10px;
+-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+-    }
+-
+-    .image-info {
+-      display: flex;
+-      justify-content: space-between;
+-      font-size: 0.85rem;
+-      color: #666;
+-      flex-wrap: wrap;
+-      gap: 10px;
+-    }
+-
+-    /* Enhanced Search Engines */
+-    .image-engines {
+-      margin-top: 10px;
+-      padding: 20px;
+-      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+-      border-radius: 8px;
+-      border: 1px solid #e0e0e0;
+-    }
+-
+-    .search-engines-grid {
+-      display: grid;
+-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+-      gap: 12px;
+-      margin-bottom: 20px;
+-    }
+-
+-    .search-engine-btn {
+-      display: flex;
+-      flex-direction: column;
+-      align-items: center;
+-      padding: 15px 10px;
+-      border: 1px solid #ddd;
+-      border-radius: 8px;
+-      background: white;
+-      cursor: pointer;
+-      transition: all 0.3s ease;
+-      text-align: center;
+-      min-width: auto;
+-    }
+-
+-    .search-engine-btn:hover {
+-      transform: translateY(-2px);
+-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+-    }
+-
+-    .google-btn:hover { border-color: #4285f4; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3); }
+-    .bing-btn:hover { border-color: #0078d4; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3); }
+-    .yandex-btn:hover { border-color: #fc3f1d; box-shadow: 0 4px 12px rgba(252, 63, 29, 0.3); }
+-    .tineye-btn:hover { border-color: #4c9be8; box-shadow: 0 4px 12px rgba(76, 155, 232, 0.3); }
+-
+-    .engine-icon {
+-      font-size: 1.5rem;
+-      margin-bottom: 6px;
+-      display: block;
+-    }
+-
+-    .engine-name {
+-      font-weight: 600;
+-      color: #333;
+-      font-size: 0.9rem;
+-      display: block;
+-      margin-bottom: 3px;
+-    }
+-
+-    .engine-hint {
+-      font-size: 0.75rem;
+-      color: #666;
+-      display: block;
+-    }
+-
+-    .search-all-container {
+-      text-align: center;
+-      border-top: 1px solid #ddd;
+-      padding-top: 15px;
+-    }
+-
+-    .search-all-btn {
+-      font-size: 1rem;
+-      padding: 12px 24px;
+-      background: linear-gradient(135deg, #B13F17 0%, #8a2e11 100%);
+-    }
+-
+-    .search-all-btn:hover {
+-      background: linear-gradient(135deg, #8a2e11 0%, #6b2209 100%);
+-      transform: translateY(-1px);
+-      box-shadow: 0 4px 12px rgba(177, 63, 23, 0.4);
+-    }
+-
+-    .engine-btn {
+-      margin-right: 10px;
+-      margin-top: 5px;
+-    }
+-
+-    /* Advanced filters */
+-    .advanced-filters label {
+-      display: block;
+-      margin-bottom: 10px;
+-    }
+-    
+-    .advanced-filters select {
+-      width: 100%;
+-      max-width: 200px;
+-    }
+-    
+-    @media (max-width: 768px) {
+-      .advanced-filters > div {
+-        grid-template-columns: 1fr !important;
+-      }
+-    }
+-
+-    .saved-cases-section input {
+-      width: 100%;
+-      max-width: 350px;
+-      margin-bottom: 10px;
+-    }
+-
+-    .saved-case-item {
+-      padding: 8px;
+-      margin: 8px 0;
+-      background: #f8f8f8;
+-      border-radius: 4px;
+-      display: flex;
+-      justify-content: space-between;
+-      align-items: center;
+-    }
+-
+-    .website-manage-list {
+-      margin-top: 20px;
+-      padding: 15px;
+-      background: #f8f8f8;
+-      border-radius: 6px;
+-    }
+-
+-    .website-manage-list h4 {
+-      margin-top: 0;
+-      color: #666;
+-    }
+-
+-    .loading {
+-      color: #666;
+-      font-style: italic;
+-    }
+-
+-    .error {
+-      color: #cc4444;
+-      background: #ffe6e6;
+-      padding: 8px;
+-      border-radius: 4px;
+-      margin: 8px 0;
+-    }
+-
+-    .success {
+-      color: #228B22;
+-      background: #e6ffe6;
+-      padding: 8px;
+-      border-radius: 4px;
+-      margin: 8px 0;
+-    }
+-
+-    .toggle-icon {
+-      transition: transform 0.2s;
+-    }
+-
+-    .toggle-icon.rotated {
+-      transform: rotate(180deg);
+-    }
+-
+-    @media (max-width: 600px) {
+-      .container {
+-        padding: 10px;
+-      }
+-      
+-      .manage-categories input, .manage-websites input, .manage-websites select {
+-        width: 100%;
+-        margin-bottom: 8px;
+-      }
+-      
+-      .saved-case-item {
+-        flex-direction: column;
+-        align-items: flex-start;
+-        gap: 8px;
+-      }
+-      
+-      /* Mobile image upload improvements */
+-      .image-upload-btn {
+-        padding: 15px;
+-        min-height: 70px;
+-      }
+-      
+-      .upload-icon {
+-        font-size: 1.5rem;
+-      }
+-      
+-      .upload-text {
+-        font-size: 0.9rem;
+-      }
+-      
+-      .search-engines-grid {
+-        grid-template-columns: 1fr 1fr;
+-        gap: 8px;
+-      }
+-      
+-      .search-engine-btn {
+-        padding: 12px 8px;
+-      }
+-      
+-      .engine-name {
+-        font-size: 0.8rem;
+-      }
+-      
+-      .engine-hint {
+-        font-size: 0.7rem;
+-      }
+-      
+-      #previewImg {
+-        max-width: 150px;
+-        max-height: 120px;
+-      }
+-      
+-      .image-info {
+-        flex-direction: column;
+-        gap: 5px;
+-      }
+-      
+-      /* Mobile category improvements */
+-      .category {
+-        padding: 10px !important;
+-        margin-bottom: 6px !important;
+-      }
+-      
+-      .category label div {
+-        font-size: 0.9rem !important;
+-      }
+-    }
+-  </style>
+-</head>
+-<body>
+-  <div class="container">
+-
+-    <header>
+-      <h1>OSINT Search Tool</h1>
+-    </header>
+-
+-    <section class="search-section">
+-      <input type="text" id="keywordInput" placeholder="Enter keyword(s)" />
+-      <button id="searchBtn" class="btn-brand">Search</button>
+-
+-      <div class="image-search">
+-        <label for="imageUpload" class="image-upload-btn">
+-          <span class="upload-icon">📷</span>
+-          <span class="upload-text">Upload Image for Reverse Search</span>
+-          <span class="upload-hint">Click to browse or drag & drop</span>
+-        </label>
+-        <input type="file" id="imageUpload" accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp" style="display:none" />
+-        
+-        <div id="imagePreview" class="image-preview" style="display:none;">
+-          <div class="preview-header">
+-            <span class="preview-title">📸 Image Ready for Search</span>
+-            <button id="removeImage" class="remove-btn" title="Remove image">×</button>
+-          </div>
+-          <img id="previewImg" src="" alt="Preview" />
+-          <div class="image-info">
+-            <span id="imageFileName"></span>
+-            <span id="imageFileSize"></span>
+-          </div>
+-        </div>
+-      </div>
+-
+-      <div id="imageSearchEngines" class="image-engines" style="display:none;">
+-        <p><strong>🔍 Choose a reverse image search engine:</strong></p>
+-        <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Your image is ready! Click any search engine below to open it in a new tab.</p>
+-        <div class="search-engines-grid">
+-          <button data-engine="google" class="search-engine-btn google-btn">
+-            <span class="engine-icon">🔍</span>
+-            <span class="engine-name">Google Images</span>
+-            <span class="engine-hint">Most comprehensive</span>
+-          </button>
+-          <button data-engine="bing" class="search-engine-btn bing-btn">
+-            <span class="engine-icon">🔎</span>
+-            <span class="engine-name">Bing Visual</span>
+-            <span class="engine-hint">Good for objects</span>
+-          </button>
+-          <button data-engine="yandex" class="search-engine-btn yandex-btn">
+-            <span class="engine-icon">🌐</span>
+-            <span class="engine-name">Yandex Images</span>
+-            <span class="engine-hint">Great for faces</span>
+-          </button>
+-          <button data-engine="tineye" class="search-engine-btn tineye-btn">
+-            <span class="engine-icon">👁️</span>
+-            <span class="engine-name">TinEye</span>
+-            <span class="engine-hint">Find exact matches</span>
+-          </button>
+-        </div>
+-        <div class="search-all-container">
+-          <button id="searchAllEngines" class="btn-brand search-all-btn">
+-            🚀 Search All Engines
+-          </button>
+-        </div>
+-      </div>
+-    </section>
+-
+-    <section class="advanced-filters">
+-      <h2>Advanced Filters</h2>
+-      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for LinkedIn and Facebook:</p>
+-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+-        <div>
+-          <h3 style="color: #0077b5; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
+-          <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
+-          <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
+-          <label>Company: <input type="text" id="linkedinCompany" placeholder="e.g., Microsoft" /></label>
+-          <label>School: <input type="text" id="linkedinSchool" placeholder="e.g., Harvard University" /></label>
+-        </div>
+-        <div>
+-          <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">📘 Facebook Filters</h3>
+-          <label>Location: <input type="text" id="facebookLocation" placeholder="e.g., London, UK" /></label>
+-          <label>Education: <input type="text" id="facebookEducation" placeholder="e.g., Harvard University" /></label>
+-          <label>Workplace: <input type="text" id="facebookWorkplace" placeholder="e.g., Microsoft" /></label>
+-          <label>Relationship: <select id="facebookRelationship">
+-            <option value="">Any</option>
+-            <option value="single">Single</option>
+-            <option value="relationship">In a relationship</option>
+-            <option value="married">Married</option>
+-          </select></label>
+-        </div>
+-      </div>
+-      <div style="background: #f0f8ff; padding: 8px; border-radius: 4px; font-size: 0.85em; color: #0066cc;">
+-        💡 <strong>Note:</strong> Filters are automatically applied to LinkedIn and Facebook searches when those categories are selected.
+-      </div>
+-    </section>
+-
+-    <section class="categories-section">
+-      <h2>Search Categories</h2>
+-      <div style="margin-bottom: 15px;">
+-        <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #1565c0;">
+-          <p style="margin: 0; font-size: 0.9em; color: #1565c0;">
+-            💡 <strong>Category Selection:</strong> Select which categories of websites to include in your search. 
+-            Each category contains multiple websites that will all be searched when selected.
+-          </p>
+-        </div>
+-        <button id="selectAllBtn" class="btn-small">Select All</button>
+-        <button id="deselectAllBtn" class="btn-small">Deselect All</button>
+-      </div>
+-      <div id="categoriesContainer"></div>
+-    </section>
+-
+-    <section class="manage-section">
+-      <h2>Manage Categories & Websites</h2>
+-
+-      <div class="manage-categories">
+-        <h3>Categories</h3>
+-        <div id="manageCategoriesContainer"></div>
+-        <input type="text" id="newCategoryInput" placeholder="New category name" />
+-        <button id="addCategoryBtn" class="btn-brand">Add Category</button>
+-        
+-        <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #ffc107;">
+-          <p style="margin: 0; font-size: 0.9em; color: #856404;">
+-            🛠️ <strong>Website Management:</strong> Click on the category headers below to view and manage existing websites. 
+-            You can edit or delete individual sites from each category.
+-          </p>
+-        </div>
+-      </div>
+-
+-      <div class="manage-websites">
+-        <h3>Add Website</h3>
+-        <select id="categorySelectForWebsites"></select>
+-        <input type="text" id="newWebsiteName" placeholder="Website name" />
+-        <input type="url" id="newWebsiteURL" placeholder="Website URL (include https://)" />
+-        <button id="addWebsiteBtn" class="btn-brand">Add Website</button>
+-      </div>
+-    </section>
+-
+-    <section class="results-section">
+-      <h2>Search Results</h2>
+-      <div id="resultsContainer">
+-        <p style="color: #666;">Enter keywords and select websites to search.</p>
+-      </div>
+-      <button id="exportReportBtn" class="btn-brand">Export Report</button>
+-    </section>
+-
+-    <section class="saved-cases-section">
+-      <h2>Saved Cases</h2>
+-      <input type="text" id="searchSavedCases" placeholder="Search saved cases..." />
+-      <div id="savedCasesContainer"></div>
+-      <button id="clearSavedCasesBtn" class="btn-brand" style="background:#555;">Clear All Saved Cases</button>
+-    </section>
+-
+-  </div>
+-
+-  <script>
+-    // Data structure with improved default categories
+-    let categories = {
+-      "Company Searches": [
+-        { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
+-        { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
+-      ],
+-      "Court Case Searches": [
+-        { name: "CaseMine", url: "https://www.casemine.com/search" },
+-        { name: "Justia", url: "https://dockets.justia.com/" }
+-      ],
+-      "Professional Registers": [
+-        { name: "GDC UK", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+-        { name: "NMC", url: "https://www.nmc.org.uk/registration/search-the-register/" },
+-        { name: "GMC", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+-        { name: "SRA (Solicitors)", url: "https://www.sra.org.uk/consumers/register/" },
+-        { name: "ICO", url: "https://ico.org.uk/about-the-ico/contact-us/register-of-data-controllers/" }
+-      ],
+-      "Social Media": [
+-        { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
+-        { name: "Facebook", url: "https://www.facebook.com/search/people/" },
+-        { name: "Twitter/X", url: "https://twitter.com/search" }
+-      ],
+-      "People Search": [
+-        { name: "Pipl", url: "https://pipl.com/" },
+-        { name: "WhitePages", url: "https://www.whitepages.com/" },
+-        { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
+-      ]
+-    };
+-
+-    // DOM elements
+-    const categoriesContainer = document.getElementById("categoriesContainer");
+-    const manageCategoriesContainer = document.getElementById("manageCategoriesContainer");
+-    const categorySelectForWebsites = document.getElementById("categorySelectForWebsites");
+-    const newCategoryInput = document.getElementById("newCategoryInput");
+-    const addCategoryBtn = document.getElementById("addCategoryBtn");
+-    const newWebsiteName = document.getElementById("newWebsiteName");
+-    const newWebsiteURL = document.getElementById("newWebsiteURL");
+-    const addWebsiteBtn = document.getElementById("addWebsiteBtn");
+-    const searchBtn = document.getElementById("searchBtn");
+-    const keywordInput = document.getElementById("keywordInput");
+-    const resultsContainer = document.getElementById("resultsContainer");
+-    const exportReportBtn = document.getElementById("exportReportBtn");
+-    const imageUploadInput = document.getElementById("imageUpload");
+-    const imageSearchEngines = document.getElementById("imageSearchEngines");
+-    const savedCasesContainer = document.getElementById("savedCasesContainer");
+-    const searchSavedCasesInput = document.getElementById("searchSavedCases");
+-    const clearSavedCasesBtn = document.getElementById("clearSavedCasesBtn");
+-    const linkedinLocationInput = document.getElementById("linkedinLocation");
+-    const linkedinJobTitleInput = document.getElementById("linkedinJobTitle");
+-    const linkedinCompanyInput = document.getElementById("linkedinCompany");
+-    const linkedinSchoolInput = document.getElementById("linkedinSchool");
+-    const facebookLocationInput = document.getElementById("facebookLocation");
+-    const facebookEducationInput = document.getElementById("facebookEducation");
+-    const facebookWorkplaceInput = document.getElementById("facebookWorkplace");
+-    const facebookRelationshipInput = document.getElementById("facebookRelationship");
+-    const selectAllBtn = document.getElementById("selectAllBtn");
+-    const deselectAllBtn = document.getElementById("deselectAllBtn");
+-
+-    // Store saved cases
+-    const SAVED_CASES_KEY = "osint_saved_cases";
+-    let uploadedImageData = null;
+-
+-    // --- Utility Functions ---
+-
+-    function showMessage(message, type = 'info') {
+-      const existingMessage = document.querySelector('.message');
+-      if (existingMessage) existingMessage.remove();
+-      
+-      const messageDiv = document.createElement('div');
+-      messageDiv.className = `message ${type}`;
+-      messageDiv.textContent = message;
+-      messageDiv.style.cssText = `
+-        position: fixed;
+-        top: 20px;
+-        right: 20px;
+-        padding: 12px 20px;
+-        border-radius: 6px;
+-        color: white;
+-        font-weight: 500;
+-        z-index: 1000;
+-        max-width: 300px;
+-        ${type === 'error' ? 'background: #dc3545;' : 
+-          type === 'success' ? 'background: #28a745;' : 
+-          'background: #17a2b8;'}
+-      `;
+-      
+-      document.body.appendChild(messageDiv);
+-      setTimeout(() => messageDiv.remove(), 3000);
+-    }
+-
+-    function validateURL(urlString) {
+-      try {
+-        const url = new URL(urlString);
+-        return url.protocol === 'http:' || url.protocol === 'https:';
+-      } catch {
+-        return false;
+-      }
+-    }
+-
+-    function buildSearchURL(site, keyword, filters = {}) {
+-      let searchURL = site.url;
+-      const encodedKeyword = encodeURIComponent(keyword);
+-      
+-      // Enhanced URL building for specific sites
+-      if (site.name.toLowerCase().includes('linkedin')) {
+-        if (searchURL.includes('/search/results/people/')) {
+-          searchURL += `?keywords=${encodedKeyword}`;
+-          if (filters.linkedinLocation) {
+-            searchURL += `&geoUrn=${encodeURIComponent(filters.linkedinLocation)}`;
+-          }
+-          if (filters.linkedinJobTitle) {
+-            searchURL += `&title=${encodeURIComponent(filters.linkedinJobTitle)}`;
+-          }
+-          if (filters.linkedinCompany) {
+-            searchURL += `&currentCompany=${encodeURIComponent(filters.linkedinCompany)}`;
+-          }
+-          if (filters.linkedinSchool) {
+-            searchURL += `&school=${encodeURIComponent(filters.linkedinSchool)}`;
+-          }
+-        }
+-      } else if (site.name.toLowerCase().includes('facebook')) {
+-        // Facebook Graph Search approach
+-        let fbSearchURL = 'https://www.facebook.com/search/people/?q=' + encodedKeyword;
+-        let filters_applied = [];
+-        
+-        if (filters.facebookLocation) {
+-          filters_applied.push(`location:${encodeURIComponent(filters.facebookLocation)}`);
+-        }
+-        if (filters.facebookEducation) {
+-          filters_applied.push(`education:${encodeURIComponent(filters.facebookEducation)}`);
+-        }
+-        if (filters.facebookWorkplace) {
+-          filters_applied.push(`employer:${encodeURIComponent(filters.facebookWorkplace)}`);
+-        }
+-        if (filters.facebookRelationship) {
+-          filters_applied.push(`relationship:${encodeURIComponent(filters.facebookRelationship)}`);
+-        }
+-        
+-        if (filters_applied.length > 0) {
+-          fbSearchURL += '%20' + filters_applied.join('%20');
+-        }
+-        
+-        searchURL = fbSearchURL;
+-      } else if (site.name.toLowerCase().includes('twitter') || site.name.toLowerCase().includes('/x')) {
+-        searchURL += `?q=${encodedKeyword}`;
+-      } else if (site.name.toLowerCase().includes('companies house')) {
+-        searchURL += `?q=${encodedKeyword}`;
+-      } else {
+-        // Generic approach - try to append search parameter
+-        const separator = searchURL.includes('?') ? '&' : '?';
+-        searchURL += `${separator}q=${encodedKeyword}`;
+-      }
+-      
+-      return searchURL;
+-    }
+-
+-    // --- Storage Functions ---
+-
+-    function saveCasesToStorage(cases) {
+-      try {
+-        localStorage.setItem(SAVED_CASES_KEY, JSON.stringify(cases));
+-      } catch (error) {
+-        showMessage('Error saving cases to storage', 'error');
+-      }
+-    }
+-
+-    function loadSavedCases() {
+-      try {
+-        const saved = localStorage.getItem(SAVED_CASES_KEY);
+-        return saved ? JSON.parse(saved) : [];
+-      } catch {
+-        return [];
+-      }
+-    }
+-
+-    // --- Case Management Functions ---
+-
+-    function renderSavedCases(filterText = "") {
+-      savedCasesContainer.innerHTML = "";
+-      const savedCases = loadSavedCases();
+-
+-      const filteredCases = savedCases.filter(c =>
+-        c.keyword.toLowerCase().includes(filterText.toLowerCase()) ||
+-        c.date.toLowerCase().includes(filterText.toLowerCase())
+-      );
+-
+-      if (filteredCases.length === 0) {
+-        savedCasesContainer.innerHTML = "<p style='color: #666;'>No saved cases found.</p>";
+-        return;
+-      }
+-
+-      filteredCases.forEach((caseData, idx) => {
+-        const div = document.createElement("div");
+-        div.className = "saved-case-item";
+-        
+-        const caseInfo = document.createElement('div');
+-        caseInfo.innerHTML = `
+-          <strong>${caseData.keyword}</strong><br>
+-          <small style="color: #666;">${new Date(caseData.date).toLocaleString()}</small><br>
+-          <small>${caseData.selectedWebsites.length} websites selected</small>
+-        `;
+-        
+-        const buttonGroup = document.createElement('div');
+-        buttonGroup.innerHTML = `
+-          <button data-idx="${idx}" class="btn-small load-case-btn">Load</button>
+-          <button data-idx="${idx}" class="btn-small delete-case-btn" style="background:#dc3545; margin-left: 8px;">Delete</button>
+-        `;
+-        
+-        div.appendChild(caseInfo);
+-        div.appendChild(buttonGroup);
+-        savedCasesContainer.appendChild(div);
+-      });
+-
+-      // Add event listeners
+-      document.querySelectorAll(".load-case-btn").forEach(btn => {
+-        btn.addEventListener("click", () => {
+-          const idx = parseInt(btn.dataset.idx, 10);
+-          loadCaseIntoSearch(filteredCases[idx]);
+-        });
+-      });
+-      
+-      document.querySelectorAll(".delete-case-btn").forEach(btn => {
+-        btn.addEventListener("click", () => {
+-          const idx = parseInt(btn.dataset.idx, 10);
+-          deleteSavedCase(filteredCases[idx]);
+-        });
+-      });
+-    }
+-
+-    function loadCaseIntoSearch(savedCase) {
+-      keywordInput.value = savedCase.keyword;
+-      
+-      // Restore advanced filters if they exist
+-      if (savedCase.filters) {
+-              linkedinLocationInput.value = savedCase.filters.linkedinLocation || '';
+-      linkedinJobTitleInput.value = savedCase.filters.linkedinJobTitle || '';
+-      linkedinCompanyInput.value = savedCase.filters.linkedinCompany || '';
+-      linkedinSchoolInput.value = savedCase.filters.linkedinSchool || '';
+-      facebookLocationInput.value = savedCase.filters.facebookLocation || '';
+-      facebookEducationInput.value = savedCase.filters.facebookEducation || '';
+-      facebookWorkplaceInput.value = savedCase.filters.facebookWorkplace || '';
+-      facebookRelationshipInput.value = savedCase.filters.facebookRelationship || '';
+-      }
+-      
+-      // Clear all checkboxes first
+-      categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+-      
+-      // Restore selected categories (get unique categories from selected websites)
+-      const selectedCategories = [...new Set(savedCase.selectedWebsites.map(sel => sel.category))];
+-      selectedCategories.forEach(category => {
+-        const checkbox = categoriesContainer.querySelector(`input[data-category="${category}"]`);
+-        if (checkbox) checkbox.checked = true;
+-      });
+-      
+-      // Restore results if available
+-      if (savedCase.resultsHTML) {
+-        resultsContainer.innerHTML = savedCase.resultsHTML;
+-      }
+-      
+-      showMessage('Case loaded successfully', 'success');
+-    }
+-
+-    function deleteSavedCase(savedCase) {
+-      if (!confirm('Are you sure you want to delete this saved case?')) return;
+-      
+-      let savedCases = loadSavedCases();
+-      savedCases = savedCases.filter(c => c.date !== savedCase.date || c.keyword !== savedCase.keyword);
+-      saveCasesToStorage(savedCases);
+-      renderSavedCases(searchSavedCasesInput.value);
+-      showMessage('Case deleted', 'success');
+-    }
+-
+-    function saveCurrentCase(keyword, selectedWebsites, resultsHTML, filters = {}) {
+-      const savedCases = loadSavedCases();
+-      const newCase = {
+-        keyword,
+-        selectedWebsites,
+-        resultsHTML,
+-        filters,
+-        date: new Date().toISOString()
+-      };
+-      
+-      savedCases.push(newCase);
+-      
+-      // Keep only the last 50 cases to prevent storage bloat
+-      if (savedCases.length > 50) {
+-        savedCases.splice(0, savedCases.length - 50);
+-      }
+-      
+-      saveCasesToStorage(savedCases);
+-      renderSavedCases(searchSavedCasesInput.value);
+-    }
+-
+-    // --- Rendering Functions ---
+-
+-    function renderCategories() {
+-      categoriesContainer.innerHTML = "";
+-      
+-      for (const catName in categories) {
+-        const categoryDiv = document.createElement("div");
+-        categoryDiv.classList.add("category");
+-        categoryDiv.style.cssText = `
+-          display: flex;
+-          align-items: center;
+-          padding: 12px;
+-          margin-bottom: 8px;
+-          background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+-          border: 1px solid #e0e0e0;
+-          border-radius: 8px;
+-          transition: all 0.3s ease;
+-        `;
+-
+-        // Category checkbox
+-        const label = document.createElement("label");
+-        label.style.cssText = `
+-          display: flex;
+-          align-items: center;
+-          cursor: pointer;
+-          flex-grow: 1;
+-        `;
+-
+-        const checkbox = document.createElement("input");
+-        checkbox.type = "checkbox";
+-        checkbox.checked = true;
+-        checkbox.dataset.category = catName;
+-        checkbox.style.cssText = `
+-          margin-right: 12px;
+-          width: 18px;
+-          height: 18px;
+-          cursor: pointer;
+-        `;
+-
+-        const categoryInfo = document.createElement("div");
+-        categoryInfo.innerHTML = `
+-          <div style="font-weight: 600; color: #B13F17; font-size: 1.1rem; margin-bottom: 2px;">
+-            📋 ${catName}
+-          </div>
+-          <div style="font-size: 0.85rem; color: #666;">
+-            ${categories[catName].length} websites included
+-          </div>
+-        `;
+-
+-        label.appendChild(checkbox);
+-        label.appendChild(categoryInfo);
+-        categoryDiv.appendChild(label);
+-        categoriesContainer.appendChild(categoryDiv);
+-
+-        // Add hover effect
+-        categoryDiv.addEventListener('mouseenter', () => {
+-          categoryDiv.style.background = 'linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%)';
+-          categoryDiv.style.borderColor = '#B13F17';
+-          categoryDiv.style.transform = 'translateY(-1px)';
+-          categoryDiv.style.boxShadow = '0 2px 8px rgba(177, 63, 23, 0.15)';
+-        });
+-
+-        categoryDiv.addEventListener('mouseleave', () => {
+-          categoryDiv.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
+-          categoryDiv.style.borderColor = '#e0e0e0';
+-          categoryDiv.style.transform = 'translateY(0)';
+-          categoryDiv.style.boxShadow = 'none';
+-        });
+-      }
+-    }
+-
+-    function renderManageCategories() {
+-      manageCategoriesContainer.innerHTML = "";
+-      categorySelectForWebsites.innerHTML = "";
+-
+-      Object.keys(categories).forEach(catName => {
+-        const catDiv = document.createElement("div");
+-        catDiv.className = "category";
+-        catDiv.style.display = "flex";
+-        catDiv.style.alignItems = "center";
+-        catDiv.style.justifyContent = "space-between";
+-
+-        const nameSpan = document.createElement("span");
+-        nameSpan.textContent = catName;
+-        nameSpan.style.flexGrow = "1";
+-
+-        const buttonGroup = document.createElement("div");
+-
+-        const editBtn = document.createElement("button");
+-        editBtn.className = "edit-btn";
+-        editBtn.textContent = "Edit";
+-        editBtn.addEventListener("click", () => editCategory(catName));
+-
+-        const deleteBtn = document.createElement("button");
+-        deleteBtn.className = "delete-btn";
+-        deleteBtn.textContent = "Delete";
+-        deleteBtn.addEventListener("click", () => deleteCategory(catName));
+-
+-        buttonGroup.appendChild(editBtn);
+-        buttonGroup.appendChild(deleteBtn);
+-
+-        catDiv.appendChild(nameSpan);
+-        catDiv.appendChild(buttonGroup);
+-        manageCategoriesContainer.appendChild(catDiv);
+-
+-        // Add to dropdown
+-        const option = document.createElement("option");
+-        option.value = catName;
+-        option.textContent = catName;
+-        categorySelectForWebsites.appendChild(option);
+-      });
+-
+-      renderManageWebsites();
+-    }
+-
+-    function renderManageWebsites() {
+-      // Remove existing website lists
+-      document.querySelectorAll(".website-manage-list").forEach(el => el.remove());
+-
+-      let isFirstManageCategory = true;
+-
+-      Object.keys(categories).forEach(catName => {
+-        if (categories[catName].length === 0) return;
+-
+-        const container = document.createElement("div");
+-        container.className = "website-manage-list";
+-
+-        // Create collapsible header with improved styling
+-        const header = document.createElement("div");
+-        header.className = "category-header";
+-        header.style.cssText = `
+-          display: flex;
+-          justify-content: space-between;
+-          align-items: center;
+-          padding: 12px 8px;
+-          cursor: pointer;
+-          font-weight: 600;
+-          user-select: none;
+-          transition: all 0.3s ease;
+-          background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+-          border: 1px solid #e0e0e0;
+-          border-radius: 6px;
+-          margin-bottom: 8px;
+-          position: relative;
+-        `;
+-
+-        const titleSpan = document.createElement("span");
+-        titleSpan.innerHTML = `<span style="color: #B13F17;">🛠️</span> Websites in "${catName}" <small style="color: #666; font-weight: normal;">(${categories[catName].length} sites)</small>`;
+-        titleSpan.style.color = "#333";
+-
+-        const toggleIcon = document.createElement("span");
+-        toggleIcon.className = "toggle-icon";
+-        toggleIcon.textContent = "▼";
+-
+-        header.appendChild(titleSpan);
+-        header.appendChild(toggleIcon);
+-
+-        // Create collapsible content
+-        const websitesContent = document.createElement("div");
+-        websitesContent.className = "category-websites";
+-        
+-        // Start with first category open in manage section
+-        if (isFirstManageCategory) {
+-          websitesContent.classList.add("visible");
+-          toggleIcon.classList.add("rotated");
+-          isFirstManageCategory = false;
+-        } else {
+-          websitesContent.style.display = "none";
+-        }
+-
+-        categories[catName].forEach((site, idx) => {
+-          const siteDiv = document.createElement("div");
+-          siteDiv.style.cssText = `
+-            display: flex;
+-            align-items: center;
+-            justify-content: space-between;
+-            margin-bottom: 8px;
+-            padding: 8px;
+-            background: white;
+-            border-radius: 4px;
+-          `;
+-
+-          const siteInfo = document.createElement("div");
+-          siteInfo.style.flexGrow = "1";
+-          siteInfo.innerHTML = `
+-            <strong>${site.name}</strong><br>
+-            <small style="color: #666; word-break: break-all;">${site.url}</small>
+-          `;
+-
+-          const buttonGroup = document.createElement("div");
+-          buttonGroup.style.marginLeft = "10px";
+-
+-          const editBtn = document.createElement("button");
+-          editBtn.className = "edit-btn";
+-          editBtn.textContent = "Edit";
+-          editBtn.addEventListener("click", () => editWebsite(catName, idx));
+-
+-          const deleteBtn = document.createElement("button");
+-          deleteBtn.className = "delete-btn";
+-          deleteBtn.textContent = "Delete";
+-          deleteBtn.addEventListener("click", () => deleteWebsite(catName, idx));
+-
+-          buttonGroup.appendChild(editBtn);
+-          buttonGroup.appendChild(deleteBtn);
+-
+-          siteDiv.appendChild(siteInfo);
+-          siteDiv.appendChild(buttonGroup);
+-          websitesContent.appendChild(siteDiv);
+-        });
+-
+-        // Add click event to toggle dropdown
+-        header.addEventListener("click", () => {
+-          const isVisible = websitesContent.classList.toggle("visible");
+-          toggleIcon.classList.toggle("rotated", isVisible);
+-        });
+-
+-        container.appendChild(header);
+-        container.appendChild(websitesContent);
+-        manageCategoriesContainer.appendChild(container);
+-      });
+-    }
+-
+-    // --- Management Functions ---
+-
+-    function editCategory(oldName) {
+-      const newName = prompt("Edit category name:", oldName);
+-      if (!newName || newName.trim() === "" || newName === oldName) return;
+-      
+-      if (categories[newName]) {
+-        showMessage("Category name already exists", "error");
+-        return;
+-      }
+-      
+-      categories[newName] = categories[oldName];
+-      delete categories[oldName];
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Category updated successfully", "success");
+-    }
+-
+-    function deleteCategory(catName) {
+-      if (!confirm(`Delete category "${catName}" and all its websites?`)) return;
+-      
+-      delete categories[catName];
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Category deleted successfully", "success");
+-    }
+-
+-    function editWebsite(catName, idx) {
+-      const site = categories[catName][idx];
+-      const newName = prompt("Edit website name:", site.name);
+-      if (!newName || newName.trim() === "") return;
+-      
+-      const newUrl = prompt("Edit website URL:", site.url);
+-      if (!newUrl || newUrl.trim() === "") return;
+-      
+-      if (!validateURL(newUrl)) {
+-        showMessage("Please enter a valid URL", "error");
+-        return;
+-      }
+-      
+-      categories[catName][idx] = { name: newName, url: newUrl };
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Website updated successfully", "success");
+-    }
+-
+-    function deleteWebsite(catName, idx) {
+-      const site = categories[catName][idx];
+-      if (!confirm(`Delete website "${site.name}" from category "${catName}"?`)) return;
+-      
+-      categories[catName].splice(idx, 1);
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Website deleted successfully", "success");
+-    }
+-
+-    // --- Search Functions ---
+-
+-    function performSearch(keyword, selectedSites) {
+-      resultsContainer.innerHTML = '<p class="loading">🔍 Searching...</p>';
+-      searchBtn.disabled = true;
+-
+-      const filters = {
+-        linkedinLocation: linkedinLocationInput.value.trim(),
+-        linkedinJobTitle: linkedinJobTitleInput.value.trim(),
+-        linkedinCompany: linkedinCompanyInput.value.trim(),
+-        linkedinSchool: linkedinSchoolInput.value.trim(),
+-        facebookLocation: facebookLocationInput.value.trim(),
+-        facebookEducation: facebookEducationInput.value.trim(),
+-        facebookWorkplace: facebookWorkplaceInput.value.trim(),
+-        facebookRelationship: facebookRelationshipInput.value.trim()
+-      };
+-
+-      setTimeout(() => {
+-        try {
+-          const results = selectedSites.map(({category, index, site}) => {
+-            const searchURL = buildSearchURL(site, keyword, filters);
+-            
+-            // Calculate relevance score
+-            let score = Math.floor(Math.random() * 10) + 1; // Base random score
+-            
+-            // Boost score based on keyword matches
+-            const lowerKeyword = keyword.toLowerCase();
+-            if (site.name.toLowerCase().includes(lowerKeyword)) score += 5;
+-            if (site.url.toLowerCase().includes(lowerKeyword)) score += 3;
+-                    if (filters.linkedinLocation && site.name.toLowerCase().includes('linkedin')) score += 2;
+-        if (filters.linkedinJobTitle && site.name.toLowerCase().includes('linkedin')) score += 2;
+-        if (filters.linkedinCompany && site.name.toLowerCase().includes('linkedin')) score += 2;
+-        if (filters.linkedinSchool && site.name.toLowerCase().includes('linkedin')) score += 2;
+-        if ((filters.facebookLocation || filters.facebookEducation || filters.facebookWorkplace || filters.facebookRelationship) && site.name.toLowerCase().includes('facebook')) score += 3;
+-
+-            return {
+-              category,
+-              site,
+-              searchURL,
+-              score,
+-              filters: filters.location || filters.jobTitle ? filters : null
+-            };
+-          });
+-
+-          // Sort by score descending
+-          results.sort((a, b) => b.score - a.score);
+-
+-          // Display results
+-          resultsContainer.innerHTML = "";
+-          
+-          if (results.length === 0) {
+-            resultsContainer.innerHTML = '<p style="color: #666;">No websites selected for search.</p>';
+-            return;
+-          }
+-
+-          results.forEach(result => {
+-            const div = document.createElement("div");
+-            div.className = "result-item";
+-            
+-            let filtersText = '';
+-            if (result.filters && (result.filters.location || result.filters.jobTitle)) {
+-              const filterParts = [];
+-              if (result.filters.location) filterParts.push(`Location: ${result.filters.location}`);
+-              if (result.filters.jobTitle) filterParts.push(`Job Title: ${result.filters.jobTitle}`);
+-              filtersText = `<br><small style="color: #666;">Filters applied: ${filterParts.join(', ')}</small>`;
+-            }
+-            
+-            div.innerHTML = `
+-              <div style="margin-bottom: 8px;">
+-                <strong>${result.site.name}</strong> 
+-                <span style="background: #e3f2fd; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; color: #1565c0;">
+-                  ${result.category}
+-                </span>
+-              </div>
+-              <div style="margin-bottom: 8px;">
+-                Search for: <strong>"${keyword}"</strong>${filtersText}
+-              </div>
+-              <div style="margin-bottom: 8px;">
+-                <em>Relevance score: ${result.score}/20</em>
+-              </div>
+-              <div>
+-                <a href="${result.searchURL}" target="_blank" rel="noopener noreferrer" 
+-                   style="color: #B13F17; text-decoration: none; font-weight: 500;">
+-                  🔗 Open Search →
+-                </a>
+-              </div>
+-            `;
+-            resultsContainer.appendChild(div);
+-          });
+-
+-          // Save case automatically
+-          const selectedWebsitesForSave = selectedSites.map(s => ({
+-            category: s.category,
+-            index: s.index
+-          }));
+-          
+-          saveCurrentCase(keyword, selectedWebsitesForSave, resultsContainer.innerHTML, filters);
+-          showMessage(`Search completed! Found ${results.length} relevant sources.`, 'success');
+-
+-        } catch (error) {
+-          resultsContainer.innerHTML = '<p class="error">An error occurred during search. Please try again.</p>';
+-          showMessage('Search failed. Please try again.', 'error');
+-        } finally {
+-          searchBtn.disabled = false;
+-        }
+-      }, 1000);
+-    }
+-
+-    function exportReport() {
+-      const keyword = keywordInput.value.trim();
+-      if (!resultsContainer.innerHTML.trim() || resultsContainer.innerHTML.includes('Enter keywords')) {
+-        showMessage('No results to export', 'error');
+-        return;
+-      }
+-
+-      const timestamp = new Date().toLocaleString();
+-      const filters = [];
+-      if (linkedinLocationInput.value.trim()) filters.push(`LinkedIn Location: ${linkedinLocationInput.value.trim()}`);
+-      if (linkedinJobTitleInput.value.trim()) filters.push(`LinkedIn Job Title: ${linkedinJobTitleInput.value.trim()}`);
+-      if (linkedinCompanyInput.value.trim()) filters.push(`LinkedIn Company: ${linkedinCompanyInput.value.trim()}`);
+-      if (linkedinSchoolInput.value.trim()) filters.push(`LinkedIn School: ${linkedinSchoolInput.value.trim()}`);
+-      if (facebookLocationInput.value.trim()) filters.push(`Facebook Location: ${facebookLocationInput.value.trim()}`);
+-      if (facebookEducationInput.value.trim()) filters.push(`Facebook Education: ${facebookEducationInput.value.trim()}`);
+-      if (facebookWorkplaceInput.value.trim()) filters.push(`Facebook Workplace: ${facebookWorkplaceInput.value.trim()}`);
+-      if (facebookRelationshipInput.value.trim()) filters.push(`Facebook Relationship: ${facebookRelationshipInput.value.trim()}`);
+-      
+-      const filtersSection = filters.length > 0 ? 
+-        `<div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 20px 0;">
+-          <h3 style="margin: 0 0 10px 0; color: #495057;">Applied Filters:</h3>
+-          <p style="margin: 0;">${filters.join(' | ')}</p>
+-        </div>` : '';
+-
+-      const htmlContent = `
+-      <!DOCTYPE html>
+-      <html>
+-      <head>
+-        <title>OSINT Search Report - ${keyword}</title>
+-        <meta charset="UTF-8">
+-        <style>
+-          body { 
+-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+-            padding: 30px; 
+-            max-width: 800px; 
+-            margin: 0 auto;
+-            background: #fff;
+-            color: #333;
+-          }
+-          h1 { 
+-            color: #B13F17; 
+-            border-bottom: 3px solid #B13F17;
+-            padding-bottom: 10px;
+-          }
+-          h3 { color: #555; }
+-          a { 
+-            color: #B13F17; 
+-            text-decoration: none; 
+-          }
+-          a:hover { text-decoration: underline; }
+-          .result-item { 
+-            margin-bottom: 25px; 
+-            padding: 15px;
+-            border: 1px solid #e9ecef;
+-            border-radius: 8px;
+-            background: #fafafa;
+-          }
+-          .header-info {
+-            background: #f8f9fa;
+-            padding: 20px;
+-            border-radius: 8px;
+-            margin-bottom: 30px;
+-          }
+-          .timestamp {
+-            color: #6c757d;
+-            font-size: 0.9em;
+-            margin-top: 10px;
+-          }
+-          @media print {
+-            body { padding: 20px; }
+-            a { color: #000 !important; }
+-          }
+-        </style>
+-      </head>
+-      <body>
+-        <div class="header-info">
+-          <h1>🔍 OSINT Search Report</h1>
+-          <h2 style="margin: 10px 0; color: #495057;">Search Query: "${keyword}"</h2>
+-          <div class="timestamp">Generated: ${timestamp}</div>
+-        </div>
+-        
+-        ${filtersSection}
+-        
+-        <h3>Search Results:</h3>
+-        ${resultsContainer.innerHTML}
+-        
+-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 0.9em;">
+-          <p>Report generated by OSINT Search Tool</p>
+-          <p>⚠️ Remember to verify all information through multiple sources and follow proper OSINT methodology.</p>
+-        </div>
+-      </body>
+-      </html>
+-      `;
+-
+-      try {
+-        const blob = new Blob([htmlContent], { type: "text/html" });
+-        const url = URL.createObjectURL(blob);
+-        const a = document.createElement("a");
+-        a.href = url;
+-        a.download = `OSINT_Report_${keyword.replace(/[^a-zA-Z0-9]/g, "_")}_${new Date().toISOString().split('T')[0]}.html`;
+-        document.body.appendChild(a);
+-        a.click();
+-        document.body.removeChild(a);
+-        URL.revokeObjectURL(url);
+-        showMessage('Report exported successfully', 'success');
+-      } catch (error) {
+-        showMessage('Failed to export report', 'error');
+-      }
+-    }
+-
+-    // --- Event Listeners ---
+-
+-    // Search functionality
+-    searchBtn.addEventListener("click", () => {
+-      const keyword = keywordInput.value.trim();
+-      if (!keyword) {
+-        showMessage("Please enter a keyword to search", "error");
+-        keywordInput.focus();
+-        return;
+-      }
+-
+-      const selectedSites = [];
+-      categoriesContainer.querySelectorAll("input[type=checkbox]:checked").forEach(cb => {
+-        const category = cb.dataset.category;
+-        if (categories[category]) {
+-          // Add all websites from selected categories
+-          categories[category].forEach((site, index) => {
+-            selectedSites.push({
+-              category,
+-              index,
+-              site: site
+-            });
+-          });
+-        }
+-      });
+-
+-      if (selectedSites.length === 0) {
+-        showMessage("Please select at least one website to search", "error");
+-        return;
+-      }
+-
+-      performSearch(keyword, selectedSites);
+-    });
+-
+-    // Enter key support for search
+-    keywordInput.addEventListener("keypress", (e) => {
+-      if (e.key === "Enter") {
+-        searchBtn.click();
+-      }
+-    });
+-
+-    // Select/Deselect all functionality
+-    selectAllBtn.addEventListener("click", () => {
+-      categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
+-      showMessage("All categories selected", "success");
+-    });
+-
+-    deselectAllBtn.addEventListener("click", () => {
+-      categoriesContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+-      showMessage("All categories deselected", "success");
+-    });
+-
+-    // Category management
+-    addCategoryBtn.addEventListener("click", () => {
+-      const newCat = newCategoryInput.value.trim();
+-      if (!newCat) {
+-        showMessage("Category name cannot be empty", "error");
+-        newCategoryInput.focus();
+-        return;
+-      }
+-      if (categories[newCat]) {
+-        showMessage("Category already exists", "error");
+-        return;
+-      }
+-      
+-      categories[newCat] = [];
+-      newCategoryInput.value = "";
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Category added successfully", "success");
+-    });
+-
+-    // Website management
+-    addWebsiteBtn.addEventListener("click", () => {
+-      const cat = categorySelectForWebsites.value;
+-      const name = newWebsiteName.value.trim();
+-      const url = newWebsiteURL.value.trim();
+-      
+-      if (!name || !url) {
+-        showMessage("Please enter website name and URL", "error");
+-        return;
+-      }
+-      
+-      if (!categories[cat]) {
+-        showMessage("Please select a category", "error");
+-        return;
+-      }
+-      
+-      if (!validateURL(url)) {
+-        showMessage("Please enter a valid URL (include https://)", "error");
+-        newWebsiteURL.focus();
+-        return;
+-      }
+-
+-      categories[cat].push({ name, url });
+-      newWebsiteName.value = "";
+-      newWebsiteURL.value = "";
+-      renderCategories();
+-      renderManageCategories();
+-      showMessage("Website added successfully", "success");
+-    });
+-
+-    // Export functionality
+-    exportReportBtn.addEventListener("click", exportReport);
+-
+-    // Enhanced image upload and reverse search
+-    const imagePreview = document.getElementById("imagePreview");
+-    const previewImg = document.getElementById("previewImg");
+-    const imageFileName = document.getElementById("imageFileName");
+-    const imageFileSize = document.getElementById("imageFileSize");
+-    const removeImageBtn = document.getElementById("removeImage");
+-    const searchAllEnginesBtn = document.getElementById("searchAllEngines");
+-    
+-    function formatFileSize(bytes) {
+-      if (bytes === 0) return '0 Bytes';
+-      const k = 1024;
+-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+-      const i = Math.floor(Math.log(bytes) / Math.log(k));
+-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+-    }
+-    
+-    function resetImageUpload() {
+-      uploadedImageData = null;
+-      imageUploadInput.value = "";
+-      imagePreview.style.display = "none";
+-      imageSearchEngines.style.display = "none";
+-      previewImg.src = "";
+-    }
+-    
+-    imageUploadInput.addEventListener("change", (e) => {
+-      if (imageUploadInput.files.length > 0) {
+-        const file = imageUploadInput.files[0];
+-        
+-        // File size validation (10MB limit)
+-        if (file.size > 10 * 1024 * 1024) {
+-          showMessage("Image file too large. Please select a file under 10MB.", "error");
+-          resetImageUpload();
+-          return;
+-        }
+-        
+-        // File type validation
+-        if (!file.type.startsWith('image/')) {
+-          showMessage("Please select a valid image file.", "error");
+-          resetImageUpload();
+-          return;
+-        }
+-        
+-        uploadedImageData = file;
+-        
+-        // Create preview
+-        const reader = new FileReader();
+-        reader.onload = (e) => {
+-          previewImg.src = e.target.result;
+-          imageFileName.textContent = file.name;
+-          imageFileSize.textContent = formatFileSize(file.size);
+-          imagePreview.style.display = "block";
+-          imageSearchEngines.style.display = "block";
+-        };
+-        reader.readAsDataURL(file);
+-        
+-        showMessage("Image loaded successfully! Choose a search engine below.", "success");
+-      } else {
+-        resetImageUpload();
+-      }
+-    });
+-    
+-    // Remove image functionality
+-    removeImageBtn.addEventListener("click", () => {
+-      resetImageUpload();
+-      showMessage("Image removed.", "info");
+-    });
+-    
+-    // Search all engines functionality
+-    searchAllEnginesBtn.addEventListener("click", () => {
+-      if (!uploadedImageData) {
+-        showMessage("Please upload an image first", "error");
+-        return;
+-      }
+-      
+-      const engines = [
+-        { name: "Google Images", url: "https://images.google.com/" },
+-        { name: "Bing Visual", url: "https://www.bing.com/images/search?view=detailv2&iss=sbi" },
+-        { name: "Yandex Images", url: "https://yandex.com/images/search?rpt=imageview" },
+-        { name: "TinEye", url: "https://tineye.com/" }
+-      ];
+-      
+-      engines.forEach((engine, index) => {
+-        setTimeout(() => {
+-          window.open(engine.url, "_blank");
+-        }, index * 500); // Stagger the opens by 500ms each
+-      });
+-      
+-      showMessage("Opened all search engines! Upload your image on each site.", "success");
+-    });
+-    
+-    // Drag and drop functionality
+-    const imageUploadBtn = document.querySelector('.image-upload-btn');
+-    
+-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+-      imageUploadBtn.addEventListener(eventName, preventDefaults, false);
+-    });
+-    
+-    function preventDefaults(e) {
+-      e.preventDefault();
+-      e.stopPropagation();
+-    }
+-    
+-    ['dragenter', 'dragover'].forEach(eventName => {
+-      imageUploadBtn.addEventListener(eventName, highlight, false);
+-    });
+-    
+-    ['dragleave', 'drop'].forEach(eventName => {
+-      imageUploadBtn.addEventListener(eventName, unhighlight, false);
+-    });
+-    
+-    function highlight(e) {
+-      imageUploadBtn.style.borderColor = '#8a2e11';
+-      imageUploadBtn.style.background = 'linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%)';
+-    }
+-    
+-    function unhighlight(e) {
+-      imageUploadBtn.style.borderColor = '#B13F17';
+-      imageUploadBtn.style.background = 'linear-gradient(135deg, #fff 0%, #f8f8f8 100%)';
+-    }
+-    
+-    imageUploadBtn.addEventListener('drop', handleDrop, false);
+-    
+-    function handleDrop(e) {
+-      const dt = e.dataTransfer;
+-      const files = dt.files;
+-      
+-      if (files.length > 0) {
+-        imageUploadInput.files = files;
+-        imageUploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+-      }
+-    }
+-
+-    // Improved reverse image search
+-    imageSearchEngines.querySelectorAll(".search-engine-btn").forEach(btn => {
+-      btn.addEventListener("click", () => {
+-        const engine = btn.dataset.engine;
+-        if (!uploadedImageData) {
+-          showMessage("Please upload an image first", "error");
+-          return;
+-        }
+-
+-        let searchURL = "";
+-        let instructions = "";
+-
+-        switch(engine) {
+-          case "google":
+-            searchURL = "https://images.google.com/";
+-            instructions = "Click the camera icon and upload your image";
+-            break;
+-          case "bing":
+-            searchURL = "https://www.bing.com/images/search?view=detailv2&iss=sbi";
+-            instructions = "Click 'Search by image' and upload your image";
+-            break;
+-          case "yandex":
+-            searchURL = "https://yandex.com/images/search?rpt=imageview";
+-            instructions = "Click the camera icon and upload your image";
+-            break;
+-          case "tineye":
+-            searchURL = "https://tineye.com/";
+-            instructions = "Click 'Upload' and select your image";
+-            break;
+-          default:
+-            showMessage("Unknown search engine", "error");
+-            return;
+-        }
+-
+-        window.open(searchURL, "_blank");
+-        showMessage(`Opened ${engine.charAt(0).toUpperCase() + engine.slice(1)}. ${instructions}`, "info");
+-      });
+-    });
+-
+-    // Saved cases functionality
+-    searchSavedCasesInput.addEventListener("input", () => {
+-      renderSavedCases(searchSavedCasesInput.value);
+-    });
+-
+-    clearSavedCasesBtn.addEventListener("click", () => {
+-      if (!confirm("Are you sure you want to clear all saved cases? This cannot be undone.")) return;
+-      
+-      try {
+-        localStorage.removeItem(SAVED_CASES_KEY);
+-        renderSavedCases();
+-        showMessage("All saved cases cleared", "success");
+-      } catch (error) {
+-        showMessage("Error clearing saved cases", "error");
+-      }
+-    });
+-
+-    // Initialize the application
+-    function initializeApp() {
+-      try {
+-        renderCategories();
+-        renderManageCategories();
+-        renderSavedCases();
+-        showMessage("OSINT Search Tool loaded successfully", "success");
+-      } catch (error) {
+-        showMessage("Error initializing application", "error");
+-      }
+-    }
+-
+-    // Run initialization when DOM is ready
+-    if (document.readyState === 'loading') {
+-      document.addEventListener('DOMContentLoaded', initializeApp);
+-    } else {
+-      initializeApp();
+-    }
+-  </script>
+-</body>
+-</html>
++<!DOCTYPE html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>OSINT Search Tool</title>
++  <style>
++    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; color: #222; }
++    .container { max-width: 900px; margin: 0 auto; }
++    h1, h2, h3 { color: #B13F17; margin-bottom: 10px; }
++    input, select, button { padding: 8px 10px; margin: 5px 0; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
++    input[type="url"], input[type="text"], select { width: 100%; max-width: 350px; }
++    button { cursor: pointer; border: none; background-color: #B13F17; color: white; transition: background-color 0.3s ease; border-radius: 4px; min-width: 110px; }
++    button:hover { background-color: #8a2e11; }
++    button:disabled { background-color: #ccc; cursor: not-allowed; }
++    .btn-brand { min-width: 120px; }
++    .btn-small { min-width: 80px; padding: 5px 8px; font-size: 0.9rem; }
++    section { margin-bottom: 30px; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
++    .category { border-bottom: 1px solid #eee; padding: 8px 0; }
++    .category:last-child { border-bottom: none; }
++    .category-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 8px; cursor: pointer; font-weight: 600; user-select: none; transition: all 0.3s ease; background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 4px; }
++    .category-header:hover { background: linear-gradient(135deg, #f0e6e1 0%, #e8ddd8 100%); border-color: #B13F17; }
++    .category-title { font-weight: 600; }
++    .category-websites { padding-left: 20px; display: none; flex-direction: column; gap: 6px; margin-top: 8px; }
++    .category-websites.visible { display: flex; }
++    .website-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
++    .website-item label { display: flex; align-items: center; flex-grow: 1; cursor: pointer; }
++    .website-item input[type="checkbox"] { margin-right: 8px; width: auto; }
++    .website-item a { color: #B13F17; text-decoration: none; flex-grow: 1; }
++    .website-item a:hover { text-decoration: underline; }
++    .edit-btn, .delete-btn { background: transparent; border: none; color: #B13F17; cursor: pointer; font-size: 0.9rem; margin-left: 8px; min-width: auto; padding: 4px 6px; }
++    .edit-btn:hover, .delete-btn:hover { color: #8a2e11; background: #f0f0f0; }
++    .manage-categories, .manage-websites { margin-top: 15px; }
++    .manage-categories input, .manage-websites input, .manage-websites select { width: calc(100% - 130px); display: inline-block; }
++    .manage-websites input, .manage-websites select { margin-right: 10px; max-width: 300px; }
++    .website-manage-list { margin-top: 20px; padding: 15px; background: #f8f8f8; border-radius: 6px; }
++    .website-manage-list h4 { margin-top: 0; color: #666; }
++    .toggle-icon { transition: transform 0.2s; }
++    .toggle-icon.rotated { transform: rotate(180deg); }
++    .image-upload-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border: 2px dashed #B13F17; border-radius: 8px; background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%); cursor: pointer; transition: all 0.3s ease; text-align: center; min-height: 80px; margin-bottom: 15px; }
++    .image-upload-btn:hover { border-color: #8a2e11; background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(177, 63, 23, 0.2); }
++    .upload-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
++    .upload-text { font-weight: 600; color: #B13F17; font-size: 1rem; display: block; margin-bottom: 4px; }
++    .upload-hint { font-size: 0.85rem; color: #666; display: block; }
++    .image-preview { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white; margin-bottom: 15px; }
++    .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
++    .preview-title { font-weight: 600; color: #B13F17; }
++    .remove-btn { background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; min-width: auto; padding: 0; }
++    .remove-btn:hover { background: #c82333; }
++    #previewImg { max-width: 200px; max-height: 150px; border-radius: 4px; display: block; margin: 0 auto 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
++    .image-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; flex-wrap: wrap; gap: 10px; }
++    .image-engines { margin-top: 10px; padding: 20px; background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); border-radius: 8px; border: 1px solid #e0e0e0; }
++    .search-engines-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
++    .search-engine-btn { display: flex; flex-direction: column; align-items: center; padding: 15px 10px; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; min-width: auto; }
++    .search-engine-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
++    .engine-icon { font-size: 1.5rem; margin-bottom: 6px; display: block; }
++    .engine-name { font-weight: 600; color: #333; font-size: 0.9rem; display: block; margin-bottom: 3px; }
++    .engine-hint { font-size: 0.75rem; color: #666; display: block; }
++    .search-all-container { text-align: center; border-top: 1px solid #ddd; padding-top: 15px; }
++    .search-all-btn { font-size: 1rem; padding: 12px 24px; background: linear-gradient(135deg, #B13F17 0%, #8a2e11 100%); }
++    .search-all-btn:hover { background: linear-gradient(135deg, #8a2e11 0%, #6b2209 100%); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(177, 63, 23, 0.4); }
++    @media (max-width: 600px) { .container { padding: 10px; } .manage-categories input, .manage-websites input, .manage-websites select { width: 100%; margin-bottom: 8px; } }
++  </style>
++</head>
++<body>
++<!-- The rest of the HTML and JavaScript will be inserted here in the next step -->
++</body>
++</html>
+EOF
+)

@@ -605,7 +605,7 @@
       <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for LinkedIn and Facebook:</p>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
         <div>
-          <h3 style="color: #0077b5; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
+          <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
           <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
           <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
           <label>Company: <input type="text" id="linkedinCompany" placeholder="e.g., Microsoft" /></label>
@@ -1093,6 +1093,7 @@
         categorySelectForWebsites.appendChild(option);
       });
 
+      // Always call renderManageWebsites to show all websites for all categories
       renderManageWebsites();
     }
 

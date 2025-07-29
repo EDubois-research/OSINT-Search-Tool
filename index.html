@@ -394,9 +394,19 @@
 
     /* Advanced filters */
     .advanced-filters label {
-      display: inline-block;
-      margin-right: 15px;
-      margin-bottom: 8px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    .advanced-filters select {
+      width: 100%;
+      max-width: 200px;
+    }
+    
+    @media (max-width: 768px) {
+      .advanced-filters > div {
+        grid-template-columns: 1fr !important;
+      }
     }
 
     .saved-cases-section input {
@@ -592,9 +602,31 @@
 
     <section class="advanced-filters">
       <h2>Advanced Filters</h2>
-      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for supported sites (e.g., LinkedIn):</p>
-      <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
-      <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
+      <p style="color: #666; font-size: 0.9em;">These filters enhance search URLs for LinkedIn and Facebook:</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+        <div>
+          <h3 style="color: #0077b5; margin: 0 0 8px 0; font-size: 1rem;">🔗 LinkedIn Filters</h3>
+          <label>Location: <input type="text" id="linkedinLocation" placeholder="e.g., London, UK" /></label>
+          <label>Job Title: <input type="text" id="linkedinJobTitle" placeholder="e.g., Investigator" /></label>
+          <label>Company: <input type="text" id="linkedinCompany" placeholder="e.g., Microsoft" /></label>
+          <label>School: <input type="text" id="linkedinSchool" placeholder="e.g., Harvard University" /></label>
+        </div>
+        <div>
+          <h3 style="color: #1877f2; margin: 0 0 8px 0; font-size: 1rem;">📘 Facebook Filters</h3>
+          <label>Location: <input type="text" id="facebookLocation" placeholder="e.g., London, UK" /></label>
+          <label>Education: <input type="text" id="facebookEducation" placeholder="e.g., Harvard University" /></label>
+          <label>Workplace: <input type="text" id="facebookWorkplace" placeholder="e.g., Microsoft" /></label>
+          <label>Relationship: <select id="facebookRelationship">
+            <option value="">Any</option>
+            <option value="single">Single</option>
+            <option value="relationship">In a relationship</option>
+            <option value="married">Married</option>
+          </select></label>
+        </div>
+      </div>
+      <div style="background: #f0f8ff; padding: 8px; border-radius: 4px; font-size: 0.85em; color: #0066cc;">
+        💡 <strong>Note:</strong> Filters are automatically applied to LinkedIn and Facebook searches when those categories are selected.
+      </div>
     </section>
 
     <section class="categories-section">
@@ -705,6 +737,12 @@
     const clearSavedCasesBtn = document.getElementById("clearSavedCasesBtn");
     const linkedinLocationInput = document.getElementById("linkedinLocation");
     const linkedinJobTitleInput = document.getElementById("linkedinJobTitle");
+    const linkedinCompanyInput = document.getElementById("linkedinCompany");
+    const linkedinSchoolInput = document.getElementById("linkedinSchool");
+    const facebookLocationInput = document.getElementById("facebookLocation");
+    const facebookEducationInput = document.getElementById("facebookEducation");
+    const facebookWorkplaceInput = document.getElementById("facebookWorkplace");
+    const facebookRelationshipInput = document.getElementById("facebookRelationship");
     const selectAllBtn = document.getElementById("selectAllBtn");
     const deselectAllBtn = document.getElementById("deselectAllBtn");
 
@@ -757,17 +795,42 @@
       if (site.name.toLowerCase().includes('linkedin')) {
         if (searchURL.includes('/search/results/people/')) {
           searchURL += `?keywords=${encodedKeyword}`;
-          if (filters.location) {
-            searchURL += `&geoUrn=${encodeURIComponent(filters.location)}`;
+          if (filters.linkedinLocation) {
+            searchURL += `&geoUrn=${encodeURIComponent(filters.linkedinLocation)}`;
           }
-          if (filters.jobTitle) {
-            searchURL += `&title=${encodeURIComponent(filters.jobTitle)}`;
+          if (filters.linkedinJobTitle) {
+            searchURL += `&title=${encodeURIComponent(filters.linkedinJobTitle)}`;
+          }
+          if (filters.linkedinCompany) {
+            searchURL += `&currentCompany=${encodeURIComponent(filters.linkedinCompany)}`;
+          }
+          if (filters.linkedinSchool) {
+            searchURL += `&school=${encodeURIComponent(filters.linkedinSchool)}`;
           }
         }
       } else if (site.name.toLowerCase().includes('facebook')) {
-        if (searchURL.includes('/search/people/')) {
-          searchURL += `?q=${encodedKeyword}`;
+        // Facebook Graph Search approach
+        let fbSearchURL = 'https://www.facebook.com/search/people/?q=' + encodedKeyword;
+        let filters_applied = [];
+        
+        if (filters.facebookLocation) {
+          filters_applied.push(`location:${encodeURIComponent(filters.facebookLocation)}`);
         }
+        if (filters.facebookEducation) {
+          filters_applied.push(`education:${encodeURIComponent(filters.facebookEducation)}`);
+        }
+        if (filters.facebookWorkplace) {
+          filters_applied.push(`employer:${encodeURIComponent(filters.facebookWorkplace)}`);
+        }
+        if (filters.facebookRelationship) {
+          filters_applied.push(`relationship:${encodeURIComponent(filters.facebookRelationship)}`);
+        }
+        
+        if (filters_applied.length > 0) {
+          fbSearchURL += '%20' + filters_applied.join('%20');
+        }
+        
+        searchURL = fbSearchURL;
       } else if (site.name.toLowerCase().includes('twitter') || site.name.toLowerCase().includes('/x')) {
         searchURL += `?q=${encodedKeyword}`;
       } else if (site.name.toLowerCase().includes('companies house')) {
@@ -859,8 +922,14 @@
       
       // Restore advanced filters if they exist
       if (savedCase.filters) {
-        linkedinLocationInput.value = savedCase.filters.location || '';
-        linkedinJobTitleInput.value = savedCase.filters.jobTitle || '';
+              linkedinLocationInput.value = savedCase.filters.linkedinLocation || '';
+      linkedinJobTitleInput.value = savedCase.filters.linkedinJobTitle || '';
+      linkedinCompanyInput.value = savedCase.filters.linkedinCompany || '';
+      linkedinSchoolInput.value = savedCase.filters.linkedinSchool || '';
+      facebookLocationInput.value = savedCase.filters.facebookLocation || '';
+      facebookEducationInput.value = savedCase.filters.facebookEducation || '';
+      facebookWorkplaceInput.value = savedCase.filters.facebookWorkplace || '';
+      facebookRelationshipInput.value = savedCase.filters.facebookRelationship || '';
       }
       
       // Clear all checkboxes first
@@ -1197,8 +1266,14 @@
       searchBtn.disabled = true;
 
       const filters = {
-        location: linkedinLocationInput.value.trim(),
-        jobTitle: linkedinJobTitleInput.value.trim()
+        linkedinLocation: linkedinLocationInput.value.trim(),
+        linkedinJobTitle: linkedinJobTitleInput.value.trim(),
+        linkedinCompany: linkedinCompanyInput.value.trim(),
+        linkedinSchool: linkedinSchoolInput.value.trim(),
+        facebookLocation: facebookLocationInput.value.trim(),
+        facebookEducation: facebookEducationInput.value.trim(),
+        facebookWorkplace: facebookWorkplaceInput.value.trim(),
+        facebookRelationship: facebookRelationshipInput.value.trim()
       };
 
       setTimeout(() => {
@@ -1213,8 +1288,11 @@
             const lowerKeyword = keyword.toLowerCase();
             if (site.name.toLowerCase().includes(lowerKeyword)) score += 5;
             if (site.url.toLowerCase().includes(lowerKeyword)) score += 3;
-            if (filters.location && site.name.toLowerCase().includes('linkedin')) score += 2;
-            if (filters.jobTitle && site.name.toLowerCase().includes('linkedin')) score += 2;
+                    if (filters.linkedinLocation && site.name.toLowerCase().includes('linkedin')) score += 2;
+        if (filters.linkedinJobTitle && site.name.toLowerCase().includes('linkedin')) score += 2;
+        if (filters.linkedinCompany && site.name.toLowerCase().includes('linkedin')) score += 2;
+        if (filters.linkedinSchool && site.name.toLowerCase().includes('linkedin')) score += 2;
+        if ((filters.facebookLocation || filters.facebookEducation || filters.facebookWorkplace || filters.facebookRelationship) && site.name.toLowerCase().includes('facebook')) score += 3;
 
             return {
               category,
@@ -1298,8 +1376,14 @@
 
       const timestamp = new Date().toLocaleString();
       const filters = [];
-      if (linkedinLocationInput.value.trim()) filters.push(`Location: ${linkedinLocationInput.value.trim()}`);
-      if (linkedinJobTitleInput.value.trim()) filters.push(`Job Title: ${linkedinJobTitleInput.value.trim()}`);
+      if (linkedinLocationInput.value.trim()) filters.push(`LinkedIn Location: ${linkedinLocationInput.value.trim()}`);
+      if (linkedinJobTitleInput.value.trim()) filters.push(`LinkedIn Job Title: ${linkedinJobTitleInput.value.trim()}`);
+      if (linkedinCompanyInput.value.trim()) filters.push(`LinkedIn Company: ${linkedinCompanyInput.value.trim()}`);
+      if (linkedinSchoolInput.value.trim()) filters.push(`LinkedIn School: ${linkedinSchoolInput.value.trim()}`);
+      if (facebookLocationInput.value.trim()) filters.push(`Facebook Location: ${facebookLocationInput.value.trim()}`);
+      if (facebookEducationInput.value.trim()) filters.push(`Facebook Education: ${facebookEducationInput.value.trim()}`);
+      if (facebookWorkplaceInput.value.trim()) filters.push(`Facebook Workplace: ${facebookWorkplaceInput.value.trim()}`);
+      if (facebookRelationshipInput.value.trim()) filters.push(`Facebook Relationship: ${facebookRelationshipInput.value.trim()}`);
       
       const filtersSection = filters.length > 0 ? 
         `<div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 20px 0;">

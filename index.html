@@ -2,42 +2,131 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OSINT Search Tool</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; max-width: 900px; }
-    h1, h2 { color: #333; }
-    .section { margin-bottom: 30px; }
-    .category-group, .site { margin: 10px 0; }
-    .sites { margin-left: 20px; }
-    input[type="text"] { width: 300px; padding: 6px; }
-    label { margin-right: 10px; }
-    button { margin-top: 10px; padding: 8px 12px; }
-    .result a { word-break: break-all; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .category {
+      margin-bottom: 15px;
+    }
+    .site-list {
+      margin-left: 20px;
+      font-size: 0.95em;
+      color: #333;
+    }
+    input[type="text"], button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1em;
+    }
+    .results {
+      margin-top: 30px;
+    }
+    .result-entry {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-
   <h1>OSINT Search Tool</h1>
 
-  <!-- Keyword Search -->
-  <div class="section">
-    <label for="keyword">🔍 Enter keyword:</label><br />
-    <input type="text" id="keyword" placeholder="e.g. John Smith" />
+  <label for="keyword">Enter keyword:</label><br />
+  <input type="text" id="keyword" placeholder="Type your search term..." size="40" />
+  
+  <h2>Select Categories:</h2>
+  <div id="categoryList"></div>
+
+  <button onclick="search()">Search</button>
+
+  <h2>Add a Website</h2>
+  <input type="text" id="newSiteUrl" placeholder="Website URL" size="40"/>
+  <input type="text" id="newSiteCategory" placeholder="Category (must match or be new)" size="30"/>
+  <button onclick="addSite()">Add Website</button>
+
+  <div class="results">
+    <h2>Search Results</h2>
+    <div id="resultsContainer"></div>
   </div>
 
-  <!-- Category Selection -->
-  <div class="section">
-    <h2>📂 Categories</h2>
-    <div id="categoryList"></div>
-  </div>
+  <script>
+    const categories = {
+      "Company Searches": ["https://find-and-update.company-information.service.gov.uk/"],
+      "Court Case Searches": ["https://www.casemine.com/"],
+      "Occupation Registers": ["https://www.gdc-uk.org/pages/searchregisters.aspx"],
+      "Genealogy": ["https://probatesearch.service.gov.uk/#wills"],
+      "Transport": ["https://cartaxcheck.co.uk/"],
+      "Sanctions, Watchlists, PEPs": ["https://www.insolvencydirect.bis.gov.uk/eiir/search"],
+      "Social Media": ["https://www.facebook.com/"],
+      "Offshore Companies": ["https://offshoreleaks.icij.org/"],
+      "Domain/Leaked/Cached": ["https://who.is/"]
+    };
 
-  <!-- Search Button -->
-  <button id="searchBtn">Search</button>
+    function renderCategories() {
+      const container = document.getElementById("categoryList");
+      container.innerHTML = "";
+      for (const cat in categories) {
+        const div = document.createElement("div");
+        div.className = "category";
+        div.innerHTML = `
+          <input type="checkbox" id="${cat}" name="category" value="${cat}" />
+          <label for="${cat}">${cat}</label>
+          <div class="site-list">${categories[cat].join("<br>")}</div>
+        `;
+        container.appendChild(div);
+      }
+    }
 
-  <!-- Results -->
-  <div class="section" id="results"></div>
+    function addSite() {
+      const url = document.getElementById("newSiteUrl").value.trim();
+      const category = document.getElementById("newSiteCategory").value.trim();
+      if (!url || !category) return alert("Please enter both a URL and category.");
+      if (!categories[category]) categories[category] = [];
+      if (!categories[category].includes(url)) {
+        categories[category].push(url);
+        renderCategories();
+        alert("Website added.");
+      } else {
+        alert("This site already exists in that category.");
+      }
+    }
 
-  <hr />
+    function search() {
+      const keyword = document.getElementById("keyword").value.trim();
+      if (!keyword) return alert("Please enter a keyword.");
 
-  <!-- Add New Website -->
-  <div clas
+      const checked = [...document.querySelectorAll("input[name='category']:checked")].map(e => e.value);
+      if (checked.length === 0) return alert("Please select at least one category.");
+
+      const resultContainer = document.getElementById("resultsContainer");
+      resultContainer.innerHTML = "";
+
+      checked.forEach(cat => {
+        categories[cat].forEach(site => {
+          const result = document.createElement("div");
+          result.className = "result-entry";
+          result.innerHTML = `
+            <strong>${cat}</strong><br/>
+            <a href="${site}" target="_blank">${site}</a><br/>
+            <em>Searched for: <strong>${keyword}</strong></em>
+          `;
+          resultContainer.appendChild(result);
+        });
+      });
+    }
+
+    renderCategories();
+  </script>
+</body>
+</html>

@@ -419,30 +419,44 @@
   </div>
   <script>
 // --- Application State ---
-let categories = {
-  "Social Media": [
-    { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
-    { name: "Facebook", url: "https://www.facebook.com/search/people/" },
-    { name: "Twitter/X", url: "https://twitter.com/search" },
-    { name: "Instagram", url: "https://www.instagram.com/explore/tags/" }
-  ],
-  "Professional Registers": [
-    { name: "GMC (UK)", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
-    { name: "NMC (UK)", url: "https://www.nmc.org.uk/registration/search-the-register/" },
-    { name: "SRA (UK)", url: "https://www.sra.org.uk/consumers/register/" }
-  ],
-  "Company Searches": [
-    { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
-    { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
-  ],
-  "People Search": [
-    { name: "Pipl", url: "https://pipl.com/" },
-    { name: "WhitePages", url: "https://www.whitepages.com/" },
-    { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
-  ]
-};
+let categories = {};
 let uploadedImage = null;
 let savedCases = [];
+
+// --- Persistence Functions ---
+function saveCategoriesToStorage() {
+  localStorage.setItem('osint_categories', JSON.stringify(categories));
+}
+function loadCategoriesFromStorage() {
+  const stored = localStorage.getItem('osint_categories');
+  if (stored) {
+    categories = JSON.parse(stored);
+  } else {
+    // Default categories if nothing in storage
+    categories = {
+      "Social Media": [
+        { name: "LinkedIn", url: "https://www.linkedin.com/search/results/people/" },
+        { name: "Facebook", url: "https://www.facebook.com/search/people/" },
+        { name: "Twitter/X", url: "https://twitter.com/search" },
+        { name: "Instagram", url: "https://www.instagram.com/explore/tags/" }
+      ],
+      "Professional Registers": [
+        { name: "GMC (UK)", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+        { name: "NMC (UK)", url: "https://www.nmc.org.uk/registration/search-the-register/" },
+        { name: "SRA (UK)", url: "https://www.sra.org.uk/consumers/register/" }
+      ],
+      "Company Searches": [
+        { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/search/companies" },
+        { name: "SEC EDGAR (US)", url: "https://www.sec.gov/edgar/searchedgar/companysearch.html" }
+      ],
+      "People Search": [
+        { name: "Pipl", url: "https://pipl.com/" },
+        { name: "WhitePages", url: "https://www.whitepages.com/" },
+        { name: "TruePeopleSearch", url: "https://www.truepeoplesearch.com/" }
+      ]
+    };
+  }
+}
 
 // --- DOM Elements ---
 const searchInput = document.getElementById('searchInput');
@@ -657,6 +671,7 @@ function renderCategories() {
     categorySelect.appendChild(option);
   });
   renderManageCategories();
+  saveCategoriesToStorage(); // Save after rendering
 }
 function renderManageCategories() {
   manageCategoriesContainer.innerHTML = '';
@@ -974,6 +989,7 @@ function setupEventListeners() {
 
 // --- Initialize Application ---
 function init() {
+  loadCategoriesFromStorage(); // Load categories on startup
   setupImageUpload();
   setupSearchEngines();
   setupEventListeners();

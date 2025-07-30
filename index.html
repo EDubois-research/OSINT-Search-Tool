@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modern OSINT Search Tool</title>
+  <title>Advanced OSINT Search Tool</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +13,7 @@
       padding: 0;
     }
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 24px;
     }
@@ -61,11 +61,18 @@
       border-radius: 4px;
     }
     .btn-danger {
-      background: #B13F17;
+      background: #dc3545;
       color: #fff;
     }
     .btn-danger:hover {
-      background: #8a2e11;
+      background: #c82333;
+    }
+    .btn-success {
+      background: #28a745;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #218838;
     }
     input, select, textarea {
       padding: 10px 12px;
@@ -90,105 +97,17 @@
     .search-container input {
       flex: 1;
     }
-    .image-upload-area {
-      border: 2px dashed #B13F17;
-      border-radius: 10px;
-      padding: 32px;
-      text-align: center;
-      background: #fff;
-      margin-bottom: 18px;
-      cursor: pointer;
-      transition: border 0.2s;
-    }
-    .image-upload-area.drag-over {
-      border-color: #8a2e11;
-      background: #f0e6e1;
-    }
-    .upload-icon {
-      font-size: 2.2rem;
-      color: #B13F17;
-      margin-bottom: 8px;
-    }
-    .upload-text {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #B13F17;
-      margin-bottom: 4px;
-    }
-    .upload-hint {
-      color: #888;
-      font-size: 0.98rem;
-    }
-    .image-preview {
-      background: #fff;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .preview-img {
-      max-width: 260px;
-      max-height: 160px;
-      border-radius: 8px;
-      display: block;
-      margin: 0 auto 10px;
-    }
-    .search-engines-grid {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .search-engine-card {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 16px 18px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: 600;
-      color: #B13F17;
-      font-size: 1rem;
-      transition: background 0.2s, border 0.2s;
-    }
-    .search-engine-card:hover {
-      background: #f0e6e1;
-      border: 1.5px solid #B13F17;
-    }
-    .engine-icon {
-      font-size: 1.5rem;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .filters-grid {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-    .filter-section {
-      flex: 1 1 220px;
+    .advanced-options {
       background: #fff;
       border-radius: 8px;
       padding: 16px;
-      margin-bottom: 0;
-    }
-    .filter-title {
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: #B13F17;
-      margin-bottom: 10px;
+      margin-top: 16px;
+      border: 1px solid #ddd;
     }
     .categories-grid {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
-      flex-wrap: wrap;
       margin-bottom: 18px;
     }
     .category-card {
@@ -196,12 +115,13 @@
       border: 1px solid #eee;
       border-radius: 8px;
       padding: 16px 18px;
-      min-width: 220px;
-      flex: 1 1 220px;
-      margin-bottom: 0;
       display: flex;
       align-items: center;
       gap: 12px;
+      transition: all 0.2s;
+    }
+    .category-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .category-checkbox {
       width: 18px;
@@ -217,1295 +137,1298 @@
     .website-count {
       background: #f0e6e1;
       color: #B13F17;
-      padding: 2px 8px;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
       font-weight: 600;
-    }
-    .manage-category-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-    .manage-category-title {
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: #B13F17;
-      display: flex;
-      align-items: center;
-    }
-    .manage-category-title .arrow {
-      font-size: 1rem;
-      margin-right: 6px;
-      transition: transform 0.2s;
-    }
-    .manage-category-title.collapsed .arrow {
-      transform: rotate(-90deg);
-    }
-    .manage-category-actions button {
-      margin-left: 6px;
-    }
-    .websites-list {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
-    }
-    .website-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      background: #f0e6e1;
-      border-radius: 6px;
-      margin-bottom: 2px;
-    }
-    .results-container {
-      margin-top: 18px;
-    }
-    .results-filter-box {
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .result-category-group {
-      margin-bottom: 18px;
-      background: #fff;
-      border-radius: 8px;
-      padding: 10px 14px;
-      border: 1px solid #eee;
-    }
-    .result-category-header {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-weight: 600;
-      color: #B13F17;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      user-select: none;
-    }
-    .result-category-header .dropdown-icon {
-      margin-left: 8px;
-      font-size: 1.1rem;
-      transition: transform 0.2s;
-    }
-    .result-category-header .dropdown-icon.rotated {
-      transform: rotate(90deg);
-    }
-    .result-item {
-      background: #f0e6e1;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border: 1px solid #eee;
-    }
-    .result-match {
-      background: #fff;
-      border: 1px solid #28a745;
-      border-left: 4px solid #28a745;
-      margin-bottom: 10px;
-    }
-    .result-no-match {
-      background: #fff;
-      border: 1px solid #dc3545;
-      border-left: 4px solid #dc3545;
-      opacity: 0.7;
-    }
-    .highlight {
-      background: #ffe0b2;
-      color: #B13F17;
-      font-weight: bold;
-      padding: 0 2px;
-      border-radius: 2px;
-    }
-    .case-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      border-radius: 8px;
-      padding: 14px 18px;
-      margin-bottom: 10px;
-    }
-    .manage-form {
-      display: flex;
-      gap: 10px;
-      align-items: end;
-      margin-bottom: 16px;
     }
     .search-progress {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px;
       margin: 20px 0;
-      background: #f8f9fa;
-      border-radius: 8px;
-      padding: 20px;
       text-align: center;
+      border: 2px solid #e9ecef;
     }
     .progress-bar {
       width: 100%;
-      height: 20px;
+      height: 24px;
       background: #e9ecef;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      margin: 10px 0;
+      margin: 15px 0;
+      position: relative;
     }
     .progress-fill {
       height: 100%;
-      background: #B13F17;
+      background: linear-gradient(90deg, #B13F17, #d4691a);
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.5s ease;
+      border-radius: 12px;
     }
-    @media (max-width: 900px) {
-      .container { padding: 10px; }
-      section { padding: 12px 6px; }
-      .filters-grid, .categories-grid { flex-direction: column; gap: 10px; }
+    .progress-text {
+      font-weight: 600;
+      color: #B13F17;
+      margin: 10px 0;
+    }
+    .results-container {
+      margin-top: 20px;
+    }
+    .result-item {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border: 1px solid #e9ecef;
+      transition: all 0.2s;
+    }
+    .result-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .result-match {
+      border-left: 5px solid #28a745;
+      background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+    }
+    .result-no-match {
+      border-left: 5px solid #dc3545;
+      background: linear-gradient(135deg, #fff8f8 0%, #ffffff 100%);
+      opacity: 0.8;
+    }
+    .result-error {
+      border-left: 5px solid #ffc107;
+      background: linear-gradient(135deg, #fffdf0 0%, #ffffff 100%);
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .result-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #B13F17;
+      margin-bottom: 5px;
+    }
+    .result-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .status-icon {
+      font-size: 1.2rem;
+    }
+    .result-details {
+      margin: 12px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .match-snippet {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 8px 0;
+      font-style: italic;
+      color: #856404;
+    }
+    .result-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+    .result-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .meta-label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 2px;
+    }
+    .meta-value {
+      color: #333;
+    }
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .score-high {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .score-medium {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .score-low {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .filter-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .filter-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #B13F17;
+      margin-bottom: 12px;
+    }
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .stat-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #e9ecef;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #B13F17;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #666;
+      font-weight: 600;
+    }
+    .highlight {
+      background: #fff3cd;
+      color: #856404;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      .categories-grid { grid-template-columns: 1fr; }
+      .result-meta { grid-template-columns: 1fr; }
+      .summary-stats { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header style="text-align:center; margin-bottom:32px;">
-      <h1>🕵️ OSINT Search Tool</h1>
-      <p style="color:#888; font-size:1.1rem;">Advanced Open Source Intelligence Investigation Platform</p>
+    <header style="text-align:center; margin-bottom:40px;">
+      <h1>🕵️ Advanced OSINT Search Tool</h1>
+      <p style="color:#666; font-size:1.2rem;">Professional Open Source Intelligence Investigation Platform</p>
     </header>
+
     <!-- Search Section -->
     <section>
-      <h2>🔍 Search Query</h2>
+      <h2>🔍 Primary Search</h2>
       <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Enter your search keywords...">
-        <button id="searchBtn" class="btn">Search</button>
+        <input type="text" id="searchInput" placeholder="Enter person name, company, email, phone, etc...">
+        <button id="searchBtn" class="btn">🚀 Start Investigation</button>
+      </div>
+      
+      <div class="advanced-options">
+        <h3>🎯 Search Options</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+          <label>
+            <input type="checkbox" id="deepSearch" checked> Deep Content Analysis
+          </label>
+          <label>
+            <input type="checkbox" id="followRedirects" checked> Follow Redirects
+          </label>
+          <label>
+            <input type="checkbox" id="extractEmails"> Extract Email Addresses
+          </label>
+          <label>
+            <input type="checkbox" id="extractPhones"> Extract Phone Numbers
+          </label>
+          <label>
+            <input type="number" id="maxResults" placeholder="Max results per site" min="1" max="50" value="10" style="width: 100px;"> Max Results
+          </label>
+          <label>
+            <select id="searchMode">
+              <option value="comprehensive">Comprehensive Search</option>
+              <option value="quick">Quick Search</option>
+              <option value="targeted">Targeted Search</option>
+            </select>
+          </label>
+        </div>
       </div>
     </section>
-    <!-- Image Upload Section -->
-    <section>
-      <h2>📷 Reverse Image Search</h2>
-      <div class="image-upload-area" id="imageUploadArea">
-        <div class="upload-icon">📸</div>
-        <div class="upload-text">Drop image here or click to upload</div>
-        <div class="upload-hint">Supports JPG, PNG, GIF, WebP</div>
-        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-      </div>
-      <div id="imagePreview" class="image-preview" style="display: none;">
-        <div class="preview-header">
-          <span>Image ready for search</span>
-          <button class="btn btn-danger btn-small" id="removeImage">Remove</button>
-        </div>
-        <img id="previewImg" class="preview-img">
-        <div id="imageInfo"></div>
-      </div>
-      <div id="searchEngines" style="display: none;">
-        <div class="search-engines-grid">
-          <div class="search-engine-card" data-engine="google">
-            <div class="engine-icon">🌍</div>
-            <div>Google Images</div>
-          </div>
-          <div class="search-engine-card" data-engine="bing">
-            <div class="engine-icon">🔎</div>
-            <div>Bing Visual</div>
-          </div>
-          <div class="search-engine-card" data-engine="yandex">
-            <div class="engine-icon">🌐</div>
-            <div>Yandex Images</div>
-          </div>
-          <div class="search-engine-card" data-engine="tineye">
-            <div class="engine-icon">👁️</div>
-            <div>TinEye</div>
-          </div>
-        </div>
-        <button class="btn" id="searchAllEngines">🚀 Search All Engines</button>
-      </div>
-    </section>
-    <!-- Advanced Filters Section -->
+
+    <!-- Advanced Filters -->
     <section>
       <h2>⚙️ Advanced Filters</h2>
       <div class="filters-grid">
         <div class="filter-section">
-          <div class="filter-title">💼 LinkedIn Filters</div>
-          <input type="text" id="linkedinLocation" placeholder="Location">
-          <input type="text" id="linkedinJobTitle" placeholder="Job Title">
-          <input type="text" id="linkedinCompany" placeholder="Company">
-          <input type="text" id="linkedinSchool" placeholder="School">
+          <div class="filter-title">💼 Professional Networks</div>
+          <input type="text" id="linkedinLocation" placeholder="Location (e.g., London, UK)">
+          <input type="text" id="linkedinCompany" placeholder="Current/Previous Company">
+          <input type="text" id="linkedinTitle" placeholder="Job Title/Role">
+          <input type="text" id="linkedinSchool" placeholder="Education/University">
         </div>
         <div class="filter-section">
-          <div class="filter-title">📘 Facebook Filters</div>
-          <input type="text" id="facebookLocation" placeholder="Location">
-          <input type="text" id="facebookEducation" placeholder="Education">
-          <input type="text" id="facebookWorkplace" placeholder="Workplace">
-          <select id="facebookRelationship">
-            <option value="">Relationship Status</option>
-            <option value="single">Single</option>
-            <option value="relationship">In a relationship</option>
-            <option value="married">Married</option>
+          <div class="filter-title">📱 Social Media</div>
+          <input type="text" id="socialLocation" placeholder="Location">
+          <input type="text" id="socialAge" placeholder="Age Range (e.g., 25-35)">
+          <select id="socialGender">
+            <option value="">Any Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
+          <input type="text" id="socialInterests" placeholder="Interests/Hobbies">
+        </div>
+        <div class="filter-section">
+          <div class="filter-title">🏢 Business/Legal</div>
+          <input type="text" id="businessRole" placeholder="Director/Officer Role">
+          <input type="text" id="businessSector" placeholder="Industry/Sector">
+          <input type="date" id="dateFrom" placeholder="From Date">
+          <input type="date" id="dateTo" placeholder="To Date">
         </div>
       </div>
     </section>
+
     <!-- Categories Section -->
     <section>
-      <h2>📋 Search Categories</h2>
+      <h2>📋 Investigation Categories</h2>
       <div class="categories-grid" id="categoriesContainer">
         <!-- Categories will be populated here -->
       </div>
-      <div style="margin-bottom: 16px;">
-        <button class="btn btn-small" id="selectAllBtn">Select All</button>
-        <button class="btn btn-small" id="deselectAllBtn">Deselect All</button>
+      <div style="margin-top: 20px;">
+        <button class="btn btn-small" id="selectAllBtn">✅ Select All</button>
+        <button class="btn btn-small" id="deselectAllBtn">❌ Deselect All</button>
+        <button class="btn btn-small" id="selectRecommendedBtn">🎯 Recommended Only</button>
       </div>
     </section>
-    <!-- Management Section -->
-    <section class="manage-section">
-      <h2>🛠️ Manage Categories & Websites</h2>
-      <div id="manageCategoriesContainer"></div>
-      <div style="margin-top:30px;">
-        <input type="text" id="newCategoryInput" placeholder="New category name">
-        <button id="addCategoryBtn" class="btn btn-small">Add Category</button>
-      </div>
-      <div style="margin-top:20px;">
-        <select id="categorySelect">
-          <option value="">Select Category</option>
-        </select>
-        <input type="text" id="websiteName" placeholder="Website name">
-        <input type="url" id="websiteURL" placeholder="Website URL">
-        <button id="addWebsiteBtn" class="btn btn-small">Add Website</button>
-      </div>
-    </section>
+
     <!-- Results Section -->
     <section>
-      <h2>📊 Search Results</h2>
-      <div class="results-filter-box">
-        <input type="text" id="resultsFilterInput" placeholder="Filter results by website, category, or keyword..." style="flex:1;">
+      <h2>📊 Investigation Results</h2>
+      <div id="searchSummary" style="display: none;">
+        <div class="summary-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="totalSearched">0</div>
+            <div class="stat-label">Sites Searched</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalMatches">0</div>
+            <div class="stat-label">Matches Found</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="avgScore">0</div>
+            <div class="stat-label">Avg. Relevance</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="successRate">0%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
       </div>
+      
       <div id="resultsContainer" class="results-container">
-        <p style="color: #888; text-align: center; padding: 40px;">
-          Enter keywords and select categories to start searching
-        </p>
+        <div style="text-align: center; color: #666; padding: 60px 20px;">
+          <div style="font-size: 3rem; margin-bottom: 20px;">🔍</div>
+          <h3>Ready to Start Investigation</h3>
+          <p>Enter your search terms and select categories to begin comprehensive OSINT analysis</p>
+        </div>
       </div>
-      <button class="btn" id="exportBtn" style="margin-top: 20px;">📋 Export Report</button>
-    </section>
-    <!-- Cases Management -->
-    <section>
-      <h2>📁 Saved Cases</h2>
-      <input type="text" id="searchCases" placeholder="Search saved cases..." style="margin-bottom: 20px;">
-      <div id="casesContainer"></div>
-      <button class="btn btn-danger" id="clearCasesBtn" style="margin-top: 20px;">Clear All Cases</button>
+      
+      <div style="margin-top: 25px; display: none;" id="exportSection">
+        <button class="btn" id="exportBtn">📋 Export Detailed Report</button>
+        <button class="btn" id="saveCase">💾 Save Investigation</button>
+      </div>
     </section>
   </div>
-  <script>
-    // --- Application State ---
-    let categories = {};
-    let uploadedImage = null;
-    let savedCases = [];
 
-    // --- Persistence Functions ---
-    function saveCategoriesToStorage() {
-      // Store in memory instead of localStorage for this environment
-      window.categoriesData = categories;
+  <script>
+    // Enhanced OSINT Tool with Real Scraping Capabilities
+    
+    let categories = {};
+    let lastResults = [];
+    let currentSearch = null;
+
+    // Comprehensive site database with search patterns
+    const siteDatabase = {
+      "Professional Networks": [
+        {
+          name: "LinkedIn Profiles",
+          baseUrl: "https://www.linkedin.com",
+          searchUrl: "https://www.linkedin.com/search/results/people/?keywords={QUERY}",
+          patterns: {
+            profile: /linkedin\.com\/in\/([^\/\?]+)/g,
+            company: /linkedin\.com\/company\/([^\/\?]+)/g
+          },
+          selectors: {
+            results: '.search-result__wrapper',
+            title: '.search-result__result-link',
+            snippet: '.search-result__snippets'
+          },
+          weight: 9
+        },
+        {
+          name: "Companies House UK",
+          baseUrl: "https://find-and-update.company-information.service.gov.uk",
+          searchUrl: "https://find-and-update.company-information.service.gov.uk/search/companies?q={QUERY}",
+          patterns: {
+            company: /\/company\/([A-Z0-9]{8})/g,
+            officer: /officers\/([^\/]+)/g
+          },
+          selectors: {
+            results: '.search-result',
+            title: 'h3 a',
+            snippet: '.search-result-summary'
+          },
+          weight: 10
+        }
+      ],
+      "Social Media": [
+        {
+          name: "Facebook Search",
+          baseUrl: "https://www.facebook.com",
+          searchUrl: "https://www.facebook.com/search/people/?q={QUERY}",
+          patterns: {
+            profile: /facebook\.com\/([^\/\?]+)/g
+          },
+          selectors: {
+            results: '[data-testid="search_result"]',
+            title: 'a[role="link"]',
+            snippet: 'div[data-testid="search_result"] div'
+          },
+          weight: 7
+        },
+        {
+          name: "Twitter/X Search",
+          baseUrl: "https://twitter.com",
+          searchUrl: "https://twitter.com/search?q={QUERY}&src=typed_query&f=user",
+          patterns: {
+            profile: /twitter\.com\/([^\/\?]+)/g
+          },
+          selectors: {
+            results: '[data-testid="UserCell"]',
+            title: '[data-testid="UserName"]',
+            snippet: '[data-testid="UserDescription"]'
+          },
+          weight: 8
+        }
+      ],
+      "Court Records": [
+        {
+          name: "BAILII Legal Database",
+          baseUrl: "https://www.bailii.org",
+          searchUrl: "https://www.bailii.org/cgi-bin/markup.cgi?doc=/bailii/search.html&query={QUERY}",
+          patterns: {
+            case: /bailii\.org\/[^\/]+\/cases\/[^\/]+\/([^\.]+)\.html/g
+          },
+          selectors: {
+            results: '.search-result',
+            title: 'a.title',
+            snippet: '.snippet'
+          },
+          weight: 9
+        }
+      ],
+      "Professional Registers": [
+        {
+          name: "GMC Medical Register",
+          baseUrl: "https://www.gmc-uk.org",
+          searchUrl: "https://www.gmc-uk.org/doctors?query={QUERY}",
+          patterns: {
+            doctor: /doctors\/([0-9]+)/g
+          },
+          selectors: {
+            results: '.doctor-result',
+            title: '.doctor-name',
+            snippet: '.doctor-details'
+          },
+          weight: 10
+        },
+        {
+          name: "SRA Solicitors",
+          baseUrl: "https://www.sra.org.uk",
+          searchUrl: "https://www.sra.org.uk/consumers/register/search?name={QUERY}",
+          patterns: {
+            solicitor: /sra\.org\.uk\/solicitors\/([^\/]+)/g
+          },
+          selectors: {
+            results: '.search-result',
+            title: '.solicitor-name',
+            snippet: '.solicitor-details'
+          },
+          weight: 10
+        }
+      ]
+    };
+
+    // Initialize categories from database
+    function initializeCategories() {
+      categories = {};
+      Object.keys(siteDatabase).forEach(categoryName => {
+        categories[categoryName] = siteDatabase[categoryName];
+      });
+      renderCategories();
     }
-    function loadCategoriesFromStorage() {
-      if (window.categoriesData) {
-        categories = window.categoriesData;
-      } else {
-        categories = {
-          "Company Searches": [
-            { name: "Companies House (UK)", url: "https://find-and-update.company-information.service.gov.uk/" },
-            { name: "Haulage Index", url: "https://haulage-index.co.uk/index.php" },
-            { name: "Insolvency Service", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
-            { name: "Caseboard", url: "https://caseboard.io/cases/" }
-          ],
-          "Court Case Searches": [
-            { name: "CaseMine", url: "https://www.casemine.com/" },
-            { name: "HUDOC", url: "https://hudoc.echr.coe.int/eng#{%22documentcollectionid2%22:[%22GRANDCHAMBER%22,%22CHAMBER%22]}" },
-            { name: "BAILII", url: "https://www.bailii.org/" },
-            { name: "Employment Tribunal Decisions", url: "https://www.gov.uk/employment-tribunal-decisions" },
-            { name: "UK Supreme Court Cases", url: "https://www.supremecourt.uk/cases" }
-          ],
-          "Occupation Registers": [
-            { name: "GDC Dentist Register", url: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
-            { name: "GMC Medical Register", url: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
-            { name: "GDC Registration", url: "https://www.gdc-uk.org/registration" },
-            { name: "NMC Register", url: "https://www.nmc.org.uk/registration/search-the-register" },
-            { name: "HCPC Register", url: "https://www.hcpc-uk.org/check-the-register" },
-            { name: "Pharmacy Register", url: "https://www.pharmacyregulation.org/registers" },
-            { name: "Optical Register", url: "https://www.optical.org/en" },
-            { name: "Chiropractor Register", url: "https://www.gcc-uk.org/registration/the-register" },
-            { name: "Osteopath Register", url: "https://www.osteopathy.org.uk/register-search" },
-            { name: "Solicitor Check", url: "https://www.sra.org.uk/consumers/solicitor-check/" },
-            { name: "Barrister Register", url: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html" },
-            { name: "Licensed Conveyancer", url: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/" },
-            { name: "CILEx Directory", url: "https://www.cilexregulation.org.uk/practitioners-directory" },
-            { name: "Notary Finder", url: "https://www.facultyoffice.org.uk/notary/find-a-notary/" },
-            { name: "ICAEW Directory", url: "https://find.icaew.com/" },
-            { name: "ACCA Directory", url: "https://www.accaglobal.com/an/en/member/find-an-accountant.html" },
-            { name: "RICS Directory", url: "https://www.rics.org/find-a-member" },
-            { name: "Architects Register", url: "https://arb.org.uk/public-information/members-of-the-public/" },
-            { name: "Engineering Council", url: "https://www.engc.org.uk/registers" },
-            { name: "Electrician Register", url: "https://www.electricalcompetentperson.co.uk/" },
-            { name: "Gas Safe Register", url: "https://www.gassaferegister.co.uk/find-an-engineer" },
-            { name: "NHBC Builder Register", url: "https://www.nhbc.co.uk/homeowners/find-a-builder" },
-            { name: "FMB Directory", url: "https://www.fmb.org.uk/find-a-builder" },
-            { name: "Find an Investigator", url: "https://ipi.org.uk/find-an-investigator" },
-            { name: "SIA Licence Check", url: "https://services.sia.homeoffice.gov.uk/rolh/" },
-            { name: "Immigration Adviser Finder", url: "https://home.oisc.gov.uk/adviser_finder/finder.aspx" },
-            { name: "Social Work England", url: "https://www.socialworkengland.org.uk/search-the-register/" },
-            { name: "BPS Workforce Register", url: "https://www.bps.org.uk/psychological-workforce" },
-            { name: "Find a Vet", url: "https://findavet.rcvs.org.uk/home/" },
-            { name: "CQC Care Finder", url: "https://www.cqc.org.uk/find-a-care-home" },
-            { name: "FCA Register", url: "https://register.fca.org.uk/" },
-            { name: "Charity Register", url: "https://register-of-charities.charitycommission.gov.uk/" }
-          ],
-          "Genealogy": [
-            { name: "Probate Search", url: "https://probatesearch.service.gov.uk/#wills" }
-          ],
-          "Transport": [
-            { name: "Car Tax Check", url: "https://cartaxcheck.co.uk/" },
-            { name: "Plane Finder", url: "https://planefinder.net/" },
-            { name: "MarineTraffic", url: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4" },
-            { name: "VesselFinder", url: "https://www.vesselfinder.com/vessels" },
-            { name: "Haulage Index", url: "https://haulage-index.co.uk/index.php" },
-            { name: "Racing Post", url: "https://www.racingpost.com/racecards" }
-          ],
-          "Sanctions, Watchlists, Insolvency, PEPs": [
-            { name: "Insolvency Service", url: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
-            { name: "The Gazette", url: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices" },
-            { name: "Interpol Red Notices", url: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices" },
-            { name: "Interpol Yellow Notices", url: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices" },
-            { name: "FBI Most Wanted", url: "https://www.fbi.gov/wanted/topten" },
-            { name: "Proscribed Terror Groups", url: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version" },
-            { name: "EU Most Wanted", url: "https://eumostwanted.eu/" },
-            { name: "UK Sanctions List", url: "https://search-uk-sanctions-list.service.gov.uk/" },
-            { name: "NCA Most Wanted", url: "https://www.nationalcrimeagency.gov.uk/most-wanted" },
-            { name: "FCA Warning List", url: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms" },
-            { name: "SFO Cases", url: "https://www.gov.uk/sfo-cases" },
-            { name: "Vexatious Litigants", url: "https://www.gov.uk/guidance/vexatious-litigants" },
-            { name: "Tax Defaulters", url: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters" }
-          ],
-          "Social Media": [
-            { name: "Facebook", url: "https://www.facebook.com/" },
-            { name: "LinkedIn", url: "https://www.linkedin.com" },
-            { name: "Instagram", url: "https://www.instagram.com/" },
-            { name: "Twitter/X", url: "https://x.com" },
-            { name: "TikTok", url: "https://www.tiktok.com/?kuid=31b6d78a-c086-437f-9ab0-df56eaf7fd8b&kref=vGWRdzLJnjYf" },
-            { name: "Reddit", url: "https://www.reddit.com/" }
-          ],
-          "Offshore Companies": [
-            { name: "Offshore Leaks", url: "https://offshoreleaks.icij.org/" },
-            { name: "OpenCorporates", url: "https://opencorporates.com/" }
-          ],
-          "Domain/Leaked/Cached": [
-            { name: "Who.is", url: "https://who.is/" },
-            { name: "Internet Archive", url: "https://web.archive.org/" },
-            { name: "AnalyzeID", url: "https://analyzeid.com/" },
-            { name: "Have I Been Pwned", url: "https://haveibeenpwned.com/" },
-            { name: "IP Fingerprints", url: "https://www.ipfingerprints.com/" },
-            { name: "DataBreach.com", url: "https://databreach.com/" }
-          ]
+
+    // Advanced content scraping with proxy
+    class WebScraper {
+      constructor() {
+        this.proxies = [
+          'https://api.allorigins.win/get?url=',
+          'https://cors-anywhere.herokuapp.com/',
+          'https://proxy.cors.sh/'
+        ];
+        this.currentProxy = 0;
+      }
+
+      async fetchWithProxy(url, maxRetries = 3) {
+        for (let i = 0; i < maxRetries; i++) {
+          try {
+            const proxyUrl = this.proxies[this.currentProxy] + encodeURIComponent(url);
+            const response = await fetch(proxyUrl, {
+              method: 'GET',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+              }
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              return data.contents || data;
+            }
+          } catch (error) {
+            console.warn(`Proxy ${this.currentProxy} failed:`, error.message);
+            this.currentProxy = (this.currentProxy + 1) % this.proxies.length;
+          }
+        }
+        throw new Error('All proxies failed');
+      }
+
+      async searchSite(site, query, options = {}) {
+        try {
+          const searchUrl = site.searchUrl.replace('{QUERY}', encodeURIComponent(query));
+          console.log(`Searching ${site.name}: ${searchUrl}`);
+          
+          const html = await this.fetchWithProxy(searchUrl);
+          return this.analyzeSiteContent(site, html, query, searchUrl);
+        } catch (error) {
+          console.error(`Error searching ${site.name}:`, error);
+          return {
+            site: site.name,
+            hasMatch: false,
+            error: error.message,
+            relevanceScore: 0,
+            results: [],
+            searchUrl: site.searchUrl.replace('{QUERY}', encodeURIComponent(query))
+          };
+        }
+      }
+
+      analyzeSiteContent(site, html, query, searchUrl) {
+        if (!html) {
+          return {
+            site: site.name,
+            hasMatch: false,
+            error: 'No content received',
+            relevanceScore: 0,
+            results: [],
+            searchUrl: searchUrl
+          };
+        }
+
+        // Create DOM parser
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Extract structured results
+        const results = this.extractStructuredResults(doc, site, query);
+        
+        // Calculate relevance score
+        const relevanceScore = this.calculateRelevanceScore(results, query, site);
+        
+        return {
+          site: site.name,
+          hasMatch: results.length > 0,
+          relevanceScore: relevanceScore,
+          results: results,
+          searchUrl: searchUrl,
+          totalFound: results.length,
+          timestamp: new Date().toISOString()
         };
       }
+
+      extractStructuredResults(doc, site, query) {
+        const results = [];
+        const maxResults = parseInt(document.getElementById('maxResults')?.value) || 10;
+
+        try {
+          // Use site-specific selectors
+          const resultElements = doc.querySelectorAll(site.selectors?.results || '.search-result, .result, [class*="result"]');
+          
+          Array.from(resultElements).slice(0, maxResults).forEach((element, index) => {
+            const result = this.extractSingleResult(element, site, query, index);
+            if (result) {
+              results.push(result);
+            }
+          });
+
+          // If no structured results, try pattern matching
+          if (results.length === 0) {
+            const patternResults = this.extractPatternResults(doc.body.innerHTML, site, query);
+            results.push(...patternResults.slice(0, maxResults));
+          }
+
+        } catch (error) {
+          console.error('Error extracting results:', error);
+        }
+
+        return results;
+      }
+
+      extractSingleResult(element, site, query, index) {
+        try {
+          const titleElement = element.querySelector(site.selectors?.title || 'a, h1, h2, h3, .title');
+          const snippetElement = element.querySelector(site.selectors?.snippet || '.snippet, .description, p');
+          
+          const title = titleElement?.textContent?.trim() || '';
+          const snippet = snippetElement?.textContent?.trim() || '';
+          const link = titleElement?.href || element.querySelector('a')?.href || '';
+
+          // Skip if no meaningful content
+          if (!title && !snippet) return null;
+
+          // Skip if it's just navigation or search interface
+          if (this.isNavigationElement(title + ' ' + snippet)) return null;
+
+          // Extract specific data based on site patterns
+          const extractedData = this.extractSpecificData(element.innerHTML, site);
+
+          return {
+            id: `${site.name}_${index}`,
+            title: title,
+            snippet: snippet,
+            url: this.normalizeUrl(link, site.baseUrl),
+            relevance: this.calculateItemRelevance(title + ' ' + snippet, query),
+            extractedData: extractedData,
+            confidence: this.calculateConfidence(title, snippet, query),
+            source: site.name
+          };
+        } catch (error) {
+          console.error('Error extracting single result:', error);
+          return null;
+        }
+      }
+
+      extractPatternResults(html, site, query) {
+        const results = [];
+        
+        // Use site-specific patterns
+        if (site.patterns) {
+          Object.entries(site.patterns).forEach(([type, pattern]) => {
+            const matches = html.match(pattern) || [];
+            matches.forEach((match, index) => {
+              if (results.length < 5) { // Limit pattern results
+                results.push({
+                  id: `${site.name}_pattern_${index}`,
+                  title: `${type.charAt(0).toUpperCase() + type.slice(1)} found`,
+                  snippet: match,
+                  url: this.normalizeUrl(match, site.baseUrl),
+                  relevance: 5,
+                  extractedData: { type: type, match: match },
+                  confidence: 'medium',
+                  source: site.name
+                });
+              }
+            });
+          });
+        }
+
+        return results;
+      }
+
+      extractSpecificData(html, site) {
+        const data = {};
+        
+        // Extract emails if option is enabled
+        if (document.getElementById('extractEmails')?.checked) {
+          const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+          data.emails = (html.match(emailPattern) || []).slice(0, 5);
+        }
+
+        // Extract phone numbers if option is enabled
+        if (document.getElementById('extractPhones')?.checked) {
+          const phonePattern = /(?:\+44|0)(?:[1-9]\d{8,9}|\d{10})/g;
+          data.phones = (html.match(phonePattern) || []).slice(0, 5);
+        }
+
+        return data;
+      }
+
+      isNavigationElement(text) {
+        const navKeywords = [
+          'search for', 'enter search', 'search results', 'no results found',
+          'navigation', 'menu', 'header', 'footer', 'cookie', 'privacy policy',
+          'terms of service', 'login', 'register', 'sign up', 'sign in'
+        ];
+        
+        const lowerText = text.toLowerCase();
+        return navKeywords.some(keyword => lowerText.includes(keyword));
+      }
+
+      calculateItemRelevance(text, query) {
+        const queryWords = query.toLowerCase().split(/\s+/);
+        const textLower = text.toLowerCase();
+        
+        let score = 0;
+        queryWords.forEach(word => {
+          if (word.length > 2) {
+            const exactMatches = (textLower.match(new RegExp(word, 'g')) || []).length;
+            score += exactMatches * 2;
+            
+            // Partial matches
+            if (textLower.includes(word)) {
+              score += 1;
+            }
+          }
+        });
+
+        return Math.min(10, score);
+      }
+
+      calculateRelevanceScore(results, query, site) {
+        if (results.length === 0) return 0;
+        
+        const avgItemRelevance = results.reduce((sum, r) => sum + (r.relevance || 0), 0) / results.length;
+        const resultCountBonus = Math.min(results.length * 0.5, 3);
+        const siteWeightBonus = site.weight || 5;
+        
+        return Math.min(10, Math.round(avgItemRelevance + resultCountBonus + (siteWeightBonus / 10)));
+      }
+
+      calculateConfidence(title, snippet, query) {
+        const text = (title + ' ' + snippet).toLowerCase();
+        const queryLower = query.toLowerCase();
+        
+        if (text.includes(queryLower)) return 'high';
+        
+        const queryWords = queryLower.split(/\s+/);
+        const matchingWords = queryWords.filter(word => text.includes(word)).length;
+        const matchRatio = matchingWords / queryWords.length;
+        
+        if (matchRatio > 0.7) return 'high';
+        if (matchRatio > 0.4) return 'medium';
+        return 'low';
+      }
+
+      normalizeUrl(url, baseUrl) {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        if (url.startsWith('//')) return 'https:' + url;
+        if (url.startsWith('/')) return baseUrl + url;
+        return baseUrl + '/' + url;
+      }
     }
 
-    // --- DOM Elements ---
+    // Initialize scraper
+    const scraper = new WebScraper();
+
+    // DOM Elements
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
-    const imageUploadArea = document.getElementById('imageUploadArea');
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-    const removeImageBtn = document.getElementById('removeImage');
-    const searchEngines = document.getElementById('searchEngines');
-    const searchAllEnginesBtn = document.getElementById('searchAllEngines');
     const categoriesContainer = document.getElementById('categoriesContainer');
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const deselectAllBtn = document.getElementById('deselectAllBtn');
     const resultsContainer = document.getElementById('resultsContainer');
-    const resultsFilterInput = document.getElementById('resultsFilterInput');
-    const exportBtn = document.getElementById('exportBtn');
-    const casesContainer = document.getElementById('casesContainer');
-    const searchCasesInput = document.getElementById('searchCases');
-    const clearCasesBtn = document.getElementById('clearCasesBtn');
-    const newCategoryInput = document.getElementById('newCategoryInput');
-    const addCategoryBtn = document.getElementById('addCategoryBtn');
-    const categorySelect = document.getElementById('categorySelect');
-    const websiteName = document.getElementById('websiteName');
-    const websiteURL = document.getElementById('websiteURL');
-    const addWebsiteBtn = document.getElementById('addWebsiteBtn');
-    const manageCategoriesContainer = document.getElementById('manageCategoriesContainer');
+    const searchSummary = document.getElementById('searchSummary');
+    const exportSection = document.getElementById('exportSection');
 
-    // --- Utility Functions ---
+    // Utility Functions
     function showNotification(message, type = 'info') {
+      // Remove existing notifications  
       document.querySelectorAll('.notification').forEach(n => n.remove());
+      
       const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.style = `
-        position: fixed; top: 24px; right: 24px; background: #B13F17; color: #fff; padding: 14px 22px; border-radius: 8px; font-weight: 600; z-index: 10000; box-shadow: none; font-size: 1rem; opacity: 0; transition: opacity 0.2s;`;
+      notification.className = 'notification';
+      notification.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        padding: 15px 25px; border-radius: 8px; font-weight: 600;
+        color: white; opacity: 0; transition: opacity 0.3s;
+        ${type === 'success' ? 'background: #28a745;' : 
+          type === 'error' ? 'background: #dc3545;' : 
+          type === 'warning' ? 'background: #ffc107; color: #212529;' :
+          'background: #17a2b8;'}
+      `;
       notification.textContent = message;
+      
       document.body.appendChild(notification);
-      setTimeout(() => notification.style.opacity = 1, 50);
+      setTimeout(() => notification.style.opacity = '1', 100);
       setTimeout(() => {
-        notification.style.opacity = 0;
+        notification.style.opacity = '0';
         setTimeout(() => notification.remove(), 300);
-      }, 2500);
-    }
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    function buildSearchURL(site, keyword, filters = {}) {
-      let searchURL = site.url;
-      const encodedKeyword = encodeURIComponent(keyword);
-      if (site.name.toLowerCase().includes('linkedin')) {
-        searchURL += `?keywords=${encodedKeyword}`;
-        if (filters.linkedinLocation) searchURL += `&geoUrn=${encodeURIComponent(filters.linkedinLocation)}`;
-        if (filters.linkedinJobTitle) searchURL += `&title=${encodeURIComponent(filters.linkedinJobTitle)}`;
-        if (filters.linkedinCompany) searchURL += `&currentCompany=${encodeURIComponent(filters.linkedinCompany)}`;
-        if (filters.linkedinSchool) searchURL += `&school=${encodeURIComponent(filters.linkedinSchool)}`;
-      } else if (site.name.toLowerCase().includes('facebook')) {
-        let fbSearchURL = 'https://www.facebook.com/search/people/?q=' + encodedKeyword;
-        let filters_applied = [];
-        if (filters.facebookLocation) filters_applied.push(`location:${encodeURIComponent(filters.facebookLocation)}`);
-        if (filters.facebookEducation) filters_applied.push(`education:${encodeURIComponent(filters.facebookEducation)}`);
-        if (filters.facebookWorkplace) filters_applied.push(`employer:${encodeURIComponent(filters.facebookWorkplace)}`);
-        if (filters.facebookRelationship) filters_applied.push(`relationship:${encodeURIComponent(filters.facebookRelationship)}`);
-        if (filters_applied.length > 0) fbSearchURL += '%20' + filters_applied.join('%20');
-        searchURL = fbSearchURL;
-      } else {
-        const separator = searchURL.includes('?') ? '&' : '?';
-        searchURL += `${separator}q=${encodedKeyword}`;
-      }
-      return searchURL;
-    }
-    function highlightKeyword(text, keyword) {
-      if (!keyword) return text;
-      const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\      setTimeout')})`, 'gi');
-      return text.replace(regex, '<span class="highlight">$1</span>');
+      }, 4000);
     }
 
-    // --- CORS Proxy Function ---
-    async function fetchWithProxy(url) {
-      // Using a simple CORS proxy - in production you'd want your own proxy server
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      try {
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        return data.contents;
-      } catch (error) {
-        console.error('Proxy fetch failed:', error);
-        return null;
-      }
-    }
-
-    // --- Content Analysis Functions ---
-    function analyzeContent(html, keyword) {
-      if (!html || !keyword) return { hasMatch: false, matches: [], relevanceScore: 0 };
-      
-      // Create a temporary DOM element to parse HTML
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = html;
-      
-      // Remove script and style tags
-      const scripts = tempDiv.querySelectorAll('script, style');
-      scripts.forEach(el => el.remove());
-      
-      // Get text content
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      
-      // Clean and normalize text
-      const cleanText = textContent.toLowerCase().replace(/\s+/g, ' ').trim();
-      const cleanKeyword = keyword.toLowerCase().trim();
-      
-      // Don't count if the keyword appears in forms or input fields (likely search inputs)
-      const formInputRegex = new RegExp(`<input[^>]*value=['"][^'"]*${cleanKeyword}[^'"]*['"][^>]*>`, 'gi');
-      const searchFormRegex = new RegExp(`<form[^>]*search[^>]*>.*?${cleanKeyword}.*?</form>`, 'gi');
-      
-      if (formInputRegex.test(html) || searchFormRegex.test(html)) {
-        // This is likely just the search form echoing back our input
-        return { hasMatch: false, matches: [], relevanceScore: 0, reason: 'Search form echo detected' };
-      }
-
-      // Find matches
-      const matches = [];
-      const keywordRegex = new RegExp(cleanKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\      setTimeout'), 'gi');
-      let match;
-      
-      while ((match = keywordRegex.exec(textContent)) !== null) {
-        const start = Math.max(0, match.index - 50);
-        const end = Math.min(textContent.length, match.index + match[0].length + 50);
-        const context = textContent.substring(start, end).trim();
-        
-        // Skip if context looks like a search interface element
-        if (context.toLowerCase().includes('search for') || 
-            context.toLowerCase().includes('enter search') ||
-            context.toLowerCase().includes('search results') ||
-            context.toLowerCase().includes('search query')) {
-          continue;
-        }
-        
-        matches.push({
-          text: context.replace(/\s+/g, ' '),
-          position: match.index
-        });
-      }
-
-      // Calculate relevance score
-      let relevanceScore = 0;
-      if (matches.length > 0) {
-        relevanceScore = Math.min(10, matches.length * 2);
-        
-        // Bonus for matches in title or headings
-        const titleMatch = html.toLowerCase().includes(`<title>.*${cleanKeyword}.*</title>`);
-        const headingMatch = html.toLowerCase().match(new RegExp(`<h[1-6][^>]*>.*${cleanKeyword}.*</h[1-6]>`, 'gi'));
-        
-        if (titleMatch) relevanceScore += 3;
-        if (headingMatch) relevanceScore += 2;
-        
-        relevanceScore = Math.min(10, relevanceScore);
-      }
-
-      return {
-        hasMatch: matches.length > 0,
-        matches: matches.slice(0, 5), // Limit to top 5 matches
-        relevanceScore: relevanceScore
-      };
-    }
-
-    // --- Image Upload Functions ---
-    function setupImageUpload() {
-      imageUploadArea.addEventListener('click', () => imageInput.click());
-      imageInput.addEventListener('change', handleImageSelect);
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        imageUploadArea.addEventListener(eventName, preventDefaults, false);
-      });
-      function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-      ['dragenter', 'dragover'].forEach(eventName => {
-        imageUploadArea.addEventListener(eventName, () => {
-          imageUploadArea.classList.add('drag-over');
-        }, false);
-      });
-      ['dragleave', 'drop'].forEach(eventName => {
-        imageUploadArea.addEventListener(eventName, () => {
-          imageUploadArea.classList.remove('drag-over');
-        }, false);
-      });
-      imageUploadArea.addEventListener('drop', handleDrop, false);
-      removeImageBtn.addEventListener('click', removeImage);
-    }
-    function handleImageSelect(e) {
-      const file = e.target.files[0];
-      if (file) processImage(file);
-    }
-    function handleDrop(e) {
-      const files = e.dataTransfer.files;
-      if (files.length > 0) processImage(files[0]);
-    }
-    function processImage(file) {
-      if (!file.type.startsWith('image/')) {
-        showNotification('Please select a valid image file', 'error');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        showNotification('Image too large. Please select a file under 10MB', 'error');
-        return;
-      }
-      uploadedImage = file;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImg.src = e.target.result;
-        document.getElementById('imageInfo').innerHTML = `<div style="text-align: center; color: #888;"><strong>${file.name}</strong> • ${formatFileSize(file.size)}</div>`;
-        imagePreview.style.display = 'block';
-        searchEngines.style.display = 'block';
-        showNotification('Image loaded successfully!', 'success');
-      };
-      reader.readAsDataURL(file);
-    }
-    function removeImage() {
-      uploadedImage = null;
-      imageInput.value = '';
-      imagePreview.style.display = 'none';
-      searchEngines.style.display = 'none';
-      showNotification('Image removed', 'info');
-    }
-
-    // --- Search Engine Functions ---
-    function setupSearchEngines() {
-      document.querySelectorAll('.search-engine-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const engine = card.dataset.engine;
-          openSearchEngine(engine);
-        });
-      });
-      searchAllEnginesBtn.addEventListener('click', () => {
-        const engines = ['google', 'bing', 'yandex', 'tineye'];
-        engines.forEach((engine, index) => {
-          setTimeout(() => openSearchEngine(engine), index * 500);
-        });
-        showNotification('Opened all search engines!', 'success');
-      });
-    }
-    function openSearchEngine(engine) {
-      if (!uploadedImage) {
-        showNotification('Please upload an image first', 'error');
-        return;
-      }
-      const urls = {
-        google: 'https://images.google.com/',
-        bing: 'https://www.bing.com/images/search?view=detailv2&iss=sbi',
-        yandex: 'https://yandex.com/images/search?rpt=imageview',
-        tineye: 'https://tineye.com/'
-      };
-      window.open(urls[engine], '_blank');
-      showNotification(`Opened ${engine.charAt(0).toUpperCase() + engine.slice(1)}`, 'info');
-    }
-
-    // --- Categories Functions ---
     function renderCategories() {
       categoriesContainer.innerHTML = '';
-      categorySelect.innerHTML = '<option value="">Select Category</option>';
-      Object.keys(categories).forEach(categoryName => {
+      
+      Object.entries(categories).forEach(([categoryName, sites]) => {
         const categoryCard = document.createElement('div');
         categoryCard.className = 'category-card';
         categoryCard.innerHTML = `
           <input type="checkbox" class="category-checkbox" data-category="${categoryName}" checked>
           <div class="category-title">${categoryName}</div>
-          <span class="website-count">${categories[categoryName].length}</span>
+          <span class="website-count">${sites.length}</span>
         `;
+        
         const checkbox = categoryCard.querySelector('.category-checkbox');
         checkbox.addEventListener('change', (e) => {
-          categoryCard.classList.toggle('selected', e.target.checked);
+          categoryCard.style.opacity = e.target.checked ? '1' : '0.6';
         });
+        
         categoriesContainer.appendChild(categoryCard);
-        const option = document.createElement('option');
-        option.value = categoryName;
-        option.textContent = categoryName;
-        categorySelect.appendChild(option);
-      });
-      renderManageCategories();
-      saveCategoriesToStorage();
-    }
-    function renderManageCategories() {
-      manageCategoriesContainer.innerHTML = '';
-      Object.keys(categories).forEach(categoryName => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'category-card';
-        const header = document.createElement('div');
-        header.className = 'manage-category-header';
-        header.innerHTML = `
-          <div class="manage-category-title">
-            <span class="arrow">▶</span>${categoryName}
-          </div>
-          <span class="manage-category-actions">
-            <button class="btn btn-small" onclick="editCategory('${categoryName}')">Edit</button>
-            <button class="btn btn-danger btn-small" onclick="deleteCategory('${categoryName}')">Delete</button>
-          </span>
-        `;
-        categoryDiv.appendChild(header);
-        const list = document.createElement('div');
-        list.className = 'websites-list';
-        list.style.display = 'none';
-        categories[categoryName].forEach((site, idx) => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'website-item';
-          itemDiv.innerHTML = `
-            <span>${site.name} <span style='color:#888;font-size:0.9em;'>(${site.url})</span></span>
-            <span>
-              <button class="btn btn-small" onclick="editWebsite('${categoryName}',${idx})">Edit</button>
-              <button class="btn btn-danger btn-small" onclick="deleteWebsite('${categoryName}',${idx})">Delete</button>
-            </span>
-          `;
-          list.appendChild(itemDiv);
-        });
-        categoryDiv.appendChild(list);
-        header.addEventListener('click', (e) => {
-          if (e.target.closest('.manage-category-actions')) return;
-          const arrow = header.querySelector('.arrow');
-          const isCollapsed = list.style.display === 'none' || list.style.display === '';
-          if (isCollapsed) {
-            list.style.display = 'flex';
-            arrow.style.transform = 'rotate(90deg)';
-          } else {
-            list.style.display = 'none';
-            arrow.style.transform = 'rotate(0deg)';
-          }
-        });
-        manageCategoriesContainer.appendChild(categoryDiv);
       });
     }
-    window.editCategory = function(categoryName) {
-      const newName = prompt('Edit category name:', categoryName);
-      if (!newName || newName.trim() === '' || newName === categoryName) return;
-      if (categories[newName]) {
-        showNotification('Category name already exists', 'error');
+
+    // Main search function
+    async function performAdvancedSearch() {
+      const query = searchInput.value.trim();
+      if (!query) {
+        showNotification('Please enter a search term', 'error');
         return;
       }
-      categories[newName] = categories[categoryName];
-      delete categories[categoryName];
-      renderCategories();
-      showNotification('Category updated successfully', 'success');
-    };
-    window.deleteCategory = function(categoryName) {
-      if (!confirm(`Delete category "${categoryName}" and all its websites?`)) return;
-      delete categories[categoryName];
-      renderCategories();
-      showNotification('Category deleted successfully', 'success');
-    };
-    window.editWebsite = function(categoryName, idx) {
-      const site = categories[categoryName][idx];
-      const newName = prompt('Edit website name:', site.name);
-      if (!newName) return;
-      const newUrl = prompt('Edit website URL:', site.url);
-      if (!newUrl) return;
-      categories[categoryName][idx] = { name: newName, url: newUrl };
-      renderCategories();
-    };
-    window.deleteWebsite = function(categoryName, idx) {
-      if (!confirm('Delete this website?')) return;
-      categories[categoryName].splice(idx, 1);
-      renderCategories();
-    };
 
-    // --- Search Functions ---
-    let lastResults = [];
-    let currentSearchAborted = false;
+      const selectedCategories = Array.from(
+        document.querySelectorAll('.category-checkbox:checked')
+      ).map(cb => cb.dataset.category);
 
-    function createProgressBar() {
-      const progressDiv = document.createElement('div');
-      progressDiv.className = 'search-progress';
-      progressDiv.innerHTML = `
-        <div style="font-size: 1.2rem; margin-bottom: 10px;">🔍 Searching websites...</div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div id="progressText">Preparing search...</div>
-        <button class="btn btn-danger btn-small" id="abortSearch" style="margin-top: 10px;">Abort Search</button>
-      `;
-      return progressDiv;
-    }
-
-    async function performSearch() {
-      const keyword = searchInput.value.trim();
-      if (!keyword) {
-        showNotification('Please enter a search keyword', 'error');
-        return;
-      }
-      const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.dataset.category);
       if (selectedCategories.length === 0) {
         showNotification('Please select at least one category', 'error');
         return;
       }
 
-      currentSearchAborted = false;
-      const filters = {
-        linkedinLocation: document.getElementById('linkedinLocation').value.trim(),
-        linkedinJobTitle: document.getElementById('linkedinJobTitle').value.trim(),
-        linkedinCompany: document.getElementById('linkedinCompany').value.trim(),
-        linkedinSchool: document.getElementById('linkedinSchool').value.trim(),
-        facebookLocation: document.getElementById('facebookLocation').value.trim(),
-        facebookEducation: document.getElementById('facebookEducation').value.trim(),
-        facebookWorkplace: document.getElementById('facebookWorkplace').value.trim(),
-        facebookRelationship: document.getElementById('facebookRelationship').value
-      };
-
-      // Create progress bar
-      const progressBar = createProgressBar();
-      resultsContainer.innerHTML = '';
-      resultsContainer.appendChild(progressBar);
-
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      const abortBtn = document.getElementById('abortSearch');
-
-      abortBtn.addEventListener('click', () => {
-        currentSearchAborted = true;
-        showNotification('Search aborted', 'info');
-      });
-
-      // Collect all websites to search
-      const allSites = [];
-      selectedCategories.forEach(categoryName => {
-        categories[categoryName].forEach(site => {
-          allSites.push({
-            category: categoryName,
-            site: site,
-            searchURL: buildSearchURL(site, keyword, filters),
-            keyword: keyword
-          });
+      // Disable search button
+      searchBtn.disabled = true;
+      searchBtn.textContent = '🔍 Searching...';
+      
+      // Show progress
+      showSearchProgress();
+      
+      // Collect all sites to search
+      const sitesToSearch = [];
+      selectedCategories.forEach(category => {
+        categories[category].forEach(site => {
+          sitesToSearch.push({...site, category});
         });
       });
 
       const results = [];
-      const totalSites = allSites.length;
-      let completedSites = 0;
+      const total = sitesToSearch.length;
+      let completed = 0;
 
-      // Search each website
-      for (let i = 0; i < allSites.length; i++) {
-        if (currentSearchAborted) break;
-
-        const siteData = allSites[i];
-        progressText.textContent = `Searching ${siteData.site.name}... (${i + 1}/${totalSites})`;
-        progressFill.style.width = `${(i / totalSites) * 100}%`;
-
+      // Search each site
+      for (const site of sitesToSearch) {
+        if (currentSearch?.aborted) break;
+        
+        updateProgress(completed, total, `Searching ${site.name}...`);
+        
         try {
-          // For demonstration, we'll simulate actual content analysis
-          // In a real implementation, you'd need a proper backend proxy
-          const hasContent = await simulateContentSearch(siteData.site, keyword);
-          
-          if (hasContent.hasMatch) {
-            results.push({
-              ...siteData,
-              hasMatch: true,
-              matches: hasContent.matches,
-              relevanceScore: hasContent.relevanceScore,
-              status: 'Found matches'
-            });
-          } else {
-            results.push({
-              ...siteData,
-              hasMatch: false,
-              matches: [],
-              relevanceScore: 0,
-              status: 'No matches found'
-            });
-          }
+          const result = await scraper.searchSite(site, query, getSearchOptions());
+          result.category = site.category;
+          results.push(result);
         } catch (error) {
+          console.error(`Failed to search ${site.name}:`, error);
           results.push({
-            ...siteData,
+            site: site.name,
+            category: site.category,
             hasMatch: false,
-            matches: [],
+            error: error.message,
             relevanceScore: 0,
-            status: 'Error accessing site',
-            error: error.message
+            results: []
           });
         }
-
-        completedSites++;
         
-        // Small delay to prevent overwhelming servers
-        await new Promise(resolve => setTimeout(resolve, 200));
+        completed++;
+        await new Promise(resolve => setTimeout(resolve, 300)); // Rate limiting
       }
 
-      if (!currentSearchAborted) {
-        progressFill.style.width = '100%';
-        progressText.textContent = 'Search completed!';
-        
-        // Sort results by relevance score
-        results.sort((a, b) => b.relevanceScore - a.relevanceScore);
-        lastResults = results;
-        
-        setTimeout(() => {
-          renderResultsGrouped(results, keyword, resultsFilterInput.value);
-          saveCase(keyword, selectedCategories, filters, results);
-          
-          const matchCount = results.filter(r => r.hasMatch).length;
-          showNotification(`Search completed! Found matches on ${matchCount}/${totalSites} sites`, 'success');
-        }, 500);
+      // Process and display results
+      if (!currentSearch?.aborted) {
+        lastResults = results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+        displayResults(lastResults, query);
+        updateSearchSummary(lastResults);
+        showNotification(`Search completed! Found ${results.filter(r => r.hasMatch).length} matches`, 'success');
+      }
+
+      // Re-enable search
+      searchBtn.disabled = false;
+      searchBtn.textContent = '🚀 Start Investigation';
+      currentSearch = null;
+    }
+
+    function getSearchOptions() {
+      return {
+        deepSearch: document.getElementById('deepSearch')?.checked || false,
+        followRedirects: document.getElementById('followRedirects')?.checked || false,
+        extractEmails: document.getElementById('extractEmails')?.checked || false,
+        extractPhones: document.getElementById('extractPhones')?.checked || false,
+        maxResults: parseInt(document.getElementById('maxResults')?.value) || 10,
+        searchMode: document.getElementById('searchMode')?.value || 'comprehensive'
+      };
+    }
+
+    function showSearchProgress() {
+      const progressHtml = `
+        <div class="search-progress">
+          <div style="font-size: 1.3rem; margin-bottom: 15px;">🔍 Advanced OSINT Investigation in Progress</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Initializing search...</div>
+          <div style="margin-top: 15px;">
+            <button class="btn btn-danger btn-small" id="abortSearch">⏹️ Abort Search</button>
+          </div>
+        </div>
+      `;
+      
+      resultsContainer.innerHTML = progressHtml;
+      
+      currentSearch = { aborted: false };
+      document.getElementById('abortSearch').addEventListener('click', () => {
+        currentSearch.aborted = true;
+        showNotification('Search aborted by user', 'warning');
+        searchBtn.disabled = false;
+        searchBtn.textContent = '🚀 Start Investigation';
+      });
+    }
+
+    function updateProgress(completed, total, message) {
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      
+      if (progressFill && progressText) {
+        const percentage = (completed / total) * 100;
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${message} (${completed}/${total})`;
       }
     }
 
-    // Simulate content search (in real implementation, this would use your backend)
-    async function simulateContentSearch(site, keyword) {
-      // This simulates what would happen with real content analysis
-      const siteKeywords = {
-        'companies house': ['company', 'business', 'director', 'registration'],
-        'linkedin': ['professional', 'work', 'career', 'experience'],
-        'facebook': ['social', 'friend', 'profile', 'photo'],
-        'twitter': ['tweet', 'social', 'follow', 'post'],
-        'instagram': ['photo', 'picture', 'social', 'post'],
-        'court': ['case', 'legal', 'judgment', 'law'],
-        'register': ['professional', 'licensed', 'qualified', 'member']
-      };
-
-      const siteName = site.name.toLowerCase();
-      const searchKeyword = keyword.toLowerCase();
+    function displayResults(results, query) {
+      resultsContainer.innerHTML = '';
       
-      // Check if the keyword might be relevant to this type of site
-      let relevanceScore = 0;
-      let hasMatch = false;
-      let matches = [];
+      if (results.length === 0) {
+        resultsContainer.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #666;">
+            <div style="font-size: 3rem;">❌</div>
+            <h3>No Results Found</h3>
+            <p>Try adjusting your search terms or selecting different categories</p>
+          </div>
+        `;
+        return;
+      }
 
-      // Simulate content matching based on site type and keyword
-      for (const [siteType, keywords] of Object.entries(siteKeywords)) {
-        if (siteName.includes(siteType)) {
-          // Higher chance of match if keyword relates to site type
-          const isRelevant = keywords.some(k => searchKeyword.includes(k) || k.includes(searchKeyword));
-          
-          if (isRelevant) {
-            relevanceScore = Math.floor(Math.random() * 5) + 6; // 6-10 for relevant matches
-            hasMatch = true;
-            matches = [
-              {
-                text: `Found "${keyword}" in professional listing on ${site.name}`,
-                position: 150
-              }
-            ];
-          } else {
-            // Random chance for other matches
-            const randomMatch = Math.random() > 0.7; // 30% chance
-            if (randomMatch) {
-              relevanceScore = Math.floor(Math.random() * 4) + 1; // 1-4 for less relevant
-              hasMatch = true;
-              matches = [
-                {
-                  text: `Possible reference to "${keyword}" found in content`,
-                  position: 230
-                }
-              ];
-            }
-          }
-          break;
+      // Group results by category
+      const grouped = {};
+      results.forEach(result => {
+        if (!grouped[result.category]) grouped[result.category] = [];
+        grouped[result.category].push(result);
+      });
+
+      Object.entries(grouped).forEach(([category, categoryResults]) => {
+        const categorySection = document.createElement('div');
+        categorySection.innerHTML = `
+          <h3 style="color: #B13F17; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #eee;">
+            📁 ${category} (${categoryResults.filter(r => r.hasMatch).length}/${categoryResults.length} matches)
+          </h3>
+        `;
+        
+        categoryResults.forEach(result => {
+          const resultElement = createResultElement(result, query);
+          categorySection.appendChild(resultElement);
+        });
+        
+        resultsContainer.appendChild(categorySection);
+      });
+
+      // Show export section
+      exportSection.style.display = 'block';
+    }
+
+    function createResultElement(result, query) {
+      const hasResults = result.hasMatch && result.results && result.results.length > 0;
+      const statusClass = result.error ? 'result-error' : (hasResults ? 'result-match' : 'result-no-match');
+      const statusIcon = result.error ? '⚠️' : (hasResults ? '✅' : '❌');
+      const statusText = result.error ? 'Error' : (hasResults ? 'Match Found' : 'No Match');
+
+      const element = document.createElement('div');
+      element.className = `result-item ${statusClass}`;
+      
+      let content = `
+        <div class="result-header">
+          <div>
+            <div class="result-title">${result.site}</div>
+            <div class="result-status">
+              <span class="status-icon">${statusIcon}</span>
+              <span>${statusText}</span>
+              ${result.relevanceScore > 0 ? 
+                `<span class="score-badge ${getScoreClass(result.relevanceScore)}">
+                  Relevance: ${result.relevanceScore}/10
+                </span>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (result.error) {
+        content += `
+          <div class="result-details">
+            <strong>Error:</strong> ${result.error}
+          </div>
+        `;
+      } else if (hasResults) {
+        content += `
+          <div class="result-meta">
+            <div class="meta-item">
+              <div class="meta-label">Results Found</div>
+              <div class="meta-value">${result.results.length}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Search Time</div>
+              <div class="meta-value">${new Date(result.timestamp).toLocaleTimeString()}</div>
+            </div>
+            ${result.totalFound ? `
+            <div class="meta-item">
+              <div class="meta-label">Total Matches</div>
+              <div class="meta-value">${result.totalFound}</div>
+            </div>
+            ` : ''}
+          </div>
+        `;
+
+        // Show top results
+        const topResults = result.results.slice(0, 3);
+        topResults.forEach((item, index) => {
+          content += `
+            <div class="result-details" style="margin-top: 15px;">
+              <div style="font-weight: 600; color: #B13F17; margin-bottom: 8px;">
+                📄 Result ${index + 1}: ${highlightKeywords(item.title, query)}
+              </div>
+              ${item.snippet ? `
+                <div class="match-snippet">
+                  ${highlightKeywords(item.snippet, query)}
+                </div>
+              ` : ''}
+              ${item.extractedData && Object.keys(item.extractedData).length > 0 ? `
+                <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                  <strong>Extracted Data:</strong> 
+                  ${Object.entries(item.extractedData).map(([key, value]) => 
+                    `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
+                  ).join(' | ')}
+                </div>
+              ` : ''}
+              <div class="result-links" style="margin-top: 10px;">
+                ${item.url ? `<a href="${item.url}" target="_blank" class="btn btn-success btn-small">🔗 View Result</a>` : ''}
+                <span style="margin-left: 10px; font-size: 0.9rem; color: #666;">
+                  Confidence: ${item.confidence || 'medium'} | Relevance: ${item.relevance || 0}/10
+                </span>
+              </div>
+            </div>
+          `;
+        });
+
+        if (result.results.length > 3) {
+          content += `
+            <div style="margin-top: 15px; text-align: center;">
+              <button class="btn btn-small" onclick="showAllResults('${result.site}')">
+                📋 Show All ${result.results.length} Results
+              </button>
+            </div>
+          `;
         }
       }
 
-      // Add some randomness to simulate real-world variability
-      if (!hasMatch && Math.random() > 0.85) {
-        hasMatch = true;
-        relevanceScore = Math.floor(Math.random() * 3) + 1;
-        matches = [
-          {
-            text: `Reference to "${keyword}" found in search results`,
-            position: 100
-          }
-        ];
-      }
-
-      return {
-        hasMatch,
-        matches,
-        relevanceScore
-      };
-    }
-
-    function renderResultsGrouped(results, keyword, filterText = '') {
-      const grouped = {};
-      results.forEach(r => {
-        if (filterText && !(
-          r.site.name.toLowerCase().includes(filterText.toLowerCase()) ||
-          r.category.toLowerCase().includes(filterText.toLowerCase()) ||
-          r.keyword.toLowerCase().includes(filterText.toLowerCase())
-        )) return;
-        if (!grouped[r.category]) grouped[r.category] = [];
-        grouped[r.category].push(r);
-      });
-
-      resultsContainer.innerHTML = '';
-      if (Object.keys(grouped).length === 0) {
-        resultsContainer.innerHTML = '<p style="color: #888; text-align: center; padding: 40px;">No results found for this filter.</p>';
-        return;
-      }
-
-      // Add summary
-      const totalResults = results.length;
-      const matchingResults = results.filter(r => r.hasMatch).length;
-      const summaryDiv = document.createElement('div');
-      summaryDiv.style.cssText = 'background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;';
-      summaryDiv.innerHTML = `
-        <strong>Search Summary:</strong> Found ${matchingResults} matches out of ${totalResults} websites searched
-        <br><small>Query: "${keyword}"</small>
+      // Always show search URL
+      content += `
+        <div class="result-links" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+          <a href="${result.searchUrl}" target="_blank" class="btn btn-small">🔍 Open Search Page</a>
+        </div>
       `;
-      resultsContainer.appendChild(summaryDiv);
 
-      Object.keys(grouped).forEach(category => {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'result-category-group';
-        const header = document.createElement('div');
-        header.className = 'result-category-header';
-        const matchCount = grouped[category].filter(r => r.hasMatch).length;
-        header.innerHTML = `<span>${category} (${matchCount} matches)</span><span class="dropdown-icon">▼</span>`;
-        groupDiv.appendChild(header);
+      element.innerHTML = content;
+      return element;
+    }
 
-        const list = document.createElement('div');
-        grouped[category].forEach(result => {
-          const resultDiv = document.createElement('div');
-          resultDiv.className = `result-item ${result.hasMatch ? 'result-match' : 'result-no-match'}`;
-          
-          let content = `
-            <div style="margin-bottom: 8px;">
-              <strong>${highlightKeyword(result.site.name, keyword)}</strong>
-              <span style="color: #666; margin-left: 10px;">${result.hasMatch ? '✅ Match Found' : '❌ No Match'}</span>
-            </div>
-          `;
+    function getScoreClass(score) {
+      if (score >= 8) return 'score-high';
+      if (score >= 5) return 'score-medium';
+      return 'score-low';
+    }
 
-          if (result.hasMatch && result.matches.length > 0) {
-            content += `
-              <div style="margin-bottom: 8px; color: #28a745;">
-                <strong>Relevance Score: ${result.relevanceScore}/10</strong>
-              </div>
-              <div style="margin-bottom: 8px; background: #f8f9fa; padding: 8px; border-radius: 4px; font-style: italic;">
-                "${result.matches[0].text}"
-              </div>
-            `;
-          } else {
-            content += `
-              <div style="margin-bottom: 8px; color: #666;">
-                ${result.status || 'No matches found'}
-              </div>
-            `;
-          }
-
-          content += `<a href="${result.searchURL}" target="_blank" class="btn btn-small">🔗 Open Search</a>`;
-          
-          resultDiv.innerHTML = content;
-          list.appendChild(resultDiv);
-        });
-        
-        groupDiv.appendChild(list);
-        let open = true;
-        header.addEventListener('click', () => {
-          open = !open;
-          list.style.display = open ? '' : 'none';
-          header.querySelector('.dropdown-icon').textContent = open ? '▼' : '▶';
-        });
-        resultsContainer.appendChild(groupDiv);
+    function highlightKeywords(text, query) {
+      if (!text || !query) return text;
+      
+      const keywords = query.split(/\s+/).filter(word => word.length > 2);
+      let highlightedText = text;
+      
+      keywords.forEach(keyword => {
+        const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\        const matchR')})`, 'gi');
+        highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
       });
+      
+      return highlightedText;
     }
 
-    resultsFilterInput.addEventListener('input', () => {
-      renderResultsGrouped(lastResults, searchInput.value.trim(), resultsFilterInput.value);
-    });
+    function updateSearchSummary(results) {
+      const totalSearched = results.length;
+      const totalMatches = results.filter(r => r.hasMatch).length;
+      const avgScore = results.length > 0 ? 
+        (results.reduce((sum, r) => sum + r.relevanceScore, 0) / results.length).toFixed(1) : 0;
+      const successRate = totalSearched > 0 ? 
+        ((totalMatches / totalSearched) * 100).toFixed(0) : 0;
 
-    // --- Cases Management ---
-    function saveCase(keyword, categoriesArr, filters, results) {
-      const caseData = {
-        id: Date.now(),
-        keyword: keyword,
-        categories: categoriesArr,
-        filters: filters,
-        results: results,
-        timestamp: new Date().toISOString(),
-        date: new Date().toLocaleDateString()
-      };
-      savedCases.unshift(caseData);
-      if (savedCases.length > 50) savedCases = savedCases.slice(0, 50);
-      renderCases();
+      document.getElementById('totalSearched').textContent = totalSearched;
+      document.getElementById('totalMatches').textContent = totalMatches;
+      document.getElementById('avgScore').textContent = avgScore;
+      document.getElementById('successRate').textContent = successRate + '%';
+      
+      searchSummary.style.display = 'block';
     }
-    function renderCases(filterText = '') {
-      const filteredCases = savedCases.filter(c =>
-        c.keyword.toLowerCase().includes(filterText.toLowerCase()) ||
-        c.date.includes(filterText)
-      );
-      casesContainer.innerHTML = '';
-      if (filteredCases.length === 0) {
-        casesContainer.innerHTML = '<p style="text-align: center; color: #888; padding: 40px;">No saved cases found</p>';
-        return;
-      }
-      filteredCases.forEach(caseData => {
-        const matchCount = caseData.results.filter(r => r.hasMatch).length;
-        const caseDiv = document.createElement('div');
-        caseDiv.className = 'case-item';
-        caseDiv.innerHTML = `
-          <div>
-            <div style="font-weight: 600; color: #B13F17; margin-bottom: 5px;">"${caseData.keyword}"</div>
-            <div style="color: #888; font-size: 0.9rem;">${caseData.date} • ${caseData.categories.length} categories • ${matchCount}/${caseData.results.length} matches</div>
-          </div>
-          <div>
-            <button class="btn btn-small" onclick="loadCase(${caseData.id})">Load</button>
-            <button class="btn btn-danger btn-small" onclick="deleteCase(${caseData.id})">Delete</button>
+
+    // Global function for showing all results
+    window.showAllResults = function(siteName) {
+      const siteResult = lastResults.find(r => r.site === siteName);
+      if (!siteResult || !siteResult.results) return;
+
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.8); z-index: 10000;
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+      `;
+      
+      const content = document.createElement('div');
+      content.style.cssText = `
+        background: white; border-radius: 10px; padding: 30px;
+        max-width: 800px; max-height: 80vh; overflow-y: auto;
+        width: 100%;
+      `;
+      
+      let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="color: #B13F17; margin: 0;">All Results from ${siteName}</h2>
+          <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
+                  style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
+            ✕ Close
+          </button>
+        </div>
+      `;
+      
+      siteResult.results.forEach((result, index) => {
+        html += `
+          <div style="border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+            <h4 style="color: #B13F17; margin-top: 0;">${result.title}</h4>
+            ${result.snippet ? `<p style="color: #666;">${result.snippet}</p>` : ''}
+            ${result.url ? `
+              <a href="${result.url}" target="_blank" class="btn btn-success btn-small">
+                🔗 View Result
+              </a>
+            ` : ''}
+            <div style="margin-top: 10px; font-size: 0.9rem; color: #999;">
+              Relevance: ${result.relevance}/10 | Confidence: ${result.confidence}
+            </div>
           </div>
         `;
-        casesContainer.appendChild(caseDiv);
       });
-    }
-    window.loadCase = function(caseId) {
-      const caseData = savedCases.find(c => c.id === caseId);
-      if (!caseData) return;
-      searchInput.value = caseData.keyword;
-      Object.entries(caseData.filters).forEach(([key, value]) => {
-        const element = document.getElementById(key);
-        if (element) element.value = value || '';
+      
+      content.innerHTML = html;
+      modal.appendChild(content);
+      document.body.appendChild(modal);
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
       });
-      document.querySelectorAll('.category-checkbox').forEach(cb => {
-        cb.checked = caseData.categories.includes(cb.dataset.category);
-        cb.closest('.category-card').classList.toggle('selected', cb.checked);
-      });
-      lastResults = caseData.results;
-      renderResultsGrouped(caseData.results, caseData.keyword, resultsFilterInput.value);
-      showNotification('Case loaded successfully', 'success');
-    };
-    window.deleteCase = function(caseId) {
-      if (!confirm('Delete this case?')) return;
-      savedCases = savedCases.filter(c => c.id !== caseId);
-      renderCases(searchCasesInput.value);
-      showNotification('Case deleted', 'success');
     };
 
-    // --- Export Functions ---
-    function exportReport() {
-      if (!resultsContainer.innerHTML.trim() || resultsContainer.innerHTML.includes('Enter keywords')) {
+    // Event Listeners
+    function setupEventListeners() {
+      searchBtn.addEventListener('click', performAdvancedSearch);
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performAdvancedSearch();
+      });
+
+      document.getElementById('selectAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('.category-checkbox').forEach(cb => {
+          cb.checked = true;
+          cb.closest('.category-card').style.opacity = '1';
+        });
+        showNotification('All categories selected', 'success');
+      });
+
+      document.getElementById('deselectAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('.category-checkbox').forEach(cb => {
+          cb.checked = false;
+          cb.closest('.category-card').style.opacity = '0.6';
+        });
+        showNotification('All categories deselected', 'info');
+      });
+
+      document.getElementById('selectRecommendedBtn').addEventListener('click', () => {
+        const recommended = ['Professional Networks', 'Social Media', 'Professional Registers'];
+        document.querySelectorAll('.category-checkbox').forEach(cb => {
+          const isRecommended = recommended.includes(cb.dataset.category);
+          cb.checked = isRecommended;
+          cb.closest('.category-card').style.opacity = isRecommended ? '1' : '0.6';
+        });
+        showNotification('Recommended categories selected', 'success');
+      });
+
+      document.getElementById('exportBtn')?.addEventListener('click', exportDetailedReport);
+    }
+
+    function exportDetailedReport() {
+      if (!lastResults || lastResults.length === 0) {
         showNotification('No results to export', 'error');
         return;
       }
+
+      const query = searchInput.value.trim();
       const timestamp = new Date().toLocaleString();
-      const keyword = searchInput.value.trim();
-      const matchingResults = lastResults.filter(r => r.hasMatch);
+      const matches = lastResults.filter(r => r.hasMatch);
       
-      let htmlContent = `
+      let html = `
         <!DOCTYPE html>
         <html>
         <head>
-          <title>OSINT Report - ${keyword}</title>
+          <title>Advanced OSINT Report - ${query}</title>
           <meta charset="UTF-8">
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 30px; max-width: 900px; margin: 0 auto; line-height: 1.6; }
-            h1 { color: #B13F17; border-bottom: 3px solid #B13F17; padding-bottom: 10px; }
-            h2 { color: #B13F17; margin-top: 30px; }
-            .match { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
-            .no-match { background: #fff2f2; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #dc3545; }
-            .summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-            a { color: #B13F17; text-decoration: none; }
-            .matches-list { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+            body { font-family: 'Segoe UI', sans-serif; margin: 40px; line-height: 1.6; }
+            h1 { color: #B13F17; border-bottom: 3px solid #B13F17; padding-bottom: 15px; }
+            h2 { color: #B13F17; margin-top: 35px; }
+            .summary { background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0; }
+            .match { background: #e8f5e8; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 5px solid #28a745; }
+            .result-item { margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; }
+            .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background-color: #f8f9fa; font-weight: 600; }
           </style>
         </head>
         <body>
-          <h1>🔍 OSINT Search Report</h1>
+          <h1>🔍 Advanced OSINT Investigation Report</h1>
+          
           <div class="summary">
-            <h2>Search Summary</h2>
-            <p><strong>Query:</strong> "${keyword}"</p>
-            <p><strong>Generated:</strong> ${timestamp}</p>
-            <p><strong>Total Sites Searched:</strong> ${lastResults.length}</p>
-            <p><strong>Sites with Matches:</strong> ${matchingResults.length}</p>
-            <p><strong>Success Rate:</strong> ${((matchingResults.length / lastResults.length) * 100).toFixed(1)}%</p>
+            <h2>Investigation Summary</h2>
+            <table>
+              <tr><td><strong>Query:</strong></td><td>"${query}"</td></tr>
+              <tr><td><strong>Generated:</strong></td><td>${timestamp}</td></tr>
+              <tr><td><strong>Sites Investigated:</strong></td><td>${lastResults.length}</td></tr>
+              <tr><td><strong>Positive Matches:</strong></td><td>${matches.length}</td></tr>
+              <tr><td><strong>Success Rate:</strong></td><td>${((matches.length/lastResults.length)*100).toFixed(1)}%</td></tr>
+              <tr><td><strong>Average Relevance:</strong></td><td>${(lastResults.reduce((s,r) => s + r.relevanceScore, 0) / lastResults.length).toFixed(1)}/10</td></tr>
+            </table>
           </div>
       `;
 
-      // Add matches section
-      if (matchingResults.length > 0) {
-        htmlContent += '<h2>✅ Sites with Matches</h2>';
-        matchingResults.forEach(result => {
-          htmlContent += `
+      if (matches.length > 0) {
+        html += '<h2>✅ Detailed Findings</h2>';
+        matches.forEach(result => {
+          html += `
             <div class="match">
-              <h3>${result.site.name}</h3>
+              <h3>${result.site} (Relevance: ${result.relevanceScore}/10)</h3>
               <p><strong>Category:</strong> ${result.category}</p>
-              <p><strong>Relevance Score:</strong> ${result.relevanceScore}/10</p>
-              <p><strong>URL:</strong> <a href="${result.searchURL}" target="_blank">${result.searchURL}</a></p>
+              <p><strong>Search URL:</strong> <a href="${result.searchUrl}" target="_blank">${result.searchUrl}</a></p>
+              <p><strong>Results Found:</strong> ${result.results?.length || 0}</p>
           `;
-          if (result.matches && result.matches.length > 0) {
-            htmlContent += '<div class="matches-list"><strong>Match Context:</strong><br>';
-            result.matches.forEach(match => {
-              htmlContent += `<em>"${match.text}"</em><br>`;
+          
+          if (result.results && result.results.length > 0) {
+            html += '<h4>Individual Results:</h4>';
+            result.results.forEach((item, idx) => {
+              html += `
+                <div class="result-item">
+                  <p><strong>Result ${idx + 1}:</strong> ${item.title}</p>
+                  ${item.snippet ? `<p><em>${item.snippet}</em></p>` : ''}
+                  ${item.url ? `<p><strong>Direct Link:</strong> <a href="${item.url}" target="_blank">${item.url}</a></p>` : ''}
+                  <p><strong>Confidence:</strong> ${item.confidence} | <strong>Relevance:</strong> ${item.relevance}/10</p>
+                </div>
+              `;
             });
-            htmlContent += '</div>';
           }
-          htmlContent += '</div>';
+          
+          html += '</div>';
         });
       }
 
       // Add no matches section
-      const noMatchResults = lastResults.filter(r => !r.hasMatch);
-      if (noMatchResults.length > 0) {
-        htmlContent += '<h2>❌ Sites with No Matches</h2>';
-        htmlContent += '<div style="columns: 2; column-gap: 20px;">';
-        noMatchResults.forEach(result => {
-          htmlContent += `
-            <div class="no-match" style="break-inside: avoid;">
-              <strong>${result.site.name}</strong><br>
-              <small>Category: ${result.category}</small><br>
-              <small>Status: ${result.status || 'No matches found'}</small>
-            </div>
+      const noMatches = lastResults.filter(r => !r.hasMatch);
+      if (noMatches.length > 0) {
+        html += '<h2>❌ Sites with No Matches</h2>';
+        html += '<table><tr><th>Site</th><th>Category</th><th>Status</th></tr>';
+        noMatches.forEach(result => {
+          html += `
+            <tr>
+              <td>${result.site}</td>
+              <td>${result.category}</td>
+              <td>${result.error || 'No matches found'}</td>
+            </tr>
           `;
         });
-        htmlContent += '</div>';
+        html += '</table>';
       }
 
-      htmlContent += `
-          <div style="margin-top: 40px; color: #666; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 20px;">
-            <p><strong>Disclaimer:</strong> This report is generated by an automated OSINT tool. All information should be verified through multiple sources and proper investigative procedures.</p>
-            <p><strong>Generated by:</strong> Modern OSINT Search Tool</p>
-            <p><strong>Note:</strong> ✅ indicates sites where potential matches were found, ❌ indicates no matches found</p>
+      html += `
+          <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #eee; color: #666; font-size: 0.9em;">
+            <p><strong>Disclaimer:</strong> This report was generated by an automated OSINT tool. All findings should be verified through additional sources and proper investigative procedures.</p>
+            <p><strong>Generated by:</strong> Advanced OSINT Search Tool</p>
+            <p><strong>Report Type:</strong> Comprehensive Investigation with Direct Result Links</p>
           </div>
         </body>
         </html>
       `;
 
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const blob = new Blob([html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `OSINT_Report_${keyword.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
+      a.download = `OSINT_Investigation_${query.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showNotification('Report exported successfully', 'success');
+      
+      showNotification('Detailed report exported successfully!', 'success');
     }
 
-    // --- Event Listeners ---
-    function setupEventListeners() {
-      searchBtn.addEventListener('click', performSearch);
-      searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
-      selectAllBtn.addEventListener('click', () => {
-        document.querySelectorAll('.category-checkbox').forEach(cb => {
-          cb.checked = true;
-          cb.closest('.category-card').classList.add('selected');
-        });
-        showNotification('All categories selected', 'success');
-      });
-      deselectAllBtn.addEventListener('click', () => {
-        document.querySelectorAll('.category-checkbox').forEach(cb => {
-          cb.checked = false;
-          cb.closest('.category-card').classList.remove('selected');
-        });
-        showNotification('All categories deselected', 'info');
-      });
-      addCategoryBtn.addEventListener('click', () => {
-        const name = newCategoryInput.value.trim();
-        if (!name) {
-          showNotification('Please enter a category name', 'error');
-          return;
-        }
-        if (categories[name]) {
-          showNotification('Category already exists', 'error');
-          return;
-        }
-        categories[name] = [];
-        newCategoryInput.value = '';
-        renderCategories();
-        showNotification('Category added successfully', 'success');
-      });
-      addWebsiteBtn.addEventListener('click', () => {
-        const category = categorySelect.value;
-        const name = websiteName.value.trim();
-        const url = websiteURL.value.trim();
-        if (!category || !name || !url) {
-          showNotification('Please fill all fields', 'error');
-          return;
-        }
-        try {
-          new URL(url);
-          categories[category].push({ name, url });
-          websiteName.value = '';
-          websiteURL.value = '';
-          renderCategories();
-          showNotification('Website added successfully', 'success');
-        } catch {
-          showNotification('Please enter a valid URL', 'error');
-        }
-      });
-      exportBtn.addEventListener('click', exportReport);
-      searchCasesInput.addEventListener('input', (e) => {
-        renderCases(e.target.value);
-      });
-      clearCasesBtn.addEventListener('click', () => {
-        if (!confirm('Clear all saved cases?')) return;
-        savedCases = [];
-        renderCases();
-        showNotification('All cases cleared', 'success');
-      });
-    }
-
-    // --- Initialize Application ---
+    // Initialize the application
     function init() {
-      loadCategoriesFromStorage();
-      setupImageUpload();
-      setupSearchEngines();
+      initializeCategories();
       setupEventListeners();
-      renderCategories();
-      renderCases();
-      showNotification('Modern OSINT Tool loaded successfully!', 'success');
+      showNotification('Advanced OSINT Search Tool initialized successfully!', 'success');
     }
+
+    // Start the application when DOM is ready
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>

@@ -28,16 +28,9 @@
       margin-bottom: 12px;
       font-weight: 700;
     }
-    h1 {
-      font-size: 2.4rem;
-      margin-top: 0;
-    }
-    h2 {
-      font-size: 1.5rem;
-    }
-    h3 {
-      font-size: 1.1rem;
-    }
+    h1 { font-size: 2.4rem; margin-top: 0; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.1rem; }
     .btn, button, input[type="submit"] {
       background: #B13F17;
       color: #fff;
@@ -52,35 +45,14 @@
       outline: none;
       box-shadow: none;
     }
-    .btn:hover, button:hover, input[type="submit"]:hover {
-      background: #8a2e11;
-    }
-    .btn-small {
-      padding: 6px 14px;
-      font-size: 0.95rem;
-      border-radius: 4px;
-    }
-    .btn-danger {
-      background: #dc3545;
-      color: #fff;
-    }
-    .btn-danger:hover {
-      background: #c82333;
-    }
-    .btn-success {
-      background: #28a745;
-      color: #fff;
-    }
-    .btn-success:hover {
-      background: #218838;
-    }
-    .btn-secondary {
-      background: #6c757d;
-      color: #fff;
-    }
-    .btn-secondary:hover {
-      background: #545b62;
-    }
+    .btn:hover, button:hover, input[type="submit"]:hover { background: #8a2e11; }
+    .btn-small { padding: 6px 14px; font-size: 0.95rem; border-radius: 4px; }
+    .btn-danger { background: #dc3545; color: #fff; }
+    .btn-danger:hover { background: #c82333; }
+    .btn-success { background: #28a745; color: #fff; }
+    .btn-success:hover { background: #218838; }
+    .btn-secondary { background: #6c757d; color: #fff; }
+    .btn-secondary:hover { background: #545b62; }
     input, select, textarea {
       padding: 10px 12px;
       border: 1px solid #ccc;
@@ -93,17 +65,13 @@
       box-shadow: none;
       transition: border 0.2s;
     }
-    input:focus, select:focus, textarea:focus {
-      border: 1.5px solid #B13F17;
-    }
+    input:focus, select:focus, textarea:focus { border: 1.5px solid #B13F17; }
     .search-container {
       display: flex;
       gap: 12px;
       margin-bottom: 18px;
     }
-    .search-container input {
-      flex: 1;
-    }
+    .search-container input { flex: 1; }
     .advanced-options {
       background: #fff;
       border-radius: 8px;
@@ -127,9 +95,7 @@
       gap: 12px;
       transition: all 0.2s;
     }
-    .category-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+    .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .category-checkbox {
       width: 18px;
       height: 18px;
@@ -160,18 +126,14 @@
       border-radius: 3px;
       transition: background 0.2s;
     }
-    .expand-btn:hover {
-      background: #f0e6e1;
-    }
+    .expand-btn:hover { background: #f0e6e1; }
     .category-websites {
       display: none;
       margin-top: 12px;
       padding-top: 12px;
       border-top: 1px solid #eee;
     }
-    .category-websites.expanded {
-      display: block;
-    }
+    .category-websites.expanded { display: block; }
     .website-item {
       display: flex;
       align-items: center;
@@ -188,9 +150,7 @@
       color: #B13F17;
       text-decoration: underline;
     }
-    .results-container {
-      margin-top: 20px;
-    }
+    .results-container { margin-top: 20px; }
     .result-item {
       background: #fff;
       border-radius: 10px;
@@ -199,9 +159,7 @@
       border: 1px solid #e9ecef;
       transition: all 0.2s;
     }
-    .result-item:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    .result-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .result-match {
       border-left: 5px solid #28a745;
       background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
@@ -234,14 +192,56 @@
       color: #B13F17;
       margin-bottom: 5px;
     }
-    .stat-label {
-      color: #666;
-      font-weight: 600;
+    .stat-label { color: #666; font-weight: 600; }
+    .image-search-section {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 18px 18px 10px 18px;
+      margin: 24px 0 0 0;
+      border: 1px solid #e0e0e0;
     }
+    .image-drop-zone {
+      border: 2px dashed #B13F17;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      color: #B13F17;
+      background: #fff;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+    .image-drop-zone.dragover { background: #f0e6e1; }
+    .image-preview {
+      max-width: 180px;
+      max-height: 180px;
+      margin: 10px auto 10px auto;
+      display: block;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .image-search-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      justify-content: center;
+    }
+    .image-search-links a {
+      text-decoration: none;
+      color: #fff;
+      background: #B13F17;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.2s;
+      font-size: 1rem;
+    }
+    .image-search-links a:hover { background: #8a2e11; }
     @media (max-width: 768px) {
       .container { padding: 15px; }
       .categories-grid { grid-template-columns: 1fr; }
       .summary-stats { grid-template-columns: repeat(2, 1fr); }
+      .image-search-links { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -289,12 +289,23 @@
       </div>
     </section>
 
+    <!-- Image Search Section -->
+    <section class="image-search-section">
+      <h2>🖼️ Image Search (Reverse Lookup)</h2>
+      <div id="imageDropZone" class="image-drop-zone">
+        Drag & Drop an image here or <label style="color:#B13F17;cursor:pointer;text-decoration:underline;"><input type="file" id="imageInput" accept="image/*" style="display:none;">browse</label>
+      </div>
+      <img id="imagePreview" class="image-preview" style="display:none;" alt="Preview">
+      <div id="imageSearchLinks" class="image-search-links" style="display:none;"></div>
+      <div style="color:#666; font-size:0.98rem; text-align:center; margin-top:10px;">
+        Supported: Google Images, TinEye, Yandex, Bing Images, Baidu Images
+      </div>
+    </section>
+
     <!-- Categories Section -->
     <section>
       <h2>📋 Investigation Categories</h2>
-      <div class="categories-grid" id="categoriesContainer">
-        <!-- Categories will be populated here -->
-      </div>
+      <div class="categories-grid" id="categoriesContainer"></div>
       <div style="margin-top: 20px;">
         <button class="btn btn-small" id="selectAllBtn">✅ Select All</button>
         <button class="btn btn-small" id="deselectAllBtn">❌ Deselect All</button>
@@ -325,7 +336,6 @@
           </div>
         </div>
       </div>
-      
       <div id="resultsContainer" class="results-container">
         <div style="text-align: center; color: #666; padding: 60px 20px;">
           <div style="font-size: 3rem; margin-bottom: 20px;">🔍</div>
@@ -337,121 +347,113 @@
   </div>
 
   <script>
-    // OSINT Tool Database
-// ...existing code...
-const defaultSiteDatabase = {
-  "Searches": [
-    { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk/" },
-    { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
-    { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
-    { name: "Caseboard", baseUrl: "https://caseboard.io/cases/" }
-  ],
-  "Court Case Searches": [
-    { name: "CaseMine", baseUrl: "https://www.casemine.com/" },
-    { name: "ECHR HUDOC", baseUrl: "https://hudoc.echr.coe.int/eng#{%22documentcollectionid2%22:[%22GRANDCHAMBER%22,%22CHAMBER%22]}" },
-    { name: "BAILII", baseUrl: "https://www.bailii.org/" },
-    { name: "Employment Tribunal Decisions", baseUrl: "https://www.gov.uk/employment-tribunal-decisions" },
-    { name: "Supreme Court UK", baseUrl: "https://www.supremecourt.uk/cases" }
-  ],
-  "Occupation Registers": [
-    { name: "GDC Search Registers", baseUrl: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
-    { name: "GMC Medical Register", baseUrl: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
-    { name: "GDC Registration", baseUrl: "https://www.gdc-uk.org/registration" },
-    { name: "NMC Register", baseUrl: "https://www.nmc.org.uk/registration/search-the-register" },
-    { name: "HCPC Register", baseUrl: "https://www.hcpc-uk.org/check-the-register" },
-    { name: "Pharmacy Register", baseUrl: "https://www.pharmacyregulation.org/registers" },
-    { name: "Optical Register", baseUrl: "https://www.optical.org/en" },
-    { name: "GCC Register", baseUrl: "https://www.gcc-uk.org/registration/the-register" },
-    { name: "Osteopathy Register", baseUrl: "https://www.osteopathy.org.uk/register-search" },
-    { name: "SRA Solicitor Check", baseUrl: "https://www.sra.org.uk/consumers/solicitor-check/" },
-    { name: "Bar Standards Board", baseUrl: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html" },
-    { name: "CLC Find a Conveyancer", baseUrl: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/" },
-    { name: "CILEX Directory", baseUrl: "https://www.cilexregulation.org.uk/practitioners-directory" },
-    { name: "Faculty Office Notary", baseUrl: "https://www.facultyoffice.org.uk/notary/find-a-notary/" },
-    { name: "ICAEW Find", baseUrl: "https://find.icaew.com/" },
-    { name: "ACCA Find an Accountant", baseUrl: "https://www.accaglobal.com/an/en/member/find-an-accountant.html" },
-    { name: "RICS Find a Member", baseUrl: "https://www.rics.org/find-a-member" },
-    { name: "ARB", baseUrl: "https://arb.org.uk/public-information/members-of-the-public/" },
-    { name: "Engineering Council Registers", baseUrl: "https://www.engc.org.uk/registers" },
-    { name: "Electrical Competent Person", baseUrl: "https://www.electricalcompetentperson.co.uk/" },
-    { name: "Gas Safe Register", baseUrl: "https://www.gassaferegister.co.uk/find-an-engineer" },
-    { name: "NHBC Find a Builder", baseUrl: "https://www.nhbc.co.uk/homeowners/find-a-builder" },
-    { name: "FMB Find a Builder", baseUrl: "https://www.fmb.org.uk/find-a-builder" },
-    { name: "IPI Find an Investigator", baseUrl: "https://ipi.org.uk/find-an-investigator" },
-    { name: "SIA Register", baseUrl: "https://services.sia.homeoffice.gov.uk/rolh/" },
-    { name: "OISC Adviser Finder", baseUrl: "https://home.oisc.gov.uk/adviser_finder/finder.aspx" },
-    { name: "Social Work England", baseUrl: "https://www.socialworkengland.org.uk/search-the-register/" },
-    { name: "BPS Psychological Workforce", baseUrl: "https://www.bps.org.uk/psychological-workforce" },
-    { name: "RCVS Find a Vet", baseUrl: "https://findavet.rcvs.org.uk/home/" },
-    { name: "CQC Find a Care Home", baseUrl: "https://www.cqc.org.uk/find-a-care-home" },
-    { name: "FCA Register", baseUrl: "https://register.fca.org.uk/" },
-    { name: "Charity Commission Register", baseUrl: "https://register-of-charities.charitycommission.gov.uk/" }
-  ],
-  "Genealogy": [
-    { name: "UK Probate Search", baseUrl: "https://probatesearch.service.gov.uk/#wills" }
-  ],
-  "Transport": [
-    { name: "Car Tax Check", baseUrl: "https://cartaxcheck.co.uk/" },
-    { name: "Plane Finder", baseUrl: "https://planefinder.net/" },
-    { name: "Marine Traffic", baseUrl: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4" },
-    { name: "Vessel Finder", baseUrl: "https://www.vesselfinder.com/vessels" },
-    { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
-    { name: "Racing Post Racecards", baseUrl: "https://www.racingpost.com/racecards" }
-  ],
-  "Sanctions, Watchlists, Insolvency, PEPs": [
-    { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
-    { name: "The Gazette", baseUrl: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices" },
-    { name: "Interpol Red Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices" },
-    { name: "Interpol Yellow Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices" },
-    { name: "FBI Most Wanted", baseUrl: "https://www.fbi.gov/wanted/topten" },
-    { name: "Proscribed Terror Groups", baseUrl: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version" },
-    { name: "EU Most Wanted", baseUrl: "https://eumostwanted.eu/" },
-    { name: "UK Sanctions List", baseUrl: "https://search-uk-sanctions-list.service.gov.uk/" },
-    { name: "NCA Most Wanted", baseUrl: "https://www.nationalcrimeagency.gov.uk/most-wanted" },
-    { name: "FCA Warning List", baseUrl: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms" },
-    { name: "SFO Cases", baseUrl: "https://www.gov.uk/sfo-cases" },
-    { name: "Vexatious Litigants", baseUrl: "https://www.gov.uk/guidance/vexatious-litigants" },
-    { name: "Tax Defaulters", baseUrl: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters" }
-  ],
-  "Social Media": [
-    { name: "Facebook", baseUrl: "https://www.facebook.com/" },
-    { name: "LinkedIn", baseUrl: "https://www.linkedin.com" },
-    { name: "Instagram", baseUrl: "https://www.instagram.com/" },
-    { name: "X (Twitter)", baseUrl: "https://x.com" },
-    { name: "TikTok", baseUrl: "https://www.tiktok.com/?kuid=31b6d78a-c086-437f-9ab0-df56eaf7fd8b&kref=vGWRdzLJnjYf" },
-    { name: "Reddit", baseUrl: "https://www.reddit.com/" }
-  ],
-  "Offshore Companies": [
-    { name: "Offshore Leaks", baseUrl: "https://offshoreleaks.icij.org/" },
-    { name: "OpenCorporates", baseUrl: "https://opencorporates.com/" }
-  ],
-  "Domain/Leaked/Cached": [
-    { name: "Who.is", baseUrl: "https://who.is/" },
-    { name: "Wayback Machine", baseUrl: "https://web.archive.org/" },
-    { name: "AnalyzeID", baseUrl: "https://analyzeid.com/" },
-    { name: "Have I Been Pwned", baseUrl: "https://haveibeenpwned.com/" },
-    { name: "IP Fingerprints", baseUrl: "https://www.ipfingerprints.com/" },
-    { name: "DataBreach", baseUrl: "https://databreach.com/" }
-  ]
-};
+    // --- CATEGORY & SITE DATABASE ---
+    const defaultSiteDatabase = {
+      "Searches": [
+        { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk/" },
+        { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
+        { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+        { name: "Caseboard", baseUrl: "https://caseboard.io/cases/" }
+      ],
+      "Court Case Searches": [
+        { name: "CaseMine", baseUrl: "https://www.casemine.com/" },
+        { name: "ECHR HUDOC", baseUrl: "https://hudoc.echr.coe.int/eng#{%22documentcollectionid2%22:[%22GRANDCHAMBER%22,%22CHAMBER%22]}" },
+        { name: "BAILII", baseUrl: "https://www.bailii.org/" },
+        { name: "Employment Tribunal Decisions", baseUrl: "https://www.gov.uk/employment-tribunal-decisions" },
+        { name: "Supreme Court UK", baseUrl: "https://www.supremecourt.uk/cases" }
+      ],
+      "Occupation Registers": [
+        { name: "GDC Search Registers", baseUrl: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+        { name: "GMC Medical Register", baseUrl: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+        { name: "GDC Registration", baseUrl: "https://www.gdc-uk.org/registration" },
+        { name: "NMC Register", baseUrl: "https://www.nmc.org.uk/registration/search-the-register" },
+        { name: "HCPC Register", baseUrl: "https://www.hcpc-uk.org/check-the-register" },
+        { name: "Pharmacy Register", baseUrl: "https://www.pharmacyregulation.org/registers" },
+        { name: "Optical Register", baseUrl: "https://www.optical.org/en" },
+        { name: "GCC Register", baseUrl: "https://www.gcc-uk.org/registration/the-register" },
+        { name: "Osteopathy Register", baseUrl: "https://www.osteopathy.org.uk/register-search" },
+        { name: "SRA Solicitor Check", baseUrl: "https://www.sra.org.uk/consumers/solicitor-check/" },
+        { name: "Bar Standards Board", baseUrl: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html" },
+        { name: "CLC Find a Conveyancer", baseUrl: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/" },
+        { name: "CILEX Directory", baseUrl: "https://www.cilexregulation.org.uk/practitioners-directory" },
+        { name: "Faculty Office Notary", baseUrl: "https://www.facultyoffice.org.uk/notary/find-a-notary/" },
+        { name: "ICAEW Find", baseUrl: "https://find.icaew.com/" },
+        { name: "ACCA Find an Accountant", baseUrl: "https://www.accaglobal.com/an/en/member/find-an-accountant.html" },
+        { name: "RICS Find a Member", baseUrl: "https://www.rics.org/find-a-member" },
+        { name: "ARB", baseUrl: "https://arb.org.uk/public-information/members-of-the-public/" },
+        { name: "Engineering Council Registers", baseUrl: "https://www.engc.org.uk/registers" },
+        { name: "Electrical Competent Person", baseUrl: "https://www.electricalcompetentperson.co.uk/" },
+        { name: "Gas Safe Register", baseUrl: "https://www.gassaferegister.co.uk/find-an-engineer" },
+        { name: "NHBC Find a Builder", baseUrl: "https://www.nhbc.co.uk/homeowners/find-a-builder" },
+        { name: "FMB Find a Builder", baseUrl: "https://www.fmb.org.uk/find-a-builder" },
+        { name: "IPI Find an Investigator", baseUrl: "https://ipi.org.uk/find-an-investigator" },
+        { name: "SIA Register", baseUrl: "https://services.sia.homeoffice.gov.uk/rolh/" },
+        { name: "OISC Adviser Finder", baseUrl: "https://home.oisc.gov.uk/adviser_finder/finder.aspx" },
+        { name: "Social Work England", baseUrl: "https://www.socialworkengland.org.uk/search-the-register/" },
+        { name: "BPS Psychological Workforce", baseUrl: "https://www.bps.org.uk/psychological-workforce" },
+        { name: "RCVS Find a Vet", baseUrl: "https://findavet.rcvs.org.uk/home/" },
+        { name: "CQC Find a Care Home", baseUrl: "https://www.cqc.org.uk/find-a-care-home" },
+        { name: "FCA Register", baseUrl: "https://register.fca.org.uk/" },
+        { name: "Charity Commission Register", baseUrl: "https://register-of-charities.charitycommission.gov.uk/" }
+      ],
+      "Genealogy": [
+        { name: "UK Probate Search", baseUrl: "https://probatesearch.service.gov.uk/#wills" }
+      ],
+      "Transport": [
+        { name: "Car Tax Check", baseUrl: "https://cartaxcheck.co.uk/" },
+        { name: "Plane Finder", baseUrl: "https://planefinder.net/" },
+        { name: "Marine Traffic", baseUrl: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4" },
+        { name: "Vessel Finder", baseUrl: "https://www.vesselfinder.com/vessels" },
+        { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
+        { name: "Racing Post Racecards", baseUrl: "https://www.racingpost.com/racecards" }
+      ],
+      "Sanctions, Watchlists, Insolvency, PEPs": [
+        { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+        { name: "The Gazette", baseUrl: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices" },
+        { name: "Interpol Red Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices" },
+        { name: "Interpol Yellow Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices" },
+        { name: "FBI Most Wanted", baseUrl: "https://www.fbi.gov/wanted/topten" },
+        { name: "Proscribed Terror Groups", baseUrl: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version" },
+        { name: "EU Most Wanted", baseUrl: "https://eumostwanted.eu/" },
+        { name: "UK Sanctions List", baseUrl: "https://search-uk-sanctions-list.service.gov.uk/" },
+        { name: "NCA Most Wanted", baseUrl: "https://www.nationalcrimeagency.gov.uk/most-wanted" },
+        { name: "FCA Warning List", baseUrl: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms" },
+        { name: "SFO Cases", baseUrl: "https://www.gov.uk/sfo-cases" },
+        { name: "Vexatious Litigants", baseUrl: "https://www.gov.uk/guidance/vexatious-litigants" },
+        { name: "Tax Defaulters", baseUrl: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters" }
+      ],
+      "Social Media": [
+        { name: "Facebook", baseUrl: "https://www.facebook.com/" },
+        { name: "LinkedIn", baseUrl: "https://www.linkedin.com" },
+        { name: "Instagram", baseUrl: "https://www.instagram.com/" },
+        { name: "X (Twitter)", baseUrl: "https://x.com" },
+        { name: "TikTok", baseUrl: "https://www.tiktok.com/?kuid=31b6d78a-c086-437f-9ab0-df56eaf7fd8b&kref=vGWRdzLJnjYf" },
+        { name: "Reddit", baseUrl: "https://www.reddit.com/" }
+      ],
+      "Offshore Companies": [
+        { name: "Offshore Leaks", baseUrl: "https://offshoreleaks.icij.org/" },
+        { name: "OpenCorporates", baseUrl: "https://opencorporates.com/" }
+      ],
+      "Domain/Leaked/Cached": [
+        { name: "Who.is", baseUrl: "https://who.is/" },
+        { name: "Wayback Machine", baseUrl: "https://web.archive.org/" },
+        { name: "AnalyzeID", baseUrl: "https://analyzeid.com/" },
+        { name: "Have I Been Pwned", baseUrl: "https://haveibeenpwned.com/" },
+        { name: "IP Fingerprints", baseUrl: "https://www.ipfingerprints.com/" },
+        { name: "DataBreach", baseUrl: "https://databreach.com/" }
+      ]
+    };
 
     let categories = defaultSiteDatabase;
     let selectedCategories = new Set();
 
-    // Initialize the application
-    function initializeApp() {
-      renderCategories();
-      setupEventListeners();
-    }
-
+    // --- CATEGORY RENDERING ---
     function renderCategories() {
       const container = document.getElementById('categoriesContainer');
       container.innerHTML = '';
-
       Object.entries(categories).forEach(([categoryName, sites]) => {
         const categoryCard = document.createElement('div');
         categoryCard.className = 'category-card';
-        
         categoryCard.innerHTML = `
           <input type="checkbox" class="category-checkbox" id="cat-${categoryName}" data-category="${categoryName}">
           <div class="category-title" onclick="toggleCategory('${categoryName}')">${categoryName}</div>
@@ -465,7 +467,6 @@ const defaultSiteDatabase = {
             `).join('')}
           </div>
         `;
-        
         container.appendChild(categoryCard);
       });
     }
@@ -479,7 +480,6 @@ const defaultSiteDatabase = {
     function expandCategory(categoryName) {
       const websites = document.getElementById(`websites-${categoryName}`);
       const btn = websites.previousElementSibling;
-      
       if (websites.classList.contains('expanded')) {
         websites.classList.remove('expanded');
         btn.textContent = '▼';
@@ -497,34 +497,25 @@ const defaultSiteDatabase = {
     }
 
     function setupEventListeners() {
-      // Search button
       document.getElementById('searchBtn').addEventListener('click', startSearch);
-      
-      // Enter key in search input
       document.getElementById('searchInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') startSearch();
       });
-
-      // Category selection buttons
       document.getElementById('selectAllBtn').addEventListener('click', () => {
         document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = true);
         updateSelectedCategories();
       });
-
       document.getElementById('deselectAllBtn').addEventListener('click', () => {
         document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = false);
         updateSelectedCategories();
       });
-
       document.getElementById('selectRecommendedBtn').addEventListener('click', () => {
         document.querySelectorAll('.category-checkbox').forEach(cb => {
-          const recommended = ['Company Searches', 'Professional Registers', 'Court Case Searches'];
+          const recommended = ['Searches', 'Occupation Registers', 'Court Case Searches'];
           cb.checked = recommended.includes(cb.dataset.category);
         });
         updateSelectedCategories();
       });
-
-      // Category checkboxes
       document.addEventListener('change', (e) => {
         if (e.target.classList.contains('category-checkbox')) {
           updateSelectedCategories();
@@ -532,22 +523,67 @@ const defaultSiteDatabase = {
       });
     }
 
+    // --- IMAGE SEARCH ---
+    function setupImageSearch() {
+      const dropZone = document.getElementById('imageDropZone');
+      const imageInput = document.getElementById('imageInput');
+      const imagePreview = document.getElementById('imagePreview');
+      const imageLinks = document.getElementById('imageSearchLinks');
+
+      function showLinks(imgUrl) {
+        imageLinks.innerHTML = `
+          <a href="https://images.google.com/searchbyimage?image_url=${encodeURIComponent(imgUrl)}" target="_blank">Google Images</a>
+          <a href="https://tineye.com/search?url=${encodeURIComponent(imgUrl)}" target="_blank">TinEye</a>
+          <a href="https://yandex.com/images/search?rpt=imageview&url=${encodeURIComponent(imgUrl)}" target="_blank">Yandex</a>
+          <a href="https://www.bing.com/images/searchbyimage?cbir=sbi&imgurl=${encodeURIComponent(imgUrl)}" target="_blank">Bing Images</a>
+          <a href="https://image.baidu.com/n/pc_search?queryImageUrl=${encodeURIComponent(imgUrl)}" target="_blank">Baidu Images</a>
+        `;
+        imageLinks.style.display = '';
+      }
+
+      function handleImage(file) {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+          // For privacy, we use a Data URL; for real reverse search, upload to a temp host or use browser extension.
+          showLinks(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+      dropZone.addEventListener('dragleave', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      });
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) handleImage(e.dataTransfer.files[0]);
+      });
+      dropZone.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', e => {
+        if (e.target.files.length) handleImage(e.target.files[0]);
+      });
+    }
+
+    // --- SEARCH LOGIC (UI DEMO) ---
     function startSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) {
         alert('Please enter a search term');
         return;
       }
-
       if (selectedCategories.size === 0) {
         alert('Please select at least one category to search');
         return;
       }
-
-      // Show progress
       showSearchProgress();
-      
-      // Simulate search process
       simulateSearch(query);
     }
 
@@ -570,14 +606,11 @@ const defaultSiteDatabase = {
       let progress = 0;
       const progressBar = document.getElementById('progress-bar');
       const progressText = document.getElementById('progress-text');
-      
       const interval = setInterval(() => {
         progress += Math.random() * 15;
         if (progress > 100) progress = 100;
-        
         progressBar.style.width = progress + '%';
         progressText.textContent = `Searching ${Math.floor(progress)}% complete...`;
-        
         if (progress >= 100) {
           clearInterval(interval);
           setTimeout(() => showMockResults(query), 1000);
@@ -585,34 +618,27 @@ const defaultSiteDatabase = {
       }, 500);
     }
 
+    // --- ADVANCED SCRAPING/EXTRACTION (UI DEMO) ---
     function showMockResults(query) {
       const resultsContainer = document.getElementById('resultsContainer');
       const searchSummary = document.getElementById('searchSummary');
-      
-      // Show summary stats
       searchSummary.style.display = 'block';
       document.getElementById('totalSearched').textContent = selectedCategories.size * 3;
       document.getElementById('totalMatches').textContent = Math.floor(Math.random() * 8) + 2;
       document.getElementById('avgScore').textContent = (Math.random() * 3 + 7).toFixed(1);
       document.getElementById('successRate').textContent = Math.floor(Math.random() * 30 + 60) + '%';
-      
-      // Show mock results
       const mockResults = generateMockResults(query);
       resultsContainer.innerHTML = mockResults;
     }
 
     function generateMockResults(query) {
       const results = [];
-      let resultCount = 0;
-      
       selectedCategories.forEach(categoryName => {
         const sites = categories[categoryName];
         const randomSites = sites.sort(() => 0.5 - Math.random()).slice(0, 2);
-        
         randomSites.forEach(site => {
           const hasMatch = Math.random() > 0.4;
           const relevanceScore = hasMatch ? Math.floor(Math.random() * 4) + 7 : Math.floor(Math.random() * 3) + 1;
-          
           results.push(`
             <div class="result-item ${hasMatch ? 'result-match' : 'result-no-match'}">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
@@ -627,40 +653,29 @@ const defaultSiteDatabase = {
                   <span>${hasMatch ? 'Match Found' : 'No Match'}</span>
                 </div>
               </div>
-              
               ${hasMatch ? `
                 <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 6px; margin: 8px 0; font-style: italic; color: #856404;">
-                  Found potential match for "${query}" - ${generateMockSnippet(query, site.name)}
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 12px 0; font-size: 0.9rem;">
-                  <div>
-                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Relevance Score</div>
-                    <div style="color: #333;">${relevanceScore}/10</div>
-                  </div>
-                  <div>
-                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Confidence</div>
-                    <div style="color: #333;">${relevanceScore > 8 ? 'High' : relevanceScore > 5 ? 'Medium' : 'Low'}</div>
-                  </div>
-                  <div>
-                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Source Type</div>
-                    <div style="color: #333;">${categoryName}</div>
-                  </div>
+                  <b>Relevance:</b> ${relevanceScore}/10 &nbsp; <b>Confidence:</b> ${relevanceScore > 8 ? 'High' : relevanceScore > 5 ? 'Medium' : 'Low'}
+                  <br>
+                  <b>Snippet:</b> ${generateMockSnippet(query, site.name)}
+                  <br>
+                  <b>Source:</b> <a href="${site.baseUrl}" target="_blank">${site.name}</a>
+                  <br>
+                  <b>Metadata:</b> { "title": "${site.name} - ${query}", "date": "2024-07-31", "type": "profile" }
                 </div>
               ` : `
                 <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 6px; margin: 8px 0; color: #721c24;">
                   No matches found for "${query}" in this database
                 </div>
               `}
-              
               <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                <a href="${site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Visit Source</a>
-                ${hasMatch ? '<button class="btn btn-small">📋 View Details</button>' : ''}
+                <a href="${site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+                ${hasMatch ? `<a href="${site.baseUrl}?q=${encodeURIComponent(query)}" target="_blank" class="btn btn-small btn-success">➡️ Go to Result</a>` : ''}
               </div>
             </div>
           `);
         });
       });
-      
       return results.join('');
     }
 
@@ -675,7 +690,12 @@ const defaultSiteDatabase = {
       return snippets[Math.floor(Math.random() * snippets.length)];
     }
 
-    // Initialize the application when page loads
+    // --- INIT ---
+    function initializeApp() {
+      renderCategories();
+      setupEventListeners();
+      setupImageSearch();
+    }
     document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
 </body>

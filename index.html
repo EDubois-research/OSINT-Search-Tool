@@ -74,6 +74,13 @@
     .btn-success:hover {
       background: #218838;
     }
+    .btn-secondary {
+      background: #6c757d;
+      color: #fff;
+    }
+    .btn-secondary:hover {
+      background: #545b62;
+    }
     input, select, textarea {
       padding: 10px 12px;
       border: 1px solid #ccc;
@@ -133,6 +140,7 @@
       font-weight: 600;
       color: #B13F17;
       flex-grow: 1;
+      cursor: pointer;
     }
     .website-count {
       background: #f0e6e1;
@@ -141,6 +149,75 @@
       border-radius: 12px;
       font-size: 0.85rem;
       font-weight: 600;
+    }
+    .expand-btn {
+      background: none;
+      border: none;
+      color: #B13F17;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+    .expand-btn:hover {
+      background: #f0e6e1;
+    }
+    .category-websites {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+    .category-websites.expanded {
+      display: block;
+    }
+    .website-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 0.9rem;
+    }
+    .website-url {
+      flex-grow: 1;
+      color: #666;
+      text-decoration: none;
+    }
+    .website-url:hover {
+      color: #B13F17;
+      text-decoration: underline;
+    }
+    .manage-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+    }
+    .manage-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      font-weight: 600;
+      color: #B13F17;
+      margin-bottom: 5px;
+    }
+    .form-row {
+      display: flex;
+      gap: 15px;
+      align-items: end;
+    }
+    .form-row > div {
+      flex: 1;
     }
     .search-progress {
       background: #fff;
@@ -329,11 +406,34 @@
       border-radius: 3px;
       font-weight: 600;
     }
+    .collapsible-header {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+    .collapsible-header:hover {
+      background: rgba(177, 63, 23, 0.05);
+      margin: 0 -10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .collapsible-content {
+      display: none;
+    }
+    .collapsible-content.expanded {
+      display: block;
+    }
     @media (max-width: 768px) {
       .container { padding: 15px; }
       .categories-grid { grid-template-columns: 1fr; }
       .result-meta { grid-template-columns: 1fr; }
       .summary-stats { grid-template-columns: repeat(2, 1fr); }
+      .form-row { flex-direction: column; }
+      .manage-controls { flex-direction: column; }
     }
   </style>
 </head>
@@ -426,6 +526,65 @@
       </div>
     </section>
 
+    <!-- Manage Categories and Websites Section -->
+    <section>
+      <div class="collapsible-header" id="manageToggle">
+        <span class="expand-btn">▶</span>
+        <h2 style="margin: 0;">⚙️ Manage Categories and Websites</h2>
+      </div>
+      <div class="collapsible-content" id="manageContent">
+        <div class="manage-section">
+          <h3>➕ Add New Website</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newCategory">Category:</label>
+              <select id="newCategory">
+                <!-- Options populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="newWebsiteName">Website Name:</label>
+              <input type="text" id="newWebsiteName" placeholder="e.g., LinkedIn">
+            </div>
+            <div class="form-group">
+              <label for="newWebsiteUrl">Website URL:</label>
+              <input type="url" id="newWebsiteUrl" placeholder="https://example.com">
+            </div>
+            <div style="display: flex; align-items: end;">
+              <button class="btn btn-success" id="addWebsiteBtn">➕ Add Website</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="manage-section">
+          <h3>📁 Add New Category</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newCategoryName">Category Name:</label>
+              <input type="text" id="newCategoryName" placeholder="e.g., Financial Records">
+            </div>
+            <div style="display: flex; align-items: end;">
+              <button class="btn btn-success" id="addCategoryBtn">📁 Add Category</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="manage-section">
+          <h3>📝 Edit/Remove Websites</h3>
+          <div id="editWebsitesList">
+            <!-- Edit options populated dynamically -->
+          </div>
+        </div>
+
+        <div class="manage-controls">
+          <button class="btn btn-secondary" id="exportConfigBtn">💾 Export Configuration</button>
+          <button class="btn btn-secondary" id="importConfigBtn">📂 Import Configuration</button>
+          <input type="file" id="importConfigFile" accept=".json" style="display: none;">
+          <button class="btn btn-danger" id="resetConfigBtn">🔄 Reset to Default</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Results Section -->
     <section>
       <h2>📊 Investigation Results</h2>
@@ -466,44 +625,430 @@
   </div>
 
   <script>
-    // Enhanced OSINT Tool with Real Scraping Capabilities
+    // Enhanced OSINT Tool with Complete Site Database
     
     let categories = {};
     let lastResults = [];
     let currentSearch = null;
 
-    // Comprehensive site database with search patterns
-    const siteDatabase = {
-      "Professional Networks": [
-        {
-          name: "LinkedIn Profiles",
-          baseUrl: "https://www.linkedin.com",
-          searchUrl: "https://www.linkedin.com/search/results/people/?keywords={QUERY}",
-          patterns: {
-            profile: /linkedin\.com\/in\/([^\/\?]+)/g,
-            company: /linkedin\.com\/company\/([^\/\?]+)/g
-          },
-          selectors: {
-            results: '.search-result__wrapper',
-            title: '.search-result__result-link',
-            snippet: '.search-result__snippets'
-          },
-          weight: 9
-        },
+    // Comprehensive site database with all requested categories
+    const defaultSiteDatabase = {
+      "Company Searches": [
         {
           name: "Companies House UK",
           baseUrl: "https://find-and-update.company-information.service.gov.uk",
           searchUrl: "https://find-and-update.company-information.service.gov.uk/search/companies?q={QUERY}",
-          patterns: {
-            company: /\/company\/([A-Z0-9]{8})/g,
-            officer: /officers\/([^\/]+)/g
-          },
-          selectors: {
-            results: '.search-result',
-            title: 'h3 a',
-            snippet: '.search-result-summary'
-          },
+          patterns: { company: /\/company\/([A-Z0-9]{8})/g },
           weight: 10
+        },
+        {
+          name: "Haulage Index",
+          baseUrl: "https://haulage-index.co.uk",
+          searchUrl: "https://haulage-index.co.uk/index.php?q={QUERY}",
+          patterns: { haulage: /haulage-index\.co\.uk\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Insolvency Direct",
+          baseUrl: "https://www.insolvencydirect.bis.gov.uk",
+          searchUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search?q={QUERY}",
+          patterns: { insolvency: /insolvencydirect\.bis\.gov\.uk\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Caseboard.io",
+          baseUrl: "https://caseboard.io",
+          searchUrl: "https://caseboard.io/cases/?q={QUERY}",
+          patterns: { case: /caseboard\.io\/cases\/([^\/]+)/g },
+          weight: 8
+        }
+      ],
+      "Court Case Searches": [
+        {
+          name: "Casemine",
+          baseUrl: "https://www.casemine.com",
+          searchUrl: "https://www.casemine.com/search?q={QUERY}",
+          patterns: { case: /casemine\.com\/judgement\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "ECHR HUDOC",
+          baseUrl: "https://hudoc.echr.coe.int",
+          searchUrl: "https://hudoc.echr.coe.int/eng#{%22fulltext%22:[\"{QUERY}\"]}",
+          patterns: { case: /hudoc\.echr\.coe\.int\/eng\?i=([^&]+)/g },
+          weight: 10
+        },
+        {
+          name: "BAILII Legal Database",
+          baseUrl: "https://www.bailii.org",
+          searchUrl: "https://www.bailii.org/cgi-bin/markup.cgi?doc=/bailii/search.html&query={QUERY}",
+          patterns: { case: /bailii\.org\/[^\/]+\/cases\/[^\/]+\/([^\.]+)\.html/g },
+          weight: 10
+        },
+        {
+          name: "Employment Tribunal Decisions",
+          baseUrl: "https://www.gov.uk",
+          searchUrl: "https://www.gov.uk/employment-tribunal-decisions?q={QUERY}",
+          patterns: { tribunal: /gov\.uk\/employment-tribunal-decisions\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Supreme Court UK",
+          baseUrl: "https://www.supremecourt.uk",
+          searchUrl: "https://www.supremecourt.uk/cases?q={QUERY}",
+          patterns: { supreme: /supremecourt\.uk\/cases\/([^\/]+)/g },
+          weight: 10
+        }
+      ],
+      "Occupation Registers": [
+        {
+          name: "GDC Dental Register",
+          baseUrl: "https://www.gdc-uk.org",
+          searchUrl: "https://www.gdc-uk.org/pages/searchregisters.aspx?q={QUERY}",
+          patterns: { dentist: /gdc-uk\.org\/registration\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "GMC Medical Register",
+          baseUrl: "https://www.gmc-uk.org",
+          searchUrl: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register?q={QUERY}",
+          patterns: { doctor: /gmc-uk\.org\/doctors\/([0-9]+)/g },
+          weight: 10
+        },
+        {
+          name: "NMC Nursing Register",
+          baseUrl: "https://www.nmc.org.uk",
+          searchUrl: "https://www.nmc.org.uk/registration/search-the-register/?q={QUERY}",
+          patterns: { nurse: /nmc\.org\.uk\/globalassets\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "HCPC Register",
+          baseUrl: "https://www.hcpc-uk.org",
+          searchUrl: "https://www.hcpc-uk.org/check-the-register/?q={QUERY}",
+          patterns: { hcpc: /hcpc-uk\.org\/check\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Pharmacy Regulation",
+          baseUrl: "https://www.pharmacyregulation.org",
+          searchUrl: "https://www.pharmacyregulation.org/registers?q={QUERY}",
+          patterns: { pharmacy: /pharmacyregulation\.org\/registers\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Optical Register",
+          baseUrl: "https://www.optical.org",
+          searchUrl: "https://www.optical.org/en/register?q={QUERY}",
+          patterns: { optical: /optical\.org\/en\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Chiropractic Register",
+          baseUrl: "https://www.gcc-uk.org",
+          searchUrl: "https://www.gcc-uk.org/registration/the-register?q={QUERY}",
+          patterns: { chiro: /gcc-uk\.org\/registration\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Osteopathy Register",
+          baseUrl: "https://www.osteopathy.org.uk",
+          searchUrl: "https://www.osteopathy.org.uk/register-search?q={QUERY}",
+          patterns: { osteo: /osteopathy\.org\.uk\/register\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "SRA Solicitors",
+          baseUrl: "https://www.sra.org.uk",
+          searchUrl: "https://www.sra.org.uk/consumers/solicitor-check/?q={QUERY}",
+          patterns: { solicitor: /sra\.org\.uk\/solicitors\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Bar Standards Board",
+          baseUrl: "https://www.barstandardsboard.org.uk",
+          searchUrl: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html?q={QUERY}",
+          patterns: { barrister: /barstandardsboard\.org\.uk\/barrister\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Licensed Conveyancers",
+          baseUrl: "https://www.clc-uk.org",
+          searchUrl: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/?q={QUERY}",
+          patterns: { conveyancer: /clc-uk\.org\/find\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "CILEX Directory",
+          baseUrl: "https://www.cilexregulation.org.uk",
+          searchUrl: "https://www.cilexregulation.org.uk/practitioners-directory?q={QUERY}",
+          patterns: { cilex: /cilexregulation\.org\.uk\/practitioner\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Faculty Office Notaries",
+          baseUrl: "https://www.facultyoffice.org.uk",
+          searchUrl: "https://www.facultyoffice.org.uk/notary/find-a-notary/?q={QUERY}",
+          patterns: { notary: /facultyoffice\.org\.uk\/notary\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "ICAEW Chartered Accountants",
+          baseUrl: "https://find.icaew.com",
+          searchUrl: "https://find.icaew.com/?q={QUERY}",
+          patterns: { accountant: /find\.icaew\.com\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "ACCA Find an Accountant",
+          baseUrl: "https://www.accaglobal.com",
+          searchUrl: "https://www.accaglobal.com/an/en/member/find-an-accountant.html?q={QUERY}",
+          patterns: { acca: /accaglobal\.com\/member\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "RICS Surveyors",
+          baseUrl: "https://www.rics.org",
+          searchUrl: "https://www.rics.org/find-a-member?q={QUERY}",
+          patterns: { surveyor: /rics\.org\/member\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "ARB Architects",
+          baseUrl: "https://arb.org.uk",
+          searchUrl: "https://arb.org.uk/public-information/members-of-the-public/?q={QUERY}",
+          patterns: { architect: /arb\.org\.uk\/architect\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Engineering Council",
+          baseUrl: "https://www.engc.org.uk",
+          searchUrl: "https://www.engc.org.uk/registers?q={QUERY}",
+          patterns: { engineer: /engc\.org\.uk\/engineer\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Electrical Competent Person",
+          baseUrl: "https://www.electricalcompetentperson.co.uk",
+          searchUrl: "https://www.electricalcompetentperson.co.uk/?q={QUERY}",
+          patterns: { electrical: /electricalcompetentperson\.co\.uk\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Gas Safe Register",
+          baseUrl: "https://www.gassaferegister.co.uk",
+          searchUrl: "https://www.gassaferegister.co.uk/find-an-engineer?q={QUERY}",
+          patterns: { gas: /gassaferegister\.co\.uk\/engineer\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "NHBC Find a Builder",
+          baseUrl: "https://www.nhbc.co.uk",
+          searchUrl: "https://www.nhbc.co.uk/homeowners/find-a-builder?q={QUERY}",
+          patterns: { builder: /nhbc\.co\.uk\/builder\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "FMB Find a Builder",
+          baseUrl: "https://www.fmb.org.uk",
+          searchUrl: "https://www.fmb.org.uk/find-a-builder?q={QUERY}",
+          patterns: { fmb: /fmb\.org\.uk\/builder\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "IPI Private Investigators",
+          baseUrl: "https://ipi.org.uk",
+          searchUrl: "https://ipi.org.uk/find-an-investigator?q={QUERY}",
+          patterns: { investigator: /ipi\.org\.uk\/investigator\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "SIA Register",
+          baseUrl: "https://services.sia.homeoffice.gov.uk",
+          searchUrl: "https://services.sia.homeoffice.gov.uk/rolh/?q={QUERY}",
+          patterns: { sia: /sia\.homeoffice\.gov\.uk\/licence\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "OISC Immigration Advisers",
+          baseUrl: "https://home.oisc.gov.uk",
+          searchUrl: "https://home.oisc.gov.uk/adviser_finder/finder.aspx?q={QUERY}",
+          patterns: { immigration: /oisc\.gov\.uk\/adviser\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Social Work England",
+          baseUrl: "https://www.socialworkengland.org.uk",
+          searchUrl: "https://www.socialworkengland.org.uk/search-the-register/?q={QUERY}",
+          patterns: { socialworker: /socialworkengland\.org\.uk\/worker\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "BPS Psychological Workforce",
+          baseUrl: "https://www.bps.org.uk",
+          searchUrl: "https://www.bps.org.uk/psychological-workforce?q={QUERY}",
+          patterns: { psychologist: /bps\.org\.uk\/member\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "RCVS Veterinary Register",
+          baseUrl: "https://findavet.rcvs.org.uk",
+          searchUrl: "https://findavet.rcvs.org.uk/home/?q={QUERY}",
+          patterns: { vet: /findavet\.rcvs\.org\.uk\/vet\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "CQC Care Providers",
+          baseUrl: "https://www.cqc.org.uk",
+          searchUrl: "https://www.cqc.org.uk/find-a-care-home?q={QUERY}",
+          patterns: { care: /cqc\.org\.uk\/location\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "FCA Register",
+          baseUrl: "https://register.fca.org.uk",
+          searchUrl: "https://register.fca.org.uk/?q={QUERY}",
+          patterns: { financial: /register\.fca\.org\.uk\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Charity Commission Register",
+          baseUrl: "https://register-of-charities.charitycommission.gov.uk",
+          searchUrl: "https://register-of-charities.charitycommission.gov.uk/search?q={QUERY}",
+          patterns: { charity: /register-of-charities\.charitycommission\.gov\.uk\/charity-search\/([^\/]+)/g },
+          weight: 10
+        }
+      ],
+      "Genealogy": [
+        {
+          name: "Probate Search Service",
+          baseUrl: "https://probatesearch.service.gov.uk",
+          searchUrl: "https://probatesearch.service.gov.uk/#wills?q={QUERY}",
+          patterns: { probate: /probatesearch\.service\.gov\.uk\/([^\/]+)/g },
+          weight: 10
+        }
+      ],
+      "Transport": [
+        {
+          name: "Car Tax Check",
+          baseUrl: "https://cartaxcheck.co.uk",
+          searchUrl: "https://cartaxcheck.co.uk/?q={QUERY}",
+          patterns: { vehicle: /cartaxcheck\.co\.uk\/vehicle\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Plane Finder",
+          baseUrl: "https://planefinder.net",
+          searchUrl: "https://planefinder.net/?q={QUERY}",
+          patterns: { aircraft: /planefinder\.net\/flight\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Marine Traffic",
+          baseUrl: "https://www.marinetraffic.com",
+          searchUrl: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4?q={QUERY}",
+          patterns: { vessel: /marinetraffic\.com\/en\/ais\/details\/ships\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Vessel Finder",
+          baseUrl: "https://www.vesselfinder.com",
+          searchUrl: "https://www.vesselfinder.com/vessels?q={QUERY}",
+          patterns: { ship: /vesselfinder\.com\/vessels\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Racing Post",
+          baseUrl: "https://www.racingpost.com",
+          searchUrl: "https://www.racingpost.com/racecards?q={QUERY}",
+          patterns: { horse: /racingpost\.com\/profile\/horse\/([^\/]+)/g },
+          weight: 7
+        }
+      ],
+      "Sanctions, Watchlists, Insolvency, PEPs": [
+        {
+          name: "The Gazette",
+          baseUrl: "https://www.thegazette.co.uk",
+          searchUrl: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices&q={QUERY}",
+          patterns: { gazette: /thegazette\.co\.uk\/notice\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Interpol Red Notices",
+          baseUrl: "https://www.interpol.int",
+          searchUrl: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices?q={QUERY}",
+          patterns: { interpol: /interpol\.int\/en\/How-we-work\/Notices\/Red-Notices\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Interpol Yellow Notices",
+          baseUrl: "https://www.interpol.int",
+          searchUrl: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices?q={QUERY}",
+          patterns: { yellow: /interpol\.int\/en\/How-we-work\/Notices\/Yellow-Notices\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "FBI Most Wanted",
+          baseUrl: "https://www.fbi.gov",
+          searchUrl: "https://www.fbi.gov/wanted/topten?q={QUERY}",
+          patterns: { fbi: /fbi\.gov\/wanted\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "Proscribed Terror Groups",
+          baseUrl: "https://www.gov.uk",
+          searchUrl: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version?q={QUERY}",
+          patterns: { terror: /gov\.uk\/government\/publications\/proscribed-terror-groups/g },
+          weight: 10
+        },
+        {
+          name: "EU Most Wanted",
+          baseUrl: "https://eumostwanted.eu",
+          searchUrl: "https://eumostwanted.eu/?q={QUERY}",
+          patterns: { eu: /eumostwanted\.eu\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "UK Sanctions List",
+          baseUrl: "https://search-uk-sanctions-list.service.gov.uk",
+          searchUrl: "https://search-uk-sanctions-list.service.gov.uk/?q={QUERY}",
+          patterns: { sanctions: /search-uk-sanctions-list\.service\.gov\.uk\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "NCA Most Wanted",
+          baseUrl: "https://www.nationalcrimeagency.gov.uk",
+          searchUrl: "https://www.nationalcrimeagency.gov.uk/most-wanted?q={QUERY}",
+          patterns: { nca: /nationalcrimeagency\.gov\.uk\/most-wanted\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "FCA Warning List",
+          baseUrl: "https://www.fca.org.uk",
+          searchUrl: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms?q={QUERY}",
+          patterns: { warning: /fca\.org\.uk\/consumers\/warning-list/g },
+          weight: 9
+        },
+        {
+          name: "SFO Cases",
+          baseUrl: "https://www.gov.uk",
+          searchUrl: "https://www.gov.uk/sfo-cases?q={QUERY}",
+          patterns: { sfo: /gov\.uk\/sfo-cases\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Vexatious Litigants",
+          baseUrl: "https://www.gov.uk",
+          searchUrl: "https://www.gov.uk/guidance/vexatious-litigants?q={QUERY}",
+          patterns: { vexatious: /gov\.uk\/guidance\/vexatious-litigants/g },
+          weight: 8
+        },
+        {
+          name: "Tax Defaulters",
+          baseUrl: "https://www.gov.uk",
+          searchUrl: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters?q={QUERY}",
+          patterns: { tax: /gov\.uk\/government\/publications.*tax-defaulters/g },
+          weight: 8
         }
       ],
       "Social Media": [
@@ -511,86 +1056,132 @@
           name: "Facebook Search",
           baseUrl: "https://www.facebook.com",
           searchUrl: "https://www.facebook.com/search/people/?q={QUERY}",
-          patterns: {
-            profile: /facebook\.com\/([^\/\?]+)/g
-          },
-          selectors: {
-            results: '[data-testid="search_result"]',
-            title: 'a[role="link"]',
-            snippet: 'div[data-testid="search_result"] div'
-          },
+          patterns: { profile: /facebook\.com\/([^\/\?]+)/g },
+          weight: 7
+        },
+        {
+          name: "LinkedIn Profiles",
+          baseUrl: "https://www.linkedin.com",
+          searchUrl: "https://www.linkedin.com/search/results/people/?keywords={QUERY}",
+          patterns: { profile: /linkedin\.com\/in\/([^\/\?]+)/g, company: /linkedin\.com\/company\/([^\/\?]+)/g },
+          weight: 9
+        },
+        {
+          name: "Instagram Search",
+          baseUrl: "https://www.instagram.com",
+          searchUrl: "https://www.instagram.com/explore/search/keyword/?q={QUERY}",
+          patterns: { profile: /instagram\.com\/([^\/\?]+)/g },
           weight: 7
         },
         {
           name: "Twitter/X Search",
-          baseUrl: "https://twitter.com",
-          searchUrl: "https://twitter.com/search?q={QUERY}&src=typed_query&f=user",
-          patterns: {
-            profile: /twitter\.com\/([^\/\?]+)/g
-          },
-          selectors: {
-            results: '[data-testid="UserCell"]',
-            title: '[data-testid="UserName"]',
-            snippet: '[data-testid="UserDescription"]'
-          },
+          baseUrl: "https://x.com",
+          searchUrl: "https://x.com/search?q={QUERY}&src=typed_query&f=user",
+          patterns: { profile: /x\.com\/([^\/\?]+)/g },
           weight: 8
+        },
+        {
+          name: "TikTok Search",
+          baseUrl: "https://www.tiktok.com",
+          searchUrl: "https://www.tiktok.com/search/user?q={QUERY}",
+          patterns: { profile: /tiktok\.com\/@([^\/\?]+)/g },
+          weight: 6
+        },
+        {
+          name: "Reddit Search",
+          baseUrl: "https://www.reddit.com",
+          searchUrl: "https://www.reddit.com/search/?q={QUERY}&type=user",
+          patterns: { profile: /reddit\.com\/user\/([^\/\?]+)/g },
+          weight: 7
         }
       ],
-      "Court Records": [
+      "Offshore Companies": [
         {
-          name: "BAILII Legal Database",
-          baseUrl: "https://www.bailii.org",
-          searchUrl: "https://www.bailii.org/cgi-bin/markup.cgi?doc=/bailii/search.html&query={QUERY}",
-          patterns: {
-            case: /bailii\.org\/[^\/]+\/cases\/[^\/]+\/([^\.]+)\.html/g
-          },
-          selectors: {
-            results: '.search-result',
-            title: 'a.title',
-            snippet: '.snippet'
-          },
-          weight: 9
-        }
-      ],
-      "Professional Registers": [
-        {
-          name: "GMC Medical Register",
-          baseUrl: "https://www.gmc-uk.org",
-          searchUrl: "https://www.gmc-uk.org/doctors?query={QUERY}",
-          patterns: {
-            doctor: /doctors\/([0-9]+)/g
-          },
-          selectors: {
-            results: '.doctor-result',
-            title: '.doctor-name',
-            snippet: '.doctor-details'
-          },
+          name: "ICIJ Offshore Leaks",
+          baseUrl: "https://offshoreleaks.icij.org",
+          searchUrl: "https://offshoreleaks.icij.org/search?q={QUERY}",
+          patterns: { entity: /offshoreleaks\.icij\.org\/nodes\/([^\/]+)/g },
           weight: 10
         },
         {
-          name: "SRA Solicitors",
-          baseUrl: "https://www.sra.org.uk",
-          searchUrl: "https://www.sra.org.uk/consumers/register/search?name={QUERY}",
-          patterns: {
-            solicitor: /sra\.org\.uk\/solicitors\/([^\/]+)/g
-          },
-          selectors: {
-            results: '.search-result',
-            title: '.solicitor-name',
-            snippet: '.solicitor-details'
-          },
+          name: "OpenCorporates",
+          baseUrl: "https://opencorporates.com",
+          searchUrl: "https://opencorporates.com/companies?q={QUERY}",
+          patterns: { company: /opencorporates\.com\/companies\/([^\/]+)/g },
           weight: 10
+        }
+      ],
+      "Domain/Leaked/Cached": [
+        {
+          name: "Whois Lookup",
+          baseUrl: "https://who.is",
+          searchUrl: "https://who.is/whois/{QUERY}",
+          patterns: { domain: /who\.is\/whois\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "Wayback Machine",
+          baseUrl: "https://web.archive.org",
+          searchUrl: "https://web.archive.org/web/*/{QUERY}",
+          patterns: { archive: /web\.archive\.org\/web\/[^\/]+\/([^\/]+)/g },
+          weight: 10
+        },
+        {
+          name: "AnalyzeID",
+          baseUrl: "https://analyzeid.com",
+          searchUrl: "https://analyzeid.com/?q={QUERY}",
+          patterns: { social: /analyzeid\.com\/username\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Have I Been Pwned",
+          baseUrl: "https://haveibeenpwned.com",
+          searchUrl: "https://haveibeenpwned.com/account/{QUERY}",
+          patterns: { breach: /haveibeenpwned\.com\/account\/([^\/]+)/g },
+          weight: 9
+        },
+        {
+          name: "IP Fingerprints",
+          baseUrl: "https://www.ipfingerprints.com",
+          searchUrl: "https://www.ipfingerprints.com/?q={QUERY}",
+          patterns: { ip: /ipfingerprints\.com\/([^\/]+)/g },
+          weight: 8
+        },
+        {
+          name: "Data Breach",
+          baseUrl: "https://databreach.com",
+          searchUrl: "https://databreach.com/?q={QUERY}",
+          patterns: { breach: /databreach\.com\/([^\/]+)/g },
+          weight: 8
         }
       ]
     };
 
     // Initialize categories from database
     function initializeCategories() {
-      categories = {};
-      Object.keys(siteDatabase).forEach(categoryName => {
-        categories[categoryName] = siteDatabase[categoryName];
-      });
+      // Try to load from memory first, then fall back to default
+      const saved = getSavedCategories();
+      categories = saved || JSON.parse(JSON.stringify(defaultSiteDatabase));
       renderCategories();
+      updateManageSection();
+    }
+
+    function getSavedCategories() {
+      try {
+        const saved = window.categoriesData || null;
+        return saved ? JSON.parse(JSON.stringify(saved)) : null;
+      } catch (e) {
+        console.warn('Could not load saved categories:', e);
+        return null;
+      }
+    }
+
+    function saveCategories() {
+      try {
+        window.categoriesData = JSON.parse(JSON.stringify(categories));
+      } catch (e) {
+        console.warn('Could not save categories:', e);
+      }
     }
 
     // Advanced content scraping with proxy
@@ -864,572 +1455,15 @@
     const searchSummary = document.getElementById('searchSummary');
     const exportSection = document.getElementById('exportSection');
 
-    // Utility Functions
-    function showNotification(message, type = 'info') {
-      // Remove existing notifications  
-      document.querySelectorAll('.notification').forEach(n => n.remove());
+    // Management functions
+    function updateManageSection() {
+      const newCategorySelect = document.getElementById('newCategory');
+      const editWebsitesList = document.getElementById('editWebsitesList');
       
-      const notification = document.createElement('div');
-      notification.className = 'notification';
-      notification.style.cssText = `
-        position: fixed; top: 20px; right: 20px; z-index: 10000;
-        padding: 15px 25px; border-radius: 8px; font-weight: 600;
-        color: white; opacity: 0; transition: opacity 0.3s;
-        ${type === 'success' ? 'background: #28a745;' : 
-          type === 'error' ? 'background: #dc3545;' : 
-          type === 'warning' ? 'background: #ffc107; color: #212529;' :
-          'background: #17a2b8;'}
-      `;
-      notification.textContent = message;
-      
-      document.body.appendChild(notification);
-      setTimeout(() => notification.style.opacity = '1', 100);
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
-      }, 4000);
-    }
-
-    function renderCategories() {
-      categoriesContainer.innerHTML = '';
-      
-      Object.entries(categories).forEach(([categoryName, sites]) => {
-        const categoryCard = document.createElement('div');
-        categoryCard.className = 'category-card';
-        categoryCard.innerHTML = `
-          <input type="checkbox" class="category-checkbox" data-category="${categoryName}" checked>
-          <div class="category-title">${categoryName}</div>
-          <span class="website-count">${sites.length}</span>
-        `;
-        
-        const checkbox = categoryCard.querySelector('.category-checkbox');
-        checkbox.addEventListener('change', (e) => {
-          categoryCard.style.opacity = e.target.checked ? '1' : '0.6';
-        });
-        
-        categoriesContainer.appendChild(categoryCard);
-      });
-    }
-
-    // Main search function
-    async function performAdvancedSearch() {
-      const query = searchInput.value.trim();
-      if (!query) {
-        showNotification('Please enter a search term', 'error');
-        return;
-      }
-
-      const selectedCategories = Array.from(
-        document.querySelectorAll('.category-checkbox:checked')
-      ).map(cb => cb.dataset.category);
-
-      if (selectedCategories.length === 0) {
-        showNotification('Please select at least one category', 'error');
-        return;
-      }
-
-      // Disable search button
-      searchBtn.disabled = true;
-      searchBtn.textContent = '🔍 Searching...';
-      
-      // Show progress
-      showSearchProgress();
-      
-      // Collect all sites to search
-      const sitesToSearch = [];
-      selectedCategories.forEach(category => {
-        categories[category].forEach(site => {
-          sitesToSearch.push({...site, category});
-        });
-      });
-
-      const results = [];
-      const total = sitesToSearch.length;
-      let completed = 0;
-
-      // Search each site
-      for (const site of sitesToSearch) {
-        if (currentSearch?.aborted) break;
-        
-        updateProgress(completed, total, `Searching ${site.name}...`);
-        
-        try {
-          const result = await scraper.searchSite(site, query, getSearchOptions());
-          result.category = site.category;
-          results.push(result);
-        } catch (error) {
-          console.error(`Failed to search ${site.name}:`, error);
-          results.push({
-            site: site.name,
-            category: site.category,
-            hasMatch: false,
-            error: error.message,
-            relevanceScore: 0,
-            results: []
-          });
-        }
-        
-        completed++;
-        await new Promise(resolve => setTimeout(resolve, 300)); // Rate limiting
-      }
-
-      // Process and display results
-      if (!currentSearch?.aborted) {
-        lastResults = results.sort((a, b) => b.relevanceScore - a.relevanceScore);
-        displayResults(lastResults, query);
-        updateSearchSummary(lastResults);
-        showNotification(`Search completed! Found ${results.filter(r => r.hasMatch).length} matches`, 'success');
-      }
-
-      // Re-enable search
-      searchBtn.disabled = false;
-      searchBtn.textContent = '🚀 Start Investigation';
-      currentSearch = null;
-    }
-
-    function getSearchOptions() {
-      return {
-        deepSearch: document.getElementById('deepSearch')?.checked || false,
-        followRedirects: document.getElementById('followRedirects')?.checked || false,
-        extractEmails: document.getElementById('extractEmails')?.checked || false,
-        extractPhones: document.getElementById('extractPhones')?.checked || false,
-        maxResults: parseInt(document.getElementById('maxResults')?.value) || 10,
-        searchMode: document.getElementById('searchMode')?.value || 'comprehensive'
-      };
-    }
-
-    function showSearchProgress() {
-      const progressHtml = `
-        <div class="search-progress">
-          <div style="font-size: 1.3rem; margin-bottom: 15px;">🔍 Advanced OSINT Investigation in Progress</div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-text" id="progressText">Initializing search...</div>
-          <div style="margin-top: 15px;">
-            <button class="btn btn-danger btn-small" id="abortSearch">⏹️ Abort Search</button>
-          </div>
-        </div>
-      `;
-      
-      resultsContainer.innerHTML = progressHtml;
-      
-      currentSearch = { aborted: false };
-      document.getElementById('abortSearch').addEventListener('click', () => {
-        currentSearch.aborted = true;
-        showNotification('Search aborted by user', 'warning');
-        searchBtn.disabled = false;
-        searchBtn.textContent = '🚀 Start Investigation';
-      });
-    }
-
-    function updateProgress(completed, total, message) {
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      
-      if (progressFill && progressText) {
-        const percentage = (completed / total) * 100;
-        progressFill.style.width = `${percentage}%`;
-        progressText.textContent = `${message} (${completed}/${total})`;
-      }
-    }
-
-    function displayResults(results, query) {
-      resultsContainer.innerHTML = '';
-      
-      if (results.length === 0) {
-        resultsContainer.innerHTML = `
-          <div style="text-align: center; padding: 40px; color: #666;">
-            <div style="font-size: 3rem;">❌</div>
-            <h3>No Results Found</h3>
-            <p>Try adjusting your search terms or selecting different categories</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Group results by category
-      const grouped = {};
-      results.forEach(result => {
-        if (!grouped[result.category]) grouped[result.category] = [];
-        grouped[result.category].push(result);
-      });
-
-      Object.entries(grouped).forEach(([category, categoryResults]) => {
-        const categorySection = document.createElement('div');
-        categorySection.innerHTML = `
-          <h3 style="color: #B13F17; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #eee;">
-            📁 ${category} (${categoryResults.filter(r => r.hasMatch).length}/${categoryResults.length} matches)
-          </h3>
-        `;
-        
-        categoryResults.forEach(result => {
-          const resultElement = createResultElement(result, query);
-          categorySection.appendChild(resultElement);
-        });
-        
-        resultsContainer.appendChild(categorySection);
-      });
-
-      // Show export section
-      exportSection.style.display = 'block';
-    }
-
-    function createResultElement(result, query) {
-      const hasResults = result.hasMatch && result.results && result.results.length > 0;
-      const statusClass = result.error ? 'result-error' : (hasResults ? 'result-match' : 'result-no-match');
-      const statusIcon = result.error ? '⚠️' : (hasResults ? '✅' : '❌');
-      const statusText = result.error ? 'Error' : (hasResults ? 'Match Found' : 'No Match');
-
-      const element = document.createElement('div');
-      element.className = `result-item ${statusClass}`;
-      
-      let content = `
-        <div class="result-header">
-          <div>
-            <div class="result-title">${result.site}</div>
-            <div class="result-status">
-              <span class="status-icon">${statusIcon}</span>
-              <span>${statusText}</span>
-              ${result.relevanceScore > 0 ? 
-                `<span class="score-badge ${getScoreClass(result.relevanceScore)}">
-                  Relevance: ${result.relevanceScore}/10
-                </span>` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-
-      if (result.error) {
-        content += `
-          <div class="result-details">
-            <strong>Error:</strong> ${result.error}
-          </div>
-        `;
-      } else if (hasResults) {
-        content += `
-          <div class="result-meta">
-            <div class="meta-item">
-              <div class="meta-label">Results Found</div>
-              <div class="meta-value">${result.results.length}</div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-label">Search Time</div>
-              <div class="meta-value">${new Date(result.timestamp).toLocaleTimeString()}</div>
-            </div>
-            ${result.totalFound ? `
-            <div class="meta-item">
-              <div class="meta-label">Total Matches</div>
-              <div class="meta-value">${result.totalFound}</div>
-            </div>
-            ` : ''}
-          </div>
-        `;
-
-        // Show top results
-        const topResults = result.results.slice(0, 3);
-        topResults.forEach((item, index) => {
-          content += `
-            <div class="result-details" style="margin-top: 15px;">
-              <div style="font-weight: 600; color: #B13F17; margin-bottom: 8px;">
-                📄 Result ${index + 1}: ${highlightKeywords(item.title, query)}
-              </div>
-              ${item.snippet ? `
-                <div class="match-snippet">
-                  ${highlightKeywords(item.snippet, query)}
-                </div>
-              ` : ''}
-              ${item.extractedData && Object.keys(item.extractedData).length > 0 ? `
-                <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
-                  <strong>Extracted Data:</strong> 
-                  ${Object.entries(item.extractedData).map(([key, value]) => 
-                    `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-                  ).join(' | ')}
-                </div>
-              ` : ''}
-              <div class="result-links" style="margin-top: 10px;">
-                ${item.url ? `<a href="${item.url}" target="_blank" class="btn btn-success btn-small">🔗 View Result</a>` : ''}
-                <span style="margin-left: 10px; font-size: 0.9rem; color: #666;">
-                  Confidence: ${item.confidence || 'medium'} | Relevance: ${item.relevance || 0}/10
-                </span>
-              </div>
-            </div>
-          `;
-        });
-
-        if (result.results.length > 3) {
-          content += `
-            <div style="margin-top: 15px; text-align: center;">
-              <button class="btn btn-small" onclick="showAllResults('${result.site}')">
-                📋 Show All ${result.results.length} Results
-              </button>
-            </div>
-          `;
-        }
-      }
-
-      // Always show search URL
-      content += `
-        <div class="result-links" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-          <a href="${result.searchUrl}" target="_blank" class="btn btn-small">🔍 Open Search Page</a>
-        </div>
-      `;
-
-      element.innerHTML = content;
-      return element;
-    }
-
-    function getScoreClass(score) {
-      if (score >= 8) return 'score-high';
-      if (score >= 5) return 'score-medium';
-      return 'score-low';
-    }
-
-    function highlightKeywords(text, query) {
-      if (!text || !query) return text;
-      
-      const keywords = query.split(/\s+/).filter(word => word.length > 2);
-      let highlightedText = text;
-      
-      keywords.forEach(keyword => {
-        const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\        const matchR')})`, 'gi');
-        highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
-      });
-      
-      return highlightedText;
-    }
-
-    function updateSearchSummary(results) {
-      const totalSearched = results.length;
-      const totalMatches = results.filter(r => r.hasMatch).length;
-      const avgScore = results.length > 0 ? 
-        (results.reduce((sum, r) => sum + r.relevanceScore, 0) / results.length).toFixed(1) : 0;
-      const successRate = totalSearched > 0 ? 
-        ((totalMatches / totalSearched) * 100).toFixed(0) : 0;
-
-      document.getElementById('totalSearched').textContent = totalSearched;
-      document.getElementById('totalMatches').textContent = totalMatches;
-      document.getElementById('avgScore').textContent = avgScore;
-      document.getElementById('successRate').textContent = successRate + '%';
-      
-      searchSummary.style.display = 'block';
-    }
-
-    // Global function for showing all results
-    window.showAllResults = function(siteName) {
-      const siteResult = lastResults.find(r => r.site === siteName);
-      if (!siteResult || !siteResult.results) return;
-
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.8); z-index: 10000;
-        display: flex; align-items: center; justify-content: center;
-        padding: 20px;
-      `;
-      
-      const content = document.createElement('div');
-      content.style.cssText = `
-        background: white; border-radius: 10px; padding: 30px;
-        max-width: 800px; max-height: 80vh; overflow-y: auto;
-        width: 100%;
-      `;
-      
-      let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h2 style="color: #B13F17; margin: 0;">All Results from ${siteName}</h2>
-          <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
-                  style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
-            ✕ Close
-          </button>
-        </div>
-      `;
-      
-      siteResult.results.forEach((result, index) => {
-        html += `
-          <div style="border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-            <h4 style="color: #B13F17; margin-top: 0;">${result.title}</h4>
-            ${result.snippet ? `<p style="color: #666;">${result.snippet}</p>` : ''}
-            ${result.url ? `
-              <a href="${result.url}" target="_blank" class="btn btn-success btn-small">
-                🔗 View Result
-              </a>
-            ` : ''}
-            <div style="margin-top: 10px; font-size: 0.9rem; color: #999;">
-              Relevance: ${result.relevance}/10 | Confidence: ${result.confidence}
-            </div>
-          </div>
-        `;
-      });
-      
-      content.innerHTML = html;
-      modal.appendChild(content);
-      document.body.appendChild(modal);
-      
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
-    };
-
-    // Event Listeners
-    function setupEventListeners() {
-      searchBtn.addEventListener('click', performAdvancedSearch);
-      searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performAdvancedSearch();
-      });
-
-      document.getElementById('selectAllBtn').addEventListener('click', () => {
-        document.querySelectorAll('.category-checkbox').forEach(cb => {
-          cb.checked = true;
-          cb.closest('.category-card').style.opacity = '1';
-        });
-        showNotification('All categories selected', 'success');
-      });
-
-      document.getElementById('deselectAllBtn').addEventListener('click', () => {
-        document.querySelectorAll('.category-checkbox').forEach(cb => {
-          cb.checked = false;
-          cb.closest('.category-card').style.opacity = '0.6';
-        });
-        showNotification('All categories deselected', 'info');
-      });
-
-      document.getElementById('selectRecommendedBtn').addEventListener('click', () => {
-        const recommended = ['Professional Networks', 'Social Media', 'Professional Registers'];
-        document.querySelectorAll('.category-checkbox').forEach(cb => {
-          const isRecommended = recommended.includes(cb.dataset.category);
-          cb.checked = isRecommended;
-          cb.closest('.category-card').style.opacity = isRecommended ? '1' : '0.6';
-        });
-        showNotification('Recommended categories selected', 'success');
-      });
-
-      document.getElementById('exportBtn')?.addEventListener('click', exportDetailedReport);
-    }
-
-    function exportDetailedReport() {
-      if (!lastResults || lastResults.length === 0) {
-        showNotification('No results to export', 'error');
-        return;
-      }
-
-      const query = searchInput.value.trim();
-      const timestamp = new Date().toLocaleString();
-      const matches = lastResults.filter(r => r.hasMatch);
-      
-      let html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Advanced OSINT Report - ${query}</title>
-          <meta charset="UTF-8">
-          <style>
-            body { font-family: 'Segoe UI', sans-serif; margin: 40px; line-height: 1.6; }
-            h1 { color: #B13F17; border-bottom: 3px solid #B13F17; padding-bottom: 15px; }
-            h2 { color: #B13F17; margin-top: 35px; }
-            .summary { background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0; }
-            .match { background: #e8f5e8; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 5px solid #28a745; }
-            .result-item { margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; }
-            .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-            th { background-color: #f8f9fa; font-weight: 600; }
-          </style>
-        </head>
-        <body>
-          <h1>🔍 Advanced OSINT Investigation Report</h1>
-          
-          <div class="summary">
-            <h2>Investigation Summary</h2>
-            <table>
-              <tr><td><strong>Query:</strong></td><td>"${query}"</td></tr>
-              <tr><td><strong>Generated:</strong></td><td>${timestamp}</td></tr>
-              <tr><td><strong>Sites Investigated:</strong></td><td>${lastResults.length}</td></tr>
-              <tr><td><strong>Positive Matches:</strong></td><td>${matches.length}</td></tr>
-              <tr><td><strong>Success Rate:</strong></td><td>${((matches.length/lastResults.length)*100).toFixed(1)}%</td></tr>
-              <tr><td><strong>Average Relevance:</strong></td><td>${(lastResults.reduce((s,r) => s + r.relevanceScore, 0) / lastResults.length).toFixed(1)}/10</td></tr>
-            </table>
-          </div>
-      `;
-
-      if (matches.length > 0) {
-        html += '<h2>✅ Detailed Findings</h2>';
-        matches.forEach(result => {
-          html += `
-            <div class="match">
-              <h3>${result.site} (Relevance: ${result.relevanceScore}/10)</h3>
-              <p><strong>Category:</strong> ${result.category}</p>
-              <p><strong>Search URL:</strong> <a href="${result.searchUrl}" target="_blank">${result.searchUrl}</a></p>
-              <p><strong>Results Found:</strong> ${result.results?.length || 0}</p>
-          `;
-          
-          if (result.results && result.results.length > 0) {
-            html += '<h4>Individual Results:</h4>';
-            result.results.forEach((item, idx) => {
-              html += `
-                <div class="result-item">
-                  <p><strong>Result ${idx + 1}:</strong> ${item.title}</p>
-                  ${item.snippet ? `<p><em>${item.snippet}</em></p>` : ''}
-                  ${item.url ? `<p><strong>Direct Link:</strong> <a href="${item.url}" target="_blank">${item.url}</a></p>` : ''}
-                  <p><strong>Confidence:</strong> ${item.confidence} | <strong>Relevance:</strong> ${item.relevance}/10</p>
-                </div>
-              `;
-            });
-          }
-          
-          html += '</div>';
-        });
-      }
-
-      // Add no matches section
-      const noMatches = lastResults.filter(r => !r.hasMatch);
-      if (noMatches.length > 0) {
-        html += '<h2>❌ Sites with No Matches</h2>';
-        html += '<table><tr><th>Site</th><th>Category</th><th>Status</th></tr>';
-        noMatches.forEach(result => {
-          html += `
-            <tr>
-              <td>${result.site}</td>
-              <td>${result.category}</td>
-              <td>${result.error || 'No matches found'}</td>
-            </tr>
-          `;
-        });
-        html += '</table>';
-      }
-
-      html += `
-          <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #eee; color: #666; font-size: 0.9em;">
-            <p><strong>Disclaimer:</strong> This report was generated by an automated OSINT tool. All findings should be verified through additional sources and proper investigative procedures.</p>
-            <p><strong>Generated by:</strong> Advanced OSINT Search Tool</p>
-            <p><strong>Report Type:</strong> Comprehensive Investigation with Direct Result Links</p>
-          </div>
-        </body>
-        </html>
-      `;
-
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `OSINT_Investigation_${query.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      showNotification('Detailed report exported successfully!', 'success');
-    }
-
-    // Initialize the application
-    function init() {
-      initializeCategories();
-      setupEventListeners();
-      showNotification('Advanced OSINT Search Tool initialized successfully!', 'success');
-    }
-
-    // Start the application when DOM is ready
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
-</body>
-</html>
+      // Update category dropdown
+      if (newCategorySelect) {
+        newCategorySelect.innerHTML = '';
+        Object.keys(categories).forEach(categoryName => {
+          const option = document.createElement('option');
+          option.value = categoryName;
+          option.textContent = categoryName;

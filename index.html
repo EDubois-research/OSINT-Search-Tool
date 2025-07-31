@@ -338,33 +338,102 @@
 
   <script>
     // OSINT Tool Database
-    const defaultSiteDatabase = {
-      "Company Searches": [
-        { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk", weight: 10 },
-        { name: "OpenCorporates", baseUrl: "https://opencorporates.com", weight: 9 },
-        { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk", weight: 9 }
-      ],
-      "Court Case Searches": [
-        { name: "BAILII Legal Database", baseUrl: "https://www.bailii.org", weight: 10 },
-        { name: "ECHR HUDOC", baseUrl: "https://hudoc.echr.coe.int", weight: 10 },
-        { name: "Supreme Court UK", baseUrl: "https://www.supremecourt.uk", weight: 10 }
-      ],
-      "Professional Registers": [
-        { name: "GMC Medical Register", baseUrl: "https://www.gmc-uk.org", weight: 10 },
-        { name: "SRA Solicitors", baseUrl: "https://www.sra.org.uk", weight: 10 },
-        { name: "FCA Register", baseUrl: "https://register.fca.org.uk", weight: 10 }
-      ],
-      "Social Media": [
-        { name: "LinkedIn Profiles", baseUrl: "https://www.linkedin.com", weight: 9 },
-        { name: "Facebook Search", baseUrl: "https://www.facebook.com", weight: 7 },
-        { name: "Twitter/X Search", baseUrl: "https://x.com", weight: 8 }
-      ],
-      "Sanctions & Watchlists": [
-        { name: "UK Sanctions List", baseUrl: "https://search-uk-sanctions-list.service.gov.uk", weight: 10 },
-        { name: "Interpol Red Notices", baseUrl: "https://www.interpol.int", weight: 10 },
-        { name: "FBI Most Wanted", baseUrl: "https://www.fbi.gov", weight: 10 }
-      ]
-    };
+// ...existing code...
+const defaultSiteDatabase = {
+  "Searches": [
+    { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk/" },
+    { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
+    { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+    { name: "Caseboard", baseUrl: "https://caseboard.io/cases/" }
+  ],
+  "Court Case Searches": [
+    { name: "CaseMine", baseUrl: "https://www.casemine.com/" },
+    { name: "ECHR HUDOC", baseUrl: "https://hudoc.echr.coe.int/eng#{%22documentcollectionid2%22:[%22GRANDCHAMBER%22,%22CHAMBER%22]}" },
+    { name: "BAILII", baseUrl: "https://www.bailii.org/" },
+    { name: "Employment Tribunal Decisions", baseUrl: "https://www.gov.uk/employment-tribunal-decisions" },
+    { name: "Supreme Court UK", baseUrl: "https://www.supremecourt.uk/cases" }
+  ],
+  "Occupation Registers": [
+    { name: "GDC Search Registers", baseUrl: "https://www.gdc-uk.org/pages/searchregisters.aspx" },
+    { name: "GMC Medical Register", baseUrl: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register" },
+    { name: "GDC Registration", baseUrl: "https://www.gdc-uk.org/registration" },
+    { name: "NMC Register", baseUrl: "https://www.nmc.org.uk/registration/search-the-register" },
+    { name: "HCPC Register", baseUrl: "https://www.hcpc-uk.org/check-the-register" },
+    { name: "Pharmacy Register", baseUrl: "https://www.pharmacyregulation.org/registers" },
+    { name: "Optical Register", baseUrl: "https://www.optical.org/en" },
+    { name: "GCC Register", baseUrl: "https://www.gcc-uk.org/registration/the-register" },
+    { name: "Osteopathy Register", baseUrl: "https://www.osteopathy.org.uk/register-search" },
+    { name: "SRA Solicitor Check", baseUrl: "https://www.sra.org.uk/consumers/solicitor-check/" },
+    { name: "Bar Standards Board", baseUrl: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html" },
+    { name: "CLC Find a Conveyancer", baseUrl: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/" },
+    { name: "CILEX Directory", baseUrl: "https://www.cilexregulation.org.uk/practitioners-directory" },
+    { name: "Faculty Office Notary", baseUrl: "https://www.facultyoffice.org.uk/notary/find-a-notary/" },
+    { name: "ICAEW Find", baseUrl: "https://find.icaew.com/" },
+    { name: "ACCA Find an Accountant", baseUrl: "https://www.accaglobal.com/an/en/member/find-an-accountant.html" },
+    { name: "RICS Find a Member", baseUrl: "https://www.rics.org/find-a-member" },
+    { name: "ARB", baseUrl: "https://arb.org.uk/public-information/members-of-the-public/" },
+    { name: "Engineering Council Registers", baseUrl: "https://www.engc.org.uk/registers" },
+    { name: "Electrical Competent Person", baseUrl: "https://www.electricalcompetentperson.co.uk/" },
+    { name: "Gas Safe Register", baseUrl: "https://www.gassaferegister.co.uk/find-an-engineer" },
+    { name: "NHBC Find a Builder", baseUrl: "https://www.nhbc.co.uk/homeowners/find-a-builder" },
+    { name: "FMB Find a Builder", baseUrl: "https://www.fmb.org.uk/find-a-builder" },
+    { name: "IPI Find an Investigator", baseUrl: "https://ipi.org.uk/find-an-investigator" },
+    { name: "SIA Register", baseUrl: "https://services.sia.homeoffice.gov.uk/rolh/" },
+    { name: "OISC Adviser Finder", baseUrl: "https://home.oisc.gov.uk/adviser_finder/finder.aspx" },
+    { name: "Social Work England", baseUrl: "https://www.socialworkengland.org.uk/search-the-register/" },
+    { name: "BPS Psychological Workforce", baseUrl: "https://www.bps.org.uk/psychological-workforce" },
+    { name: "RCVS Find a Vet", baseUrl: "https://findavet.rcvs.org.uk/home/" },
+    { name: "CQC Find a Care Home", baseUrl: "https://www.cqc.org.uk/find-a-care-home" },
+    { name: "FCA Register", baseUrl: "https://register.fca.org.uk/" },
+    { name: "Charity Commission Register", baseUrl: "https://register-of-charities.charitycommission.gov.uk/" }
+  ],
+  "Genealogy": [
+    { name: "UK Probate Search", baseUrl: "https://probatesearch.service.gov.uk/#wills" }
+  ],
+  "Transport": [
+    { name: "Car Tax Check", baseUrl: "https://cartaxcheck.co.uk/" },
+    { name: "Plane Finder", baseUrl: "https://planefinder.net/" },
+    { name: "Marine Traffic", baseUrl: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4" },
+    { name: "Vessel Finder", baseUrl: "https://www.vesselfinder.com/vessels" },
+    { name: "Haulage Index", baseUrl: "https://haulage-index.co.uk/index.php" },
+    { name: "Racing Post Racecards", baseUrl: "https://www.racingpost.com/racecards" }
+  ],
+  "Sanctions, Watchlists, Insolvency, PEPs": [
+    { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search" },
+    { name: "The Gazette", baseUrl: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices" },
+    { name: "Interpol Red Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices" },
+    { name: "Interpol Yellow Notices", baseUrl: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices" },
+    { name: "FBI Most Wanted", baseUrl: "https://www.fbi.gov/wanted/topten" },
+    { name: "Proscribed Terror Groups", baseUrl: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version" },
+    { name: "EU Most Wanted", baseUrl: "https://eumostwanted.eu/" },
+    { name: "UK Sanctions List", baseUrl: "https://search-uk-sanctions-list.service.gov.uk/" },
+    { name: "NCA Most Wanted", baseUrl: "https://www.nationalcrimeagency.gov.uk/most-wanted" },
+    { name: "FCA Warning List", baseUrl: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms" },
+    { name: "SFO Cases", baseUrl: "https://www.gov.uk/sfo-cases" },
+    { name: "Vexatious Litigants", baseUrl: "https://www.gov.uk/guidance/vexatious-litigants" },
+    { name: "Tax Defaulters", baseUrl: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters" }
+  ],
+  "Social Media": [
+    { name: "Facebook", baseUrl: "https://www.facebook.com/" },
+    { name: "LinkedIn", baseUrl: "https://www.linkedin.com" },
+    { name: "Instagram", baseUrl: "https://www.instagram.com/" },
+    { name: "X (Twitter)", baseUrl: "https://x.com" },
+    { name: "TikTok", baseUrl: "https://www.tiktok.com/?kuid=31b6d78a-c086-437f-9ab0-df56eaf7fd8b&kref=vGWRdzLJnjYf" },
+    { name: "Reddit", baseUrl: "https://www.reddit.com/" }
+  ],
+  "Offshore Companies": [
+    { name: "Offshore Leaks", baseUrl: "https://offshoreleaks.icij.org/" },
+    { name: "OpenCorporates", baseUrl: "https://opencorporates.com/" }
+  ],
+  "Domain/Leaked/Cached": [
+    { name: "Who.is", baseUrl: "https://who.is/" },
+    { name: "Wayback Machine", baseUrl: "https://web.archive.org/" },
+    { name: "AnalyzeID", baseUrl: "https://analyzeid.com/" },
+    { name: "Have I Been Pwned", baseUrl: "https://haveibeenpwned.com/" },
+    { name: "IP Fingerprints", baseUrl: "https://www.ipfingerprints.com/" },
+    { name: "DataBreach", baseUrl: "https://databreach.com/" }
+  ]
+};
 
     let categories = defaultSiteDatabase;
     let selectedCategories = new Set();

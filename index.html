@@ -79,6 +79,20 @@
       margin-top: 16px;
       border: 1px solid #ddd;
     }
+    .advanced-filters {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0 0 0;
+      border: 1px solid #e0e0e0;
+      display: none;
+    }
+    .advanced-filters label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.98rem;
+      color: #B13F17;
+    }
     .categories-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -94,6 +108,7 @@
       align-items: center;
       gap: 12px;
       transition: all 0.2s;
+      flex-wrap: wrap;
     }
     .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .category-checkbox {
@@ -132,6 +147,7 @@
       margin-top: 12px;
       padding-top: 12px;
       border-top: 1px solid #eee;
+      width: 100%;
     }
     .category-websites.expanded { display: block; }
     .website-item {
@@ -248,7 +264,7 @@
 <body>
   <div class="container">
     <header style="text-align:center; margin-bottom:40px;">
-      <h1>🕵️ Advanced OSINT Search Tool</h1>
+      <h1>Advanced OSINT Search Tool</h1>
       <p style="color:#666; font-size:1.2rem;">Professional Open Source Intelligence Investigation Platform</p>
     </header>
 
@@ -284,6 +300,19 @@
               <option value="targeted">Targeted Search</option>
             </select>
           </label>
+        </div>
+        <!-- Advanced Filters for Facebook and LinkedIn -->
+        <div id="fbFilters" class="advanced-filters">
+          <h4 style="margin:0 0 8px 0;color:#B13F17;">Facebook Filters</h4>
+          <label>Location: <input type="text" id="fbLocation" placeholder="e.g. London"></label>
+          <label>Workplace: <input type="text" id="fbWorkplace" placeholder="e.g. BBC"></label>
+          <label>School: <input type="text" id="fbSchool" placeholder="e.g. Oxford"></label>
+        </div>
+        <div id="liFilters" class="advanced-filters">
+          <h4 style="margin:0 0 8px 0;color:#B13F17;">LinkedIn Filters</h4>
+          <label>Location: <input type="text" id="liLocation" placeholder="e.g. London"></label>
+          <label>Current Company: <input type="text" id="liCompany" placeholder="e.g. Microsoft"></label>
+          <label>Job Title: <input type="text" id="liJobTitle" placeholder="e.g. Analyst"></label>
         </div>
       </div>
     </section>
@@ -351,7 +380,7 @@
   </div>
 
   <script>
-    // --- CATEGORY & SITE DATABASE ---
+    // --- DEFAULT CATEGORY & SITE DATABASE ---
     const defaultSiteDatabase = {
       "Searches": [
         { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk/" },
@@ -448,10 +477,23 @@
       ]
     };
 
-    let categories = defaultSiteDatabase;
+    // --- CATEGORY & SITE DATABASE WITH LOCALSTORAGE ---
+    const STORAGE_KEY = 'osint_categories';
+
+    function loadCategories() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+      return JSON.parse(JSON.stringify(defaultSiteDatabase)); // deep copy
+    }
+
+    function saveCategories() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+    }
+
+    let categories = loadCategories();
     let selectedCategories = new Set();
 
-    // --- CATEGORY RENDERING ---
+    // --- CATEGORY RENDERING WITH MANAGEMENT ---
     function renderCategories() {
       const container = document.getElementById('categoriesContainer');
       container.innerHTML = '';
@@ -463,22 +505,120 @@
           <div class="category-title" onclick="toggleCategory('${categoryName}')">${categoryName}</div>
           <div class="website-count">${sites.length}</div>
           <button class="expand-btn" onclick="expandCategory('${categoryName}')">▼</button>
+          <button class="btn btn-small btn-danger delete-category-btn" data-category="${categoryName}" title="Delete Category">🗑️</button>
+          <button class="btn btn-small btn-secondary edit-category-btn" data-category="${categoryName}" title="Edit Category">✏️</button>
           <div class="category-websites" id="websites-${categoryName}">
-            ${sites.map(site => `
+            ${sites.map((site, idx) => `
               <div class="website-item">
                 <a href="${site.baseUrl}" target="_blank" class="website-url">${site.name}</a>
+                <button class="btn btn-small btn-danger delete-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Delete Website">🗑️</button>
+                <button class="btn btn-small btn-secondary edit-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Edit Website">✏️</button>
               </div>
             `).join('')}
+            <form class="add-website-form" data-category="${categoryName}" style="margin-top:10px;">
+              <input type="text" name="siteName" placeholder="Website Name" required style="width:120px;">
+              <input type="url" name="siteUrl" placeholder="Website URL" required style="width:180px;">
+              <button type="submit" class="btn btn-small btn-success">Add Website</button>
+            </form>
           </div>
         `;
         container.appendChild(categoryCard);
       });
+      // Add category form
+      const addCatDiv = document.createElement('div');
+      addCatDiv.className = 'category-card';
+      addCatDiv.innerHTML = `
+        <form id="addCategoryForm" style="width:100%;">
+          <input type="text" id="newCategoryName" placeholder="New Category Name" required style="width:60%;">
+          <button type="submit" class="btn btn-small btn-success">Add Category</button>
+        </form>
+      `;
+      container.appendChild(addCatDiv);
     }
 
+    // --- CATEGORY/WEBSITE MANAGEMENT EVENT HANDLERS ---
+    document.addEventListener('submit', function(e) {
+      // Add Category
+      if (e.target.id === 'addCategoryForm') {
+        e.preventDefault();
+        const name = document.getElementById('newCategoryName').value.trim();
+        if (name && !categories[name]) {
+          categories[name] = [];
+          saveCategories();
+          renderCategories();
+          updateSelectedCategories();
+        }
+        e.target.reset();
+      }
+      // Add Website
+      if (e.target.classList.contains('add-website-form')) {
+        e.preventDefault();
+        const cat = e.target.dataset.category;
+        const name = e.target.siteName.value.trim();
+        const url = e.target.siteUrl.value.trim();
+        if (name && url) {
+          categories[cat].push({ name, baseUrl: url });
+          saveCategories();
+          renderCategories();
+          updateSelectedCategories();
+        }
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      // Delete Category
+      if (e.target.classList.contains('delete-category-btn')) {
+        const cat = e.target.dataset.category;
+        if (confirm(`Delete category "${cat}"?`)) {
+          delete categories[cat];
+          saveCategories();
+          renderCategories();
+          updateSelectedCategories();
+        }
+      }
+      // Delete Website
+      if (e.target.classList.contains('delete-site-btn')) {
+        const cat = e.target.dataset.category;
+        const idx = e.target.dataset.idx;
+        categories[cat].splice(idx, 1);
+        saveCategories();
+        renderCategories();
+        updateSelectedCategories();
+      }
+      // Edit Category
+      if (e.target.classList.contains('edit-category-btn')) {
+        const cat = e.target.dataset.category;
+        const newName = prompt('Edit category name:', cat);
+        if (newName && newName !== cat && !categories[newName]) {
+          categories[newName] = categories[cat];
+          delete categories[cat];
+          saveCategories();
+          renderCategories();
+          updateSelectedCategories();
+        }
+      }
+      // Edit Website
+      if (e.target.classList.contains('edit-site-btn')) {
+        const cat = e.target.dataset.category;
+        const idx = e.target.dataset.idx;
+        const site = categories[cat][idx];
+        const newName = prompt('Edit website name:', site.name);
+        const newUrl = prompt('Edit website URL:', site.baseUrl);
+        if (newName && newUrl) {
+          categories[cat][idx] = { name: newName, baseUrl: newUrl };
+          saveCategories();
+          renderCategories();
+          updateSelectedCategories();
+        }
+      }
+    });
+
+    // --- CATEGORY SELECTION & SEARCH LOGIC ---
     function toggleCategory(categoryName) {
       const checkbox = document.getElementById(`cat-${categoryName}`);
       checkbox.checked = !checkbox.checked;
       updateSelectedCategories();
+      showAdvancedFilters();
     }
 
     function expandCategory(categoryName) {
@@ -498,6 +638,20 @@
       document.querySelectorAll('.category-checkbox:checked').forEach(cb => {
         selectedCategories.add(cb.dataset.category);
       });
+      showAdvancedFilters();
+    }
+
+    function showAdvancedFilters() {
+      // Show Facebook filters if Social Media is selected and Facebook is present
+      let showFB = false, showLI = false;
+      if (selectedCategories.has("Social Media")) {
+        const fb = categories["Social Media"].find(site => site.name.toLowerCase().includes("facebook"));
+        if (fb) showFB = true;
+        const li = categories["Social Media"].find(site => site.name.toLowerCase().includes("linkedin"));
+        if (li) showLI = true;
+      }
+      document.getElementById('fbFilters').style.display = showFB ? '' : 'none';
+      document.getElementById('liFilters').style.display = showLI ? '' : 'none';
     }
 
     function setupEventListeners() {
@@ -605,6 +759,18 @@
       `;
     }
 
+    // --- ADVANCED SCRAPING/EXTRACTION (UI DEMO) ---
+    let savedResults = {};
+    let currentCaseRef = "";
+
+    function getRelevanceScore(query, site) {
+      let score = 0;
+      if (site.name.toLowerCase().includes(query.toLowerCase())) score += 5;
+      if (site.baseUrl.toLowerCase().includes(query.toLowerCase())) score += 3;
+      score += Math.floor(Math.random() * 3);
+      return score;
+    }
+
     function simulateSearch(query) {
       let progress = 0;
       const progressBar = document.getElementById('progress-bar');
@@ -619,18 +785,6 @@
           setTimeout(() => showMockResults(query), 1000);
         }
       }, 500);
-    }
-
-    // --- ADVANCED SCRAPING/EXTRACTION (UI DEMO) ---
-    let savedResults = {};
-    let currentCaseRef = "";
-
-    function getRelevanceScore(query, site) {
-      let score = 0;
-      if (site.name.toLowerCase().includes(query.toLowerCase())) score += 5;
-      if (site.baseUrl.toLowerCase().includes(query.toLowerCase())) score += 3;
-      score += Math.floor(Math.random() * 3);
-      return score;
     }
 
     function showMockResults(query) {
@@ -649,17 +803,48 @@
     function generateMockResults(query) {
       const results = [];
       let allResults = [];
+      // Gather advanced filters if present
+      const fbFilters = {
+        location: document.getElementById('fbLocation')?.value || "",
+        workplace: document.getElementById('fbWorkplace')?.value || "",
+        school: document.getElementById('fbSchool')?.value || ""
+      };
+      const liFilters = {
+        location: document.getElementById('liLocation')?.value || "",
+        company: document.getElementById('liCompany')?.value || "",
+        jobTitle: document.getElementById('liJobTitle')?.value || ""
+      };
       selectedCategories.forEach(categoryName => {
         const sites = categories[categoryName];
         sites.forEach(site => {
           const score = getRelevanceScore(query, site);
           const hasMatch = score > 4;
+          let extra = "";
+          if (categoryName === "Social Media" && site.name.toLowerCase().includes("facebook")) {
+            extra = `
+              <div style="color:#B13F17;font-size:0.95rem;">
+                ${fbFilters.location ? "Location: " + fbFilters.location + "<br>" : ""}
+                ${fbFilters.workplace ? "Workplace: " + fbFilters.workplace + "<br>" : ""}
+                ${fbFilters.school ? "School: " + fbFilters.school + "<br>" : ""}
+              </div>
+            `;
+          }
+          if (categoryName === "Social Media" && site.name.toLowerCase().includes("linkedin")) {
+            extra = `
+              <div style="color:#B13F17;font-size:0.95rem;">
+                ${liFilters.location ? "Location: " + liFilters.location + "<br>" : ""}
+                ${liFilters.company ? "Company: " + liFilters.company + "<br>" : ""}
+                ${liFilters.jobTitle ? "Job Title: " + liFilters.jobTitle + "<br>" : ""}
+              </div>
+            `;
+          }
           allResults.push({
             category: categoryName,
             site,
             hasMatch,
             score,
-            snippet: generateMockSnippet(query, site.name)
+            snippet: generateMockSnippet(query, site.name),
+            extra
           });
         });
       });
@@ -675,6 +860,7 @@
               ${result.site.name}
             </div>
             <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+            ${result.extra}
             <div style="margin:8px 0;">
               <b>Relevance:</b> ${result.score}/10
               <br>
@@ -756,6 +942,7 @@
               ${result.site.name}
             </div>
             <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+            ${result.extra || ""}
             <div style="margin:8px 0;">
               <b>Relevance:</b> ${result.score}/10
               <br>
@@ -775,6 +962,7 @@
       renderCategories();
       setupEventListeners();
       setupImageSearch();
+      showAdvancedFilters();
     });
   </script>
 </body>

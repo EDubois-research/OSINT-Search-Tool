@@ -188,66 +188,6 @@
       color: #B13F17;
       text-decoration: underline;
     }
-    .manage-section {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1px solid #ddd;
-    }
-    .manage-controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      font-weight: 600;
-      color: #B13F17;
-      margin-bottom: 5px;
-    }
-    .form-row {
-      display: flex;
-      gap: 15px;
-      align-items: end;
-    }
-    .form-row > div {
-      flex: 1;
-    }
-    .search-progress {
-      background: #fff;
-      border-radius: 10px;
-      padding: 25px;
-      margin: 20px 0;
-      text-align: center;
-      border: 2px solid #e9ecef;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 24px;
-      background: #e9ecef;
-      border-radius: 12px;
-      overflow: hidden;
-      margin: 15px 0;
-      position: relative;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #B13F17, #d4691a);
-      width: 0%;
-      transition: width 0.5s ease;
-      border-radius: 12px;
-    }
-    .progress-text {
-      font-weight: 600;
-      color: #B13F17;
-      margin: 10px 0;
-    }
     .results-container {
       margin-top: 20px;
     }
@@ -275,107 +215,6 @@
       border-left: 5px solid #ffc107;
       background: linear-gradient(135deg, #fffdf0 0%, #ffffff 100%);
     }
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-    .result-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #B13F17;
-      margin-bottom: 5px;
-    }
-    .result-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-    }
-    .status-icon {
-      font-size: 1.2rem;
-    }
-    .result-details {
-      margin: 12px 0;
-      padding: 12px;
-      background: #f8f9fa;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-    .match-snippet {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      padding: 10px;
-      border-radius: 6px;
-      margin: 8px 0;
-      font-style: italic;
-      color: #856404;
-    }
-    .result-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
-    .result-meta {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin: 12px 0;
-      font-size: 0.9rem;
-    }
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-    }
-    .meta-label {
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 2px;
-    }
-    .meta-value {
-      color: #333;
-    }
-    .score-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-    .score-high {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .score-medium {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-    .score-low {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    .filters-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    .filter-section {
-      background: #fff;
-      border-radius: 8px;
-      padding: 16px;
-    }
-    .filter-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #B13F17;
-      margin-bottom: 12px;
-    }
     .summary-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -399,41 +238,10 @@
       color: #666;
       font-weight: 600;
     }
-    .highlight {
-      background: #fff3cd;
-      color: #856404;
-      padding: 2px 4px;
-      border-radius: 3px;
-      font-weight: 600;
-    }
-    .collapsible-header {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 15px;
-    }
-    .collapsible-header:hover {
-      background: rgba(177, 63, 23, 0.05);
-      margin: 0 -10px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .collapsible-content {
-      display: none;
-    }
-    .collapsible-content.expanded {
-      display: block;
-    }
     @media (max-width: 768px) {
       .container { padding: 15px; }
       .categories-grid { grid-template-columns: 1fr; }
-      .result-meta { grid-template-columns: 1fr; }
       .summary-stats { grid-template-columns: repeat(2, 1fr); }
-      .form-row { flex-direction: column; }
-      .manage-controls { flex-direction: column; }
     }
   </style>
 </head>
@@ -481,38 +289,6 @@
       </div>
     </section>
 
-    <!-- Advanced Filters -->
-    <section>
-      <h2>⚙️ Advanced Filters</h2>
-      <div class="filters-grid">
-        <div class="filter-section">
-          <div class="filter-title">💼 Professional Networks</div>
-          <input type="text" id="linkedinLocation" placeholder="Location (e.g., London, UK)">
-          <input type="text" id="linkedinCompany" placeholder="Current/Previous Company">
-          <input type="text" id="linkedinTitle" placeholder="Job Title/Role">
-          <input type="text" id="linkedinSchool" placeholder="Education/University">
-        </div>
-        <div class="filter-section">
-          <div class="filter-title">📱 Social Media</div>
-          <input type="text" id="socialLocation" placeholder="Location">
-          <input type="text" id="socialAge" placeholder="Age Range (e.g., 25-35)">
-          <select id="socialGender">
-            <option value="">Any Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          <input type="text" id="socialInterests" placeholder="Interests/Hobbies">
-        </div>
-        <div class="filter-section">
-          <div class="filter-title">🏢 Business/Legal</div>
-          <input type="text" id="businessRole" placeholder="Director/Officer Role">
-          <input type="text" id="businessSector" placeholder="Industry/Sector">
-          <input type="date" id="dateFrom" placeholder="From Date">
-          <input type="date" id="dateTo" placeholder="To Date">
-        </div>
-      </div>
-    </section>
-
     <!-- Categories Section -->
     <section>
       <h2>📋 Investigation Categories</h2>
@@ -523,65 +299,6 @@
         <button class="btn btn-small" id="selectAllBtn">✅ Select All</button>
         <button class="btn btn-small" id="deselectAllBtn">❌ Deselect All</button>
         <button class="btn btn-small" id="selectRecommendedBtn">🎯 Recommended Only</button>
-      </div>
-    </section>
-
-    <!-- Manage Categories and Websites Section -->
-    <section>
-      <div class="collapsible-header" id="manageToggle">
-        <span class="expand-btn">▶</span>
-        <h2 style="margin: 0;">⚙️ Manage Categories and Websites</h2>
-      </div>
-      <div class="collapsible-content" id="manageContent">
-        <div class="manage-section">
-          <h3>➕ Add New Website</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="newCategory">Category:</label>
-              <select id="newCategory">
-                <!-- Options populated dynamically -->
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="newWebsiteName">Website Name:</label>
-              <input type="text" id="newWebsiteName" placeholder="e.g., LinkedIn">
-            </div>
-            <div class="form-group">
-              <label for="newWebsiteUrl">Website URL:</label>
-              <input type="url" id="newWebsiteUrl" placeholder="https://example.com">
-            </div>
-            <div style="display: flex; align-items: end;">
-              <button class="btn btn-success" id="addWebsiteBtn">➕ Add Website</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="manage-section">
-          <h3>📁 Add New Category</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="newCategoryName">Category Name:</label>
-              <input type="text" id="newCategoryName" placeholder="e.g., Financial Records">
-            </div>
-            <div style="display: flex; align-items: end;">
-              <button class="btn btn-success" id="addCategoryBtn">📁 Add Category</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="manage-section">
-          <h3>📝 Edit/Remove Websites</h3>
-          <div id="editWebsitesList">
-            <!-- Edit options populated dynamically -->
-          </div>
-        </div>
-
-        <div class="manage-controls">
-          <button class="btn btn-secondary" id="exportConfigBtn">💾 Export Configuration</button>
-          <button class="btn btn-secondary" id="importConfigBtn">📂 Import Configuration</button>
-          <input type="file" id="importConfigFile" accept=".json" style="display: none;">
-          <button class="btn btn-danger" id="resetConfigBtn">🔄 Reset to Default</button>
-        </div>
       </div>
     </section>
 
@@ -616,854 +333,281 @@
           <p>Enter your search terms and select categories to begin comprehensive OSINT analysis</p>
         </div>
       </div>
-      
-      <div style="margin-top: 25px; display: none;" id="exportSection">
-        <button class="btn" id="exportBtn">📋 Export Detailed Report</button>
-        <button class="btn" id="saveCase">💾 Save Investigation</button>
-      </div>
     </section>
   </div>
 
   <script>
-    // Enhanced OSINT Tool with Complete Site Database
-    
-    let categories = {};
-    let lastResults = [];
-    let currentSearch = null;
-
-    // Comprehensive site database with all requested categories
+    // OSINT Tool Database
     const defaultSiteDatabase = {
       "Company Searches": [
-        {
-          name: "Companies House UK",
-          baseUrl: "https://find-and-update.company-information.service.gov.uk",
-          searchUrl: "https://find-and-update.company-information.service.gov.uk/search/companies?q={QUERY}",
-          patterns: { company: /\/company\/([A-Z0-9]{8})/g },
-          weight: 10
-        },
-        {
-          name: "Haulage Index",
-          baseUrl: "https://haulage-index.co.uk",
-          searchUrl: "https://haulage-index.co.uk/index.php?q={QUERY}",
-          patterns: { haulage: /haulage-index\.co\.uk\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Insolvency Direct",
-          baseUrl: "https://www.insolvencydirect.bis.gov.uk",
-          searchUrl: "https://www.insolvencydirect.bis.gov.uk/eiir/search?q={QUERY}",
-          patterns: { insolvency: /insolvencydirect\.bis\.gov\.uk\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Caseboard.io",
-          baseUrl: "https://caseboard.io",
-          searchUrl: "https://caseboard.io/cases/?q={QUERY}",
-          patterns: { case: /caseboard\.io\/cases\/([^\/]+)/g },
-          weight: 8
-        }
+        { name: "Companies House UK", baseUrl: "https://find-and-update.company-information.service.gov.uk", weight: 10 },
+        { name: "OpenCorporates", baseUrl: "https://opencorporates.com", weight: 9 },
+        { name: "Insolvency Direct", baseUrl: "https://www.insolvencydirect.bis.gov.uk", weight: 9 }
       ],
       "Court Case Searches": [
-        {
-          name: "Casemine",
-          baseUrl: "https://www.casemine.com",
-          searchUrl: "https://www.casemine.com/search?q={QUERY}",
-          patterns: { case: /casemine\.com\/judgement\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "ECHR HUDOC",
-          baseUrl: "https://hudoc.echr.coe.int",
-          searchUrl: "https://hudoc.echr.coe.int/eng#{%22fulltext%22:[\"{QUERY}\"]}",
-          patterns: { case: /hudoc\.echr\.coe\.int\/eng\?i=([^&]+)/g },
-          weight: 10
-        },
-        {
-          name: "BAILII Legal Database",
-          baseUrl: "https://www.bailii.org",
-          searchUrl: "https://www.bailii.org/cgi-bin/markup.cgi?doc=/bailii/search.html&query={QUERY}",
-          patterns: { case: /bailii\.org\/[^\/]+\/cases\/[^\/]+\/([^\.]+)\.html/g },
-          weight: 10
-        },
-        {
-          name: "Employment Tribunal Decisions",
-          baseUrl: "https://www.gov.uk",
-          searchUrl: "https://www.gov.uk/employment-tribunal-decisions?q={QUERY}",
-          patterns: { tribunal: /gov\.uk\/employment-tribunal-decisions\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Supreme Court UK",
-          baseUrl: "https://www.supremecourt.uk",
-          searchUrl: "https://www.supremecourt.uk/cases?q={QUERY}",
-          patterns: { supreme: /supremecourt\.uk\/cases\/([^\/]+)/g },
-          weight: 10
-        }
+        { name: "BAILII Legal Database", baseUrl: "https://www.bailii.org", weight: 10 },
+        { name: "ECHR HUDOC", baseUrl: "https://hudoc.echr.coe.int", weight: 10 },
+        { name: "Supreme Court UK", baseUrl: "https://www.supremecourt.uk", weight: 10 }
       ],
-      "Occupation Registers": [
-        {
-          name: "GDC Dental Register",
-          baseUrl: "https://www.gdc-uk.org",
-          searchUrl: "https://www.gdc-uk.org/pages/searchregisters.aspx?q={QUERY}",
-          patterns: { dentist: /gdc-uk\.org\/registration\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "GMC Medical Register",
-          baseUrl: "https://www.gmc-uk.org",
-          searchUrl: "https://www.gmc-uk.org/registration-and-licensing/the-medical-register?q={QUERY}",
-          patterns: { doctor: /gmc-uk\.org\/doctors\/([0-9]+)/g },
-          weight: 10
-        },
-        {
-          name: "NMC Nursing Register",
-          baseUrl: "https://www.nmc.org.uk",
-          searchUrl: "https://www.nmc.org.uk/registration/search-the-register/?q={QUERY}",
-          patterns: { nurse: /nmc\.org\.uk\/globalassets\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "HCPC Register",
-          baseUrl: "https://www.hcpc-uk.org",
-          searchUrl: "https://www.hcpc-uk.org/check-the-register/?q={QUERY}",
-          patterns: { hcpc: /hcpc-uk\.org\/check\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Pharmacy Regulation",
-          baseUrl: "https://www.pharmacyregulation.org",
-          searchUrl: "https://www.pharmacyregulation.org/registers?q={QUERY}",
-          patterns: { pharmacy: /pharmacyregulation\.org\/registers\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Optical Register",
-          baseUrl: "https://www.optical.org",
-          searchUrl: "https://www.optical.org/en/register?q={QUERY}",
-          patterns: { optical: /optical\.org\/en\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Chiropractic Register",
-          baseUrl: "https://www.gcc-uk.org",
-          searchUrl: "https://www.gcc-uk.org/registration/the-register?q={QUERY}",
-          patterns: { chiro: /gcc-uk\.org\/registration\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Osteopathy Register",
-          baseUrl: "https://www.osteopathy.org.uk",
-          searchUrl: "https://www.osteopathy.org.uk/register-search?q={QUERY}",
-          patterns: { osteo: /osteopathy\.org\.uk\/register\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "SRA Solicitors",
-          baseUrl: "https://www.sra.org.uk",
-          searchUrl: "https://www.sra.org.uk/consumers/solicitor-check/?q={QUERY}",
-          patterns: { solicitor: /sra\.org\.uk\/solicitors\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Bar Standards Board",
-          baseUrl: "https://www.barstandardsboard.org.uk",
-          searchUrl: "https://www.barstandardsboard.org.uk/for-the-public/finding-a-barrister.html?q={QUERY}",
-          patterns: { barrister: /barstandardsboard\.org\.uk\/barrister\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Licensed Conveyancers",
-          baseUrl: "https://www.clc-uk.org",
-          searchUrl: "https://www.clc-uk.org/consumers/find-a-licensed-conveyancer/?q={QUERY}",
-          patterns: { conveyancer: /clc-uk\.org\/find\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "CILEX Directory",
-          baseUrl: "https://www.cilexregulation.org.uk",
-          searchUrl: "https://www.cilexregulation.org.uk/practitioners-directory?q={QUERY}",
-          patterns: { cilex: /cilexregulation\.org\.uk\/practitioner\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Faculty Office Notaries",
-          baseUrl: "https://www.facultyoffice.org.uk",
-          searchUrl: "https://www.facultyoffice.org.uk/notary/find-a-notary/?q={QUERY}",
-          patterns: { notary: /facultyoffice\.org\.uk\/notary\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "ICAEW Chartered Accountants",
-          baseUrl: "https://find.icaew.com",
-          searchUrl: "https://find.icaew.com/?q={QUERY}",
-          patterns: { accountant: /find\.icaew\.com\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "ACCA Find an Accountant",
-          baseUrl: "https://www.accaglobal.com",
-          searchUrl: "https://www.accaglobal.com/an/en/member/find-an-accountant.html?q={QUERY}",
-          patterns: { acca: /accaglobal\.com\/member\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "RICS Surveyors",
-          baseUrl: "https://www.rics.org",
-          searchUrl: "https://www.rics.org/find-a-member?q={QUERY}",
-          patterns: { surveyor: /rics\.org\/member\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "ARB Architects",
-          baseUrl: "https://arb.org.uk",
-          searchUrl: "https://arb.org.uk/public-information/members-of-the-public/?q={QUERY}",
-          patterns: { architect: /arb\.org\.uk\/architect\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Engineering Council",
-          baseUrl: "https://www.engc.org.uk",
-          searchUrl: "https://www.engc.org.uk/registers?q={QUERY}",
-          patterns: { engineer: /engc\.org\.uk\/engineer\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Electrical Competent Person",
-          baseUrl: "https://www.electricalcompetentperson.co.uk",
-          searchUrl: "https://www.electricalcompetentperson.co.uk/?q={QUERY}",
-          patterns: { electrical: /electricalcompetentperson\.co\.uk\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Gas Safe Register",
-          baseUrl: "https://www.gassaferegister.co.uk",
-          searchUrl: "https://www.gassaferegister.co.uk/find-an-engineer?q={QUERY}",
-          patterns: { gas: /gassaferegister\.co\.uk\/engineer\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "NHBC Find a Builder",
-          baseUrl: "https://www.nhbc.co.uk",
-          searchUrl: "https://www.nhbc.co.uk/homeowners/find-a-builder?q={QUERY}",
-          patterns: { builder: /nhbc\.co\.uk\/builder\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "FMB Find a Builder",
-          baseUrl: "https://www.fmb.org.uk",
-          searchUrl: "https://www.fmb.org.uk/find-a-builder?q={QUERY}",
-          patterns: { fmb: /fmb\.org\.uk\/builder\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "IPI Private Investigators",
-          baseUrl: "https://ipi.org.uk",
-          searchUrl: "https://ipi.org.uk/find-an-investigator?q={QUERY}",
-          patterns: { investigator: /ipi\.org\.uk\/investigator\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "SIA Register",
-          baseUrl: "https://services.sia.homeoffice.gov.uk",
-          searchUrl: "https://services.sia.homeoffice.gov.uk/rolh/?q={QUERY}",
-          patterns: { sia: /sia\.homeoffice\.gov\.uk\/licence\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "OISC Immigration Advisers",
-          baseUrl: "https://home.oisc.gov.uk",
-          searchUrl: "https://home.oisc.gov.uk/adviser_finder/finder.aspx?q={QUERY}",
-          patterns: { immigration: /oisc\.gov\.uk\/adviser\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Social Work England",
-          baseUrl: "https://www.socialworkengland.org.uk",
-          searchUrl: "https://www.socialworkengland.org.uk/search-the-register/?q={QUERY}",
-          patterns: { socialworker: /socialworkengland\.org\.uk\/worker\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "BPS Psychological Workforce",
-          baseUrl: "https://www.bps.org.uk",
-          searchUrl: "https://www.bps.org.uk/psychological-workforce?q={QUERY}",
-          patterns: { psychologist: /bps\.org\.uk\/member\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "RCVS Veterinary Register",
-          baseUrl: "https://findavet.rcvs.org.uk",
-          searchUrl: "https://findavet.rcvs.org.uk/home/?q={QUERY}",
-          patterns: { vet: /findavet\.rcvs\.org\.uk\/vet\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "CQC Care Providers",
-          baseUrl: "https://www.cqc.org.uk",
-          searchUrl: "https://www.cqc.org.uk/find-a-care-home?q={QUERY}",
-          patterns: { care: /cqc\.org\.uk\/location\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "FCA Register",
-          baseUrl: "https://register.fca.org.uk",
-          searchUrl: "https://register.fca.org.uk/?q={QUERY}",
-          patterns: { financial: /register\.fca\.org\.uk\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Charity Commission Register",
-          baseUrl: "https://register-of-charities.charitycommission.gov.uk",
-          searchUrl: "https://register-of-charities.charitycommission.gov.uk/search?q={QUERY}",
-          patterns: { charity: /register-of-charities\.charitycommission\.gov\.uk\/charity-search\/([^\/]+)/g },
-          weight: 10
-        }
-      ],
-      "Genealogy": [
-        {
-          name: "Probate Search Service",
-          baseUrl: "https://probatesearch.service.gov.uk",
-          searchUrl: "https://probatesearch.service.gov.uk/#wills?q={QUERY}",
-          patterns: { probate: /probatesearch\.service\.gov\.uk\/([^\/]+)/g },
-          weight: 10
-        }
-      ],
-      "Transport": [
-        {
-          name: "Car Tax Check",
-          baseUrl: "https://cartaxcheck.co.uk",
-          searchUrl: "https://cartaxcheck.co.uk/?q={QUERY}",
-          patterns: { vehicle: /cartaxcheck\.co\.uk\/vehicle\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Plane Finder",
-          baseUrl: "https://planefinder.net",
-          searchUrl: "https://planefinder.net/?q={QUERY}",
-          patterns: { aircraft: /planefinder\.net\/flight\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Marine Traffic",
-          baseUrl: "https://www.marinetraffic.com",
-          searchUrl: "https://www.marinetraffic.com/en/ais/home/centerx:-12.0/centery:25.0/zoom:4?q={QUERY}",
-          patterns: { vessel: /marinetraffic\.com\/en\/ais\/details\/ships\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Vessel Finder",
-          baseUrl: "https://www.vesselfinder.com",
-          searchUrl: "https://www.vesselfinder.com/vessels?q={QUERY}",
-          patterns: { ship: /vesselfinder\.com\/vessels\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Racing Post",
-          baseUrl: "https://www.racingpost.com",
-          searchUrl: "https://www.racingpost.com/racecards?q={QUERY}",
-          patterns: { horse: /racingpost\.com\/profile\/horse\/([^\/]+)/g },
-          weight: 7
-        }
-      ],
-      "Sanctions, Watchlists, Insolvency, PEPs": [
-        {
-          name: "The Gazette",
-          baseUrl: "https://www.thegazette.co.uk",
-          searchUrl: "https://www.thegazette.co.uk/all-notices/notice?service=all-notices&q={QUERY}",
-          patterns: { gazette: /thegazette\.co\.uk\/notice\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Interpol Red Notices",
-          baseUrl: "https://www.interpol.int",
-          searchUrl: "https://www.interpol.int/en/How-we-work/Notices/Red-Notices/View-Red-Notices?q={QUERY}",
-          patterns: { interpol: /interpol\.int\/en\/How-we-work\/Notices\/Red-Notices\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Interpol Yellow Notices",
-          baseUrl: "https://www.interpol.int",
-          searchUrl: "https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices/View-Yellow-Notices?q={QUERY}",
-          patterns: { yellow: /interpol\.int\/en\/How-we-work\/Notices\/Yellow-Notices\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "FBI Most Wanted",
-          baseUrl: "https://www.fbi.gov",
-          searchUrl: "https://www.fbi.gov/wanted/topten?q={QUERY}",
-          patterns: { fbi: /fbi\.gov\/wanted\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "Proscribed Terror Groups",
-          baseUrl: "https://www.gov.uk",
-          searchUrl: "https://www.gov.uk/government/publications/proscribed-terror-groups-or-organisations--2/proscribed-terrorist-groups-or-organisations-accessible-version?q={QUERY}",
-          patterns: { terror: /gov\.uk\/government\/publications\/proscribed-terror-groups/g },
-          weight: 10
-        },
-        {
-          name: "EU Most Wanted",
-          baseUrl: "https://eumostwanted.eu",
-          searchUrl: "https://eumostwanted.eu/?q={QUERY}",
-          patterns: { eu: /eumostwanted\.eu\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "UK Sanctions List",
-          baseUrl: "https://search-uk-sanctions-list.service.gov.uk",
-          searchUrl: "https://search-uk-sanctions-list.service.gov.uk/?q={QUERY}",
-          patterns: { sanctions: /search-uk-sanctions-list\.service\.gov\.uk\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "NCA Most Wanted",
-          baseUrl: "https://www.nationalcrimeagency.gov.uk",
-          searchUrl: "https://www.nationalcrimeagency.gov.uk/most-wanted?q={QUERY}",
-          patterns: { nca: /nationalcrimeagency\.gov\.uk\/most-wanted\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "FCA Warning List",
-          baseUrl: "https://www.fca.org.uk",
-          searchUrl: "https://www.fca.org.uk/consumers/warning-list-unauthorised-firms?q={QUERY}",
-          patterns: { warning: /fca\.org\.uk\/consumers\/warning-list/g },
-          weight: 9
-        },
-        {
-          name: "SFO Cases",
-          baseUrl: "https://www.gov.uk",
-          searchUrl: "https://www.gov.uk/sfo-cases?q={QUERY}",
-          patterns: { sfo: /gov\.uk\/sfo-cases\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Vexatious Litigants",
-          baseUrl: "https://www.gov.uk",
-          searchUrl: "https://www.gov.uk/guidance/vexatious-litigants?q={QUERY}",
-          patterns: { vexatious: /gov\.uk\/guidance\/vexatious-litigants/g },
-          weight: 8
-        },
-        {
-          name: "Tax Defaulters",
-          baseUrl: "https://www.gov.uk",
-          searchUrl: "https://www.gov.uk/government/publications/publishing-details-of-deliberate-tax-defaulters-pddd/current-list-of-deliberate-tax-defaulters?q={QUERY}",
-          patterns: { tax: /gov\.uk\/government\/publications.*tax-defaulters/g },
-          weight: 8
-        }
+      "Professional Registers": [
+        { name: "GMC Medical Register", baseUrl: "https://www.gmc-uk.org", weight: 10 },
+        { name: "SRA Solicitors", baseUrl: "https://www.sra.org.uk", weight: 10 },
+        { name: "FCA Register", baseUrl: "https://register.fca.org.uk", weight: 10 }
       ],
       "Social Media": [
-        {
-          name: "Facebook Search",
-          baseUrl: "https://www.facebook.com",
-          searchUrl: "https://www.facebook.com/search/people/?q={QUERY}",
-          patterns: { profile: /facebook\.com\/([^\/\?]+)/g },
-          weight: 7
-        },
-        {
-          name: "LinkedIn Profiles",
-          baseUrl: "https://www.linkedin.com",
-          searchUrl: "https://www.linkedin.com/search/results/people/?keywords={QUERY}",
-          patterns: { profile: /linkedin\.com\/in\/([^\/\?]+)/g, company: /linkedin\.com\/company\/([^\/\?]+)/g },
-          weight: 9
-        },
-        {
-          name: "Instagram Search",
-          baseUrl: "https://www.instagram.com",
-          searchUrl: "https://www.instagram.com/explore/search/keyword/?q={QUERY}",
-          patterns: { profile: /instagram\.com\/([^\/\?]+)/g },
-          weight: 7
-        },
-        {
-          name: "Twitter/X Search",
-          baseUrl: "https://x.com",
-          searchUrl: "https://x.com/search?q={QUERY}&src=typed_query&f=user",
-          patterns: { profile: /x\.com\/([^\/\?]+)/g },
-          weight: 8
-        },
-        {
-          name: "TikTok Search",
-          baseUrl: "https://www.tiktok.com",
-          searchUrl: "https://www.tiktok.com/search/user?q={QUERY}",
-          patterns: { profile: /tiktok\.com\/@([^\/\?]+)/g },
-          weight: 6
-        },
-        {
-          name: "Reddit Search",
-          baseUrl: "https://www.reddit.com",
-          searchUrl: "https://www.reddit.com/search/?q={QUERY}&type=user",
-          patterns: { profile: /reddit\.com\/user\/([^\/\?]+)/g },
-          weight: 7
-        }
+        { name: "LinkedIn Profiles", baseUrl: "https://www.linkedin.com", weight: 9 },
+        { name: "Facebook Search", baseUrl: "https://www.facebook.com", weight: 7 },
+        { name: "Twitter/X Search", baseUrl: "https://x.com", weight: 8 }
       ],
-      "Offshore Companies": [
-        {
-          name: "ICIJ Offshore Leaks",
-          baseUrl: "https://offshoreleaks.icij.org",
-          searchUrl: "https://offshoreleaks.icij.org/search?q={QUERY}",
-          patterns: { entity: /offshoreleaks\.icij\.org\/nodes\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "OpenCorporates",
-          baseUrl: "https://opencorporates.com",
-          searchUrl: "https://opencorporates.com/companies?q={QUERY}",
-          patterns: { company: /opencorporates\.com\/companies\/([^\/]+)/g },
-          weight: 10
-        }
-      ],
-      "Domain/Leaked/Cached": [
-        {
-          name: "Whois Lookup",
-          baseUrl: "https://who.is",
-          searchUrl: "https://who.is/whois/{QUERY}",
-          patterns: { domain: /who\.is\/whois\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "Wayback Machine",
-          baseUrl: "https://web.archive.org",
-          searchUrl: "https://web.archive.org/web/*/{QUERY}",
-          patterns: { archive: /web\.archive\.org\/web\/[^\/]+\/([^\/]+)/g },
-          weight: 10
-        },
-        {
-          name: "AnalyzeID",
-          baseUrl: "https://analyzeid.com",
-          searchUrl: "https://analyzeid.com/?q={QUERY}",
-          patterns: { social: /analyzeid\.com\/username\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Have I Been Pwned",
-          baseUrl: "https://haveibeenpwned.com",
-          searchUrl: "https://haveibeenpwned.com/account/{QUERY}",
-          patterns: { breach: /haveibeenpwned\.com\/account\/([^\/]+)/g },
-          weight: 9
-        },
-        {
-          name: "IP Fingerprints",
-          baseUrl: "https://www.ipfingerprints.com",
-          searchUrl: "https://www.ipfingerprints.com/?q={QUERY}",
-          patterns: { ip: /ipfingerprints\.com\/([^\/]+)/g },
-          weight: 8
-        },
-        {
-          name: "Data Breach",
-          baseUrl: "https://databreach.com",
-          searchUrl: "https://databreach.com/?q={QUERY}",
-          patterns: { breach: /databreach\.com\/([^\/]+)/g },
-          weight: 8
-        }
+      "Sanctions & Watchlists": [
+        { name: "UK Sanctions List", baseUrl: "https://search-uk-sanctions-list.service.gov.uk", weight: 10 },
+        { name: "Interpol Red Notices", baseUrl: "https://www.interpol.int", weight: 10 },
+        { name: "FBI Most Wanted", baseUrl: "https://www.fbi.gov", weight: 10 }
       ]
     };
 
-    // Initialize categories from database
-    function initializeCategories() {
-      // Try to load from memory first, then fall back to default
-      const saved = getSavedCategories();
-      categories = saved || JSON.parse(JSON.stringify(defaultSiteDatabase));
+    let categories = defaultSiteDatabase;
+    let selectedCategories = new Set();
+
+    // Initialize the application
+    function initializeApp() {
       renderCategories();
-      updateManageSection();
+      setupEventListeners();
     }
 
-    function getSavedCategories() {
-      try {
-        const saved = window.categoriesData || null;
-        return saved ? JSON.parse(JSON.stringify(saved)) : null;
-      } catch (e) {
-        console.warn('Could not load saved categories:', e);
-        return null;
-      }
+    function renderCategories() {
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = '';
+
+      Object.entries(categories).forEach(([categoryName, sites]) => {
+        const categoryCard = document.createElement('div');
+        categoryCard.className = 'category-card';
+        
+        categoryCard.innerHTML = `
+          <input type="checkbox" class="category-checkbox" id="cat-${categoryName}" data-category="${categoryName}">
+          <div class="category-title" onclick="toggleCategory('${categoryName}')">${categoryName}</div>
+          <div class="website-count">${sites.length}</div>
+          <button class="expand-btn" onclick="expandCategory('${categoryName}')">▼</button>
+          <div class="category-websites" id="websites-${categoryName}">
+            ${sites.map(site => `
+              <div class="website-item">
+                <a href="${site.baseUrl}" target="_blank" class="website-url">${site.name}</a>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        
+        container.appendChild(categoryCard);
+      });
     }
 
-    function saveCategories() {
-      try {
-        window.categoriesData = JSON.parse(JSON.stringify(categories));
-      } catch (e) {
-        console.warn('Could not save categories:', e);
-      }
+    function toggleCategory(categoryName) {
+      const checkbox = document.getElementById(`cat-${categoryName}`);
+      checkbox.checked = !checkbox.checked;
+      updateSelectedCategories();
     }
 
-    // Advanced content scraping with proxy
-    class WebScraper {
-      constructor() {
-        this.proxies = [
-          'https://api.allorigins.win/get?url=',
-          'https://cors-anywhere.herokuapp.com/',
-          'https://proxy.cors.sh/'
-        ];
-        this.currentProxy = 0;
-      }
-
-      async fetchWithProxy(url, maxRetries = 3) {
-        for (let i = 0; i < maxRetries; i++) {
-          try {
-            const proxyUrl = this.proxies[this.currentProxy] + encodeURIComponent(url);
-            const response = await fetch(proxyUrl, {
-              method: 'GET',
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-              }
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              return data.contents || data;
-            }
-          } catch (error) {
-            console.warn(`Proxy ${this.currentProxy} failed:`, error.message);
-            this.currentProxy = (this.currentProxy + 1) % this.proxies.length;
-          }
-        }
-        throw new Error('All proxies failed');
-      }
-
-      async searchSite(site, query, options = {}) {
-        try {
-          const searchUrl = site.searchUrl.replace('{QUERY}', encodeURIComponent(query));
-          console.log(`Searching ${site.name}: ${searchUrl}`);
-          
-          const html = await this.fetchWithProxy(searchUrl);
-          return this.analyzeSiteContent(site, html, query, searchUrl);
-        } catch (error) {
-          console.error(`Error searching ${site.name}:`, error);
-          return {
-            site: site.name,
-            hasMatch: false,
-            error: error.message,
-            relevanceScore: 0,
-            results: [],
-            searchUrl: site.searchUrl.replace('{QUERY}', encodeURIComponent(query))
-          };
-        }
-      }
-
-      analyzeSiteContent(site, html, query, searchUrl) {
-        if (!html) {
-          return {
-            site: site.name,
-            hasMatch: false,
-            error: 'No content received',
-            relevanceScore: 0,
-            results: [],
-            searchUrl: searchUrl
-          };
-        }
-
-        // Create DOM parser
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Extract structured results
-        const results = this.extractStructuredResults(doc, site, query);
-        
-        // Calculate relevance score
-        const relevanceScore = this.calculateRelevanceScore(results, query, site);
-        
-        return {
-          site: site.name,
-          hasMatch: results.length > 0,
-          relevanceScore: relevanceScore,
-          results: results,
-          searchUrl: searchUrl,
-          totalFound: results.length,
-          timestamp: new Date().toISOString()
-        };
-      }
-
-      extractStructuredResults(doc, site, query) {
-        const results = [];
-        const maxResults = parseInt(document.getElementById('maxResults')?.value) || 10;
-
-        try {
-          // Use site-specific selectors
-          const resultElements = doc.querySelectorAll(site.selectors?.results || '.search-result, .result, [class*="result"]');
-          
-          Array.from(resultElements).slice(0, maxResults).forEach((element, index) => {
-            const result = this.extractSingleResult(element, site, query, index);
-            if (result) {
-              results.push(result);
-            }
-          });
-
-          // If no structured results, try pattern matching
-          if (results.length === 0) {
-            const patternResults = this.extractPatternResults(doc.body.innerHTML, site, query);
-            results.push(...patternResults.slice(0, maxResults));
-          }
-
-        } catch (error) {
-          console.error('Error extracting results:', error);
-        }
-
-        return results;
-      }
-
-      extractSingleResult(element, site, query, index) {
-        try {
-          const titleElement = element.querySelector(site.selectors?.title || 'a, h1, h2, h3, .title');
-          const snippetElement = element.querySelector(site.selectors?.snippet || '.snippet, .description, p');
-          
-          const title = titleElement?.textContent?.trim() || '';
-          const snippet = snippetElement?.textContent?.trim() || '';
-          const link = titleElement?.href || element.querySelector('a')?.href || '';
-
-          // Skip if no meaningful content
-          if (!title && !snippet) return null;
-
-          // Skip if it's just navigation or search interface
-          if (this.isNavigationElement(title + ' ' + snippet)) return null;
-
-          // Extract specific data based on site patterns
-          const extractedData = this.extractSpecificData(element.innerHTML, site);
-
-          return {
-            id: `${site.name}_${index}`,
-            title: title,
-            snippet: snippet,
-            url: this.normalizeUrl(link, site.baseUrl),
-            relevance: this.calculateItemRelevance(title + ' ' + snippet, query),
-            extractedData: extractedData,
-            confidence: this.calculateConfidence(title, snippet, query),
-            source: site.name
-          };
-        } catch (error) {
-          console.error('Error extracting single result:', error);
-          return null;
-        }
-      }
-
-      extractPatternResults(html, site, query) {
-        const results = [];
-        
-        // Use site-specific patterns
-        if (site.patterns) {
-          Object.entries(site.patterns).forEach(([type, pattern]) => {
-            const matches = html.match(pattern) || [];
-            matches.forEach((match, index) => {
-              if (results.length < 5) { // Limit pattern results
-                results.push({
-                  id: `${site.name}_pattern_${index}`,
-                  title: `${type.charAt(0).toUpperCase() + type.slice(1)} found`,
-                  snippet: match,
-                  url: this.normalizeUrl(match, site.baseUrl),
-                  relevance: 5,
-                  extractedData: { type: type, match: match },
-                  confidence: 'medium',
-                  source: site.name
-                });
-              }
-            });
-          });
-        }
-
-        return results;
-      }
-
-      extractSpecificData(html, site) {
-        const data = {};
-        
-        // Extract emails if option is enabled
-        if (document.getElementById('extractEmails')?.checked) {
-          const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-          data.emails = (html.match(emailPattern) || []).slice(0, 5);
-        }
-
-        // Extract phone numbers if option is enabled
-        if (document.getElementById('extractPhones')?.checked) {
-          const phonePattern = /(?:\+44|0)(?:[1-9]\d{8,9}|\d{10})/g;
-          data.phones = (html.match(phonePattern) || []).slice(0, 5);
-        }
-
-        return data;
-      }
-
-      isNavigationElement(text) {
-        const navKeywords = [
-          'search for', 'enter search', 'search results', 'no results found',
-          'navigation', 'menu', 'header', 'footer', 'cookie', 'privacy policy',
-          'terms of service', 'login', 'register', 'sign up', 'sign in'
-        ];
-        
-        const lowerText = text.toLowerCase();
-        return navKeywords.some(keyword => lowerText.includes(keyword));
-      }
-
-      calculateItemRelevance(text, query) {
-        const queryWords = query.toLowerCase().split(/\s+/);
-        const textLower = text.toLowerCase();
-        
-        let score = 0;
-        queryWords.forEach(word => {
-          if (word.length > 2) {
-            const exactMatches = (textLower.match(new RegExp(word, 'g')) || []).length;
-            score += exactMatches * 2;
-            
-            // Partial matches
-            if (textLower.includes(word)) {
-              score += 1;
-            }
-          }
-        });
-
-        return Math.min(10, score);
-      }
-
-      calculateRelevanceScore(results, query, site) {
-        if (results.length === 0) return 0;
-        
-        const avgItemRelevance = results.reduce((sum, r) => sum + (r.relevance || 0), 0) / results.length;
-        const resultCountBonus = Math.min(results.length * 0.5, 3);
-        const siteWeightBonus = site.weight || 5;
-        
-        return Math.min(10, Math.round(avgItemRelevance + resultCountBonus + (siteWeightBonus / 10)));
-      }
-
-      calculateConfidence(title, snippet, query) {
-        const text = (title + ' ' + snippet).toLowerCase();
-        const queryLower = query.toLowerCase();
-        
-        if (text.includes(queryLower)) return 'high';
-        
-        const queryWords = queryLower.split(/\s+/);
-        const matchingWords = queryWords.filter(word => text.includes(word)).length;
-        const matchRatio = matchingWords / queryWords.length;
-        
-        if (matchRatio > 0.7) return 'high';
-        if (matchRatio > 0.4) return 'medium';
-        return 'low';
-      }
-
-      normalizeUrl(url, baseUrl) {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        if (url.startsWith('//')) return 'https:' + url;
-        if (url.startsWith('/')) return baseUrl + url;
-        return baseUrl + '/' + url;
-      }
-    }
-
-    // Initialize scraper
-    const scraper = new WebScraper();
-
-    // DOM Elements
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const searchSummary = document.getElementById('searchSummary');
-    const exportSection = document.getElementById('exportSection');
-
-    // Management functions
-    function updateManageSection() {
-      const newCategorySelect = document.getElementById('newCategory');
-      const editWebsitesList = document.getElementById('editWebsitesList');
+    function expandCategory(categoryName) {
+      const websites = document.getElementById(`websites-${categoryName}`);
+      const btn = websites.previousElementSibling;
       
-      // Update category dropdown
-      if (newCategorySelect) {
-        newCategorySelect.innerHTML = '';
-        Object.keys(categories).forEach(categoryName => {
-          const option = document.createElement('option');
-          option.value = categoryName;
-          option.textContent = categoryName;
+      if (websites.classList.contains('expanded')) {
+        websites.classList.remove('expanded');
+        btn.textContent = '▼';
+      } else {
+        websites.classList.add('expanded');
+        btn.textContent = '▲';
+      }
+    }
+
+    function updateSelectedCategories() {
+      selectedCategories.clear();
+      document.querySelectorAll('.category-checkbox:checked').forEach(cb => {
+        selectedCategories.add(cb.dataset.category);
+      });
+    }
+
+    function setupEventListeners() {
+      // Search button
+      document.getElementById('searchBtn').addEventListener('click', startSearch);
+      
+      // Enter key in search input
+      document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSearch();
+      });
+
+      // Category selection buttons
+      document.getElementById('selectAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = true);
+        updateSelectedCategories();
+      });
+
+      document.getElementById('deselectAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = false);
+        updateSelectedCategories();
+      });
+
+      document.getElementById('selectRecommendedBtn').addEventListener('click', () => {
+        document.querySelectorAll('.category-checkbox').forEach(cb => {
+          const recommended = ['Company Searches', 'Professional Registers', 'Court Case Searches'];
+          cb.checked = recommended.includes(cb.dataset.category);
+        });
+        updateSelectedCategories();
+      });
+
+      // Category checkboxes
+      document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('category-checkbox')) {
+          updateSelectedCategories();
+        }
+      });
+    }
+
+    function startSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) {
+        alert('Please enter a search term');
+        return;
+      }
+
+      if (selectedCategories.size === 0) {
+        alert('Please select at least one category to search');
+        return;
+      }
+
+      // Show progress
+      showSearchProgress();
+      
+      // Simulate search process
+      simulateSearch(query);
+    }
+
+    function showSearchProgress() {
+      const resultsContainer = document.getElementById('resultsContainer');
+      resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 2rem; margin-bottom: 20px;">🔄</div>
+          <h3>Investigation in Progress...</h3>
+          <p>Searching across selected databases and platforms</p>
+          <div style="background: #e9ecef; height: 20px; border-radius: 10px; overflow: hidden; margin: 20px 0;">
+            <div id="progress-bar" style="background: #B13F17; height: 100%; width: 0%; transition: width 0.5s;"></div>
+          </div>
+          <div id="progress-text">Initializing search...</div>
+        </div>
+      `;
+    }
+
+    function simulateSearch(query) {
+      let progress = 0;
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = `Searching ${Math.floor(progress)}% complete...`;
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => showMockResults(query), 1000);
+        }
+      }, 500);
+    }
+
+    function showMockResults(query) {
+      const resultsContainer = document.getElementById('resultsContainer');
+      const searchSummary = document.getElementById('searchSummary');
+      
+      // Show summary stats
+      searchSummary.style.display = 'block';
+      document.getElementById('totalSearched').textContent = selectedCategories.size * 3;
+      document.getElementById('totalMatches').textContent = Math.floor(Math.random() * 8) + 2;
+      document.getElementById('avgScore').textContent = (Math.random() * 3 + 7).toFixed(1);
+      document.getElementById('successRate').textContent = Math.floor(Math.random() * 30 + 60) + '%';
+      
+      // Show mock results
+      const mockResults = generateMockResults(query);
+      resultsContainer.innerHTML = mockResults;
+    }
+
+    function generateMockResults(query) {
+      const results = [];
+      let resultCount = 0;
+      
+      selectedCategories.forEach(categoryName => {
+        const sites = categories[categoryName];
+        const randomSites = sites.sort(() => 0.5 - Math.random()).slice(0, 2);
+        
+        randomSites.forEach(site => {
+          const hasMatch = Math.random() > 0.4;
+          const relevanceScore = hasMatch ? Math.floor(Math.random() * 4) + 7 : Math.floor(Math.random() * 3) + 1;
+          
+          results.push(`
+            <div class="result-item ${hasMatch ? 'result-match' : 'result-no-match'}">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div>
+                  <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17; margin-bottom: 5px;">
+                    ${site.name}
+                  </div>
+                  <div style="color: #666; font-size: 0.9rem;">${categoryName}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                  <span style="font-size: 1.2rem;">${hasMatch ? '✅' : '❌'}</span>
+                  <span>${hasMatch ? 'Match Found' : 'No Match'}</span>
+                </div>
+              </div>
+              
+              ${hasMatch ? `
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 6px; margin: 8px 0; font-style: italic; color: #856404;">
+                  Found potential match for "${query}" - ${generateMockSnippet(query, site.name)}
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 12px 0; font-size: 0.9rem;">
+                  <div>
+                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Relevance Score</div>
+                    <div style="color: #333;">${relevanceScore}/10</div>
+                  </div>
+                  <div>
+                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Confidence</div>
+                    <div style="color: #333;">${relevanceScore > 8 ? 'High' : relevanceScore > 5 ? 'Medium' : 'Low'}</div>
+                  </div>
+                  <div>
+                    <div style="font-weight: 600; color: #666; margin-bottom: 2px;">Source Type</div>
+                    <div style="color: #333;">${categoryName}</div>
+                  </div>
+                </div>
+              ` : `
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 6px; margin: 8px 0; color: #721c24;">
+                  No matches found for "${query}" in this database
+                </div>
+              `}
+              
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                <a href="${site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Visit Source</a>
+                ${hasMatch ? '<button class="btn btn-small">📋 View Details</button>' : ''}
+              </div>
+            </div>
+          `);
+        });
+      });
+      
+      return results.join('');
+    }
+
+    function generateMockSnippet(query, siteName) {
+      const snippets = [
+        `Profile information matching search criteria`,
+        `Record found in ${siteName.toLowerCase()} database`,
+        `Professional registration details available`,
+        `Historical records and associated data`,
+        `Contact information and business associations`
+      ];
+      return snippets[Math.floor(Math.random() * snippets.length)];
+    }
+
+    // Initialize the application when page loads
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>

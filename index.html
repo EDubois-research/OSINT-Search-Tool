@@ -259,7 +259,6 @@
         <input type="text" id="searchInput" placeholder="Enter person name, company, email, phone, etc...">
         <button id="searchBtn" class="btn">🚀 Start Investigation</button>
       </div>
-      
       <div class="advanced-options">
         <h3>🎯 Search Options</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
@@ -314,161 +313,44 @@
     </section>
 
     <!-- Results Section -->
-<!-- ...existing HTML up to Results Section... -->
-<section>
-  <h2>📊 Investigation Results</h2>
-  <div style="margin-bottom:12px;">
-    <input type="text" id="caseRefInput" placeholder="Case Reference Number" style="width:220px;">
-    <button class="btn btn-small btn-success" id="loadCaseBtn">🔄 Load Case</button>
-    <button class="btn btn-small btn-secondary" id="exportBtn">⬇️ Export Selected</button>
-  </div>
-  <div id="searchSummary" style="display: none;">
-    <!-- ...summary stats... -->
-  </div>
-  <div id="resultsContainer" class="results-container">
-    <!-- ... -->
-  </div>
-</section>
-<!-- ...existing HTML... -->
-
-<script>
-// ...existing code...
-
-let savedResults = {}; // { caseRef: [results] }
-let currentCaseRef = "";
-
-function getRelevanceScore(query, site) {
-  // Simple scoring: +5 if query in name, +3 if in URL, else random
-  let score = 0;
-  if (site.name.toLowerCase().includes(query.toLowerCase())) score += 5;
-  if (site.baseUrl.toLowerCase().includes(query.toLowerCase())) score += 3;
-  score += Math.floor(Math.random() * 3); // Add some randomness
-  return score;
-}
-
-function generateMockResults(query) {
-  const results = [];
-  let allResults = [];
-  selectedCategories.forEach(categoryName => {
-    const sites = categories[categoryName];
-    sites.forEach(site => {
-      const score = getRelevanceScore(query, site);
-      const hasMatch = score > 4;
-      allResults.push({
-        category: categoryName,
-        site,
-        hasMatch,
-        score,
-        snippet: generateMockSnippet(query, site.name)
-      });
-    });
-  });
-  // Sort by score descending, show top 10
-  allResults.sort((a, b) => b.score - a.score);
-  allResults.slice(0, 10).forEach((result, idx) => {
-    results.push(`
-      <div class="result-item ${result.hasMatch ? 'result-match' : 'result-no-match'}">
-        <label style="float:right;">
-          <input type="checkbox" class="result-checkbox" data-idx="${idx}">
-          Save
-        </label>
-        <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
-          ${result.site.name}
-        </div>
-        <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
-        <div style="margin:8px 0;">
-          <b>Relevance:</b> ${result.score}/10
-          <br>
-          <b>Snippet:</b> ${result.snippet}
-        </div>
-        <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+    <section>
+      <h2>📊 Investigation Results</h2>
+      <div style="margin-bottom:12px;">
+        <input type="text" id="caseRefInput" placeholder="Case Reference Number" style="width:220px;">
+        <button class="btn btn-small btn-success" id="loadCaseBtn">🔄 Load Case</button>
+        <button class="btn btn-small btn-secondary" id="exportBtn">⬇️ Export Selected</button>
       </div>
-    `);
-  });
-  // Store for saving
-  window._lastResults = allResults.slice(0, 10);
-  return results.join('');
-}
-
-// Saving and Exporting
-function setupResultSaving() {
-  document.getElementById('resultsContainer').addEventListener('change', function(e) {
-    if (e.target.classList.contains('result-checkbox')) {
-      saveCheckedResults();
-    }
-  });
-  document.getElementById('exportBtn').onclick = exportResults;
-  document.getElementById('loadCaseBtn').onclick = loadCase;
-  document.getElementById('caseRefInput').onchange = function() {
-    currentCaseRef = this.value.trim();
-  };
-}
-
-function saveCheckedResults() {
-  const caseRef = document.getElementById('caseRefInput').value.trim();
-  if (!caseRef) return;
-  const checked = Array.from(document.querySelectorAll('.result-checkbox'))
-    .map((cb, idx) => cb.checked ? window._lastResults[idx] : null)
-    .filter(Boolean);
-  if (!savedResults[caseRef]) savedResults[caseRef] = [];
-  savedResults[caseRef] = checked;
-  localStorage.setItem('osint_cases', JSON.stringify(savedResults));
-}
-
-function exportResults() {
-  const caseRef = document.getElementById('caseRefInput').value.trim();
-  if (!caseRef || !savedResults[caseRef] || !savedResults[caseRef].length) {
-    alert('No saved results for this case.');
-    return;
-  }
-  const data = savedResults[caseRef];
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `osint_case_${caseRef}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function loadCase() {
-  const caseRef = document.getElementById('caseRefInput').value.trim();
-  if (!caseRef) return;
-  const stored = localStorage.getItem('osint_cases');
-  if (stored) savedResults = JSON.parse(stored);
-  if (savedResults[caseRef]) {
-    // Show saved results
-    const resultsContainer = document.getElementById('resultsContainer');
-    resultsContainer.innerHTML = savedResults[caseRef].map((result, idx) => `
-      <div class="result-item result-match">
-        <label style="float:right;">
-          <input type="checkbox" class="result-checkbox" data-idx="${idx}" checked>
-          Saved
-        </label>
-        <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
-          ${result.site.name}
+      <div id="searchSummary" style="display: none;">
+        <div class="summary-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="totalSearched">0</div>
+            <div class="stat-label">Sites Searched</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalMatches">0</div>
+            <div class="stat-label">Matches Found</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="avgScore">0</div>
+            <div class="stat-label">Avg. Relevance</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="successRate">0%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
         </div>
-        <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
-        <div style="margin:8px 0;">
-          <b>Relevance:</b> ${result.score}/10
-          <br>
-          <b>Snippet:</b> ${result.snippet}
-        </div>
-        <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
       </div>
-    `).join('');
-  } else {
-    alert('No saved results for this case.');
-  }
-}
+      <div id="resultsContainer" class="results-container">
+        <div style="text-align: center; color: #666; padding: 60px 20px;">
+          <div style="font-size: 3rem; margin-bottom: 20px;">🔍</div>
+          <h3>Ready to Start Investigation</h3>
+          <p>Enter your search terms and select categories to begin comprehensive OSINT analysis</p>
+        </div>
+      </div>
+    </section>
+  </div>
 
-// On page load, restore savedResults
-document.addEventListener('DOMContentLoaded', () => {
-  const stored = localStorage.getItem('osint_cases');
-  if (stored) savedResults = JSON.parse(stored);
-  setupResultSaving();
-});
-</script>
+  <script>
     // --- CATEGORY & SITE DATABASE ---
     const defaultSiteDatabase = {
       "Searches": [
@@ -669,7 +551,6 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = function(e) {
           imagePreview.src = e.target.result;
           imagePreview.style.display = 'block';
-          // For privacy, we use a Data URL; for real reverse search, upload to a temp host or use browser extension.
           showLinks(e.target.result);
         };
         reader.readAsDataURL(file);
@@ -741,6 +622,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- ADVANCED SCRAPING/EXTRACTION (UI DEMO) ---
+    let savedResults = {};
+    let currentCaseRef = "";
+
+    function getRelevanceScore(query, site) {
+      let score = 0;
+      if (site.name.toLowerCase().includes(query.toLowerCase())) score += 5;
+      if (site.baseUrl.toLowerCase().includes(query.toLowerCase())) score += 3;
+      score += Math.floor(Math.random() * 3);
+      return score;
+    }
+
     function showMockResults(query) {
       const resultsContainer = document.getElementById('resultsContainer');
       const searchSummary = document.getElementById('searchSummary');
@@ -751,53 +643,48 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('successRate').textContent = Math.floor(Math.random() * 30 + 60) + '%';
       const mockResults = generateMockResults(query);
       resultsContainer.innerHTML = mockResults;
+      setupResultSaving();
     }
 
     function generateMockResults(query) {
       const results = [];
+      let allResults = [];
       selectedCategories.forEach(categoryName => {
         const sites = categories[categoryName];
-        const randomSites = sites.sort(() => 0.5 - Math.random()).slice(0, 2);
-        randomSites.forEach(site => {
-          const hasMatch = Math.random() > 0.4;
-          const relevanceScore = hasMatch ? Math.floor(Math.random() * 4) + 7 : Math.floor(Math.random() * 3) + 1;
-          results.push(`
-            <div class="result-item ${hasMatch ? 'result-match' : 'result-no-match'}">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div>
-                  <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17; margin-bottom: 5px;">
-                    ${site.name}
-                  </div>
-                  <div style="color: #666; font-size: 0.9rem;">${categoryName}</div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                  <span style="font-size: 1.2rem;">${hasMatch ? '✅' : '❌'}</span>
-                  <span>${hasMatch ? 'Match Found' : 'No Match'}</span>
-                </div>
-              </div>
-              ${hasMatch ? `
-                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 6px; margin: 8px 0; font-style: italic; color: #856404;">
-                  <b>Relevance:</b> ${relevanceScore}/10 &nbsp; <b>Confidence:</b> ${relevanceScore > 8 ? 'High' : relevanceScore > 5 ? 'Medium' : 'Low'}
-                  <br>
-                  <b>Snippet:</b> ${generateMockSnippet(query, site.name)}
-                  <br>
-                  <b>Source:</b> <a href="${site.baseUrl}" target="_blank">${site.name}</a>
-                  <br>
-                  <b>Metadata:</b> { "title": "${site.name} - ${query}", "date": "2024-07-31", "type": "profile" }
-                </div>
-              ` : `
-                <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 6px; margin: 8px 0; color: #721c24;">
-                  No matches found for "${query}" in this database
-                </div>
-              `}
-              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                <a href="${site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
-                ${hasMatch ? `<a href="${site.baseUrl}?q=${encodeURIComponent(query)}" target="_blank" class="btn btn-small btn-success">➡️ Go to Result</a>` : ''}
-              </div>
-            </div>
-          `);
+        sites.forEach(site => {
+          const score = getRelevanceScore(query, site);
+          const hasMatch = score > 4;
+          allResults.push({
+            category: categoryName,
+            site,
+            hasMatch,
+            score,
+            snippet: generateMockSnippet(query, site.name)
+          });
         });
       });
+      allResults.sort((a, b) => b.score - a.score);
+      allResults.slice(0, 10).forEach((result, idx) => {
+        results.push(`
+          <div class="result-item ${result.hasMatch ? 'result-match' : 'result-no-match'}">
+            <label style="float:right;">
+              <input type="checkbox" class="result-checkbox" data-idx="${idx}">
+              Save
+            </label>
+            <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
+              ${result.site.name}
+            </div>
+            <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+            <div style="margin:8px 0;">
+              <b>Relevance:</b> ${result.score}/10
+              <br>
+              <b>Snippet:</b> ${result.snippet}
+            </div>
+            <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+          </div>
+        `);
+      });
+      window._lastResults = allResults.slice(0, 10);
       return results.join('');
     }
 
@@ -812,13 +699,83 @@ document.addEventListener('DOMContentLoaded', () => {
       return snippets[Math.floor(Math.random() * snippets.length)];
     }
 
-    // --- INIT ---
-    function initializeApp() {
+    function setupResultSaving() {
+      document.getElementById('resultsContainer').addEventListener('change', function(e) {
+        if (e.target.classList.contains('result-checkbox')) {
+          saveCheckedResults();
+        }
+      });
+      document.getElementById('exportBtn').onclick = exportResults;
+      document.getElementById('loadCaseBtn').onclick = loadCase;
+      document.getElementById('caseRefInput').onchange = function() {
+        currentCaseRef = this.value.trim();
+      };
+    }
+
+    function saveCheckedResults() {
+      const caseRef = document.getElementById('caseRefInput').value.trim();
+      if (!caseRef) return;
+      const checked = Array.from(document.querySelectorAll('.result-checkbox'))
+        .map((cb, idx) => cb.checked ? window._lastResults[idx] : null)
+        .filter(Boolean);
+      if (!savedResults[caseRef]) savedResults[caseRef] = [];
+      savedResults[caseRef] = checked;
+      localStorage.setItem('osint_cases', JSON.stringify(savedResults));
+    }
+
+    function exportResults() {
+      const caseRef = document.getElementById('caseRefInput').value.trim();
+      if (!caseRef || !savedResults[caseRef] || !savedResults[caseRef].length) {
+        alert('No saved results for this case.');
+        return;
+      }
+      const data = savedResults[caseRef];
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `osint_case_${caseRef}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function loadCase() {
+      const caseRef = document.getElementById('caseRefInput').value.trim();
+      if (!caseRef) return;
+      const stored = localStorage.getItem('osint_cases');
+      if (stored) savedResults = JSON.parse(stored);
+      if (savedResults[caseRef]) {
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = savedResults[caseRef].map((result, idx) => `
+          <div class="result-item result-match">
+            <label style="float:right;">
+              <input type="checkbox" class="result-checkbox" data-idx="${idx}" checked>
+              Saved
+            </label>
+            <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
+              ${result.site.name}
+            </div>
+            <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+            <div style="margin:8px 0;">
+              <b>Relevance:</b> ${result.score}/10
+              <br>
+              <b>Snippet:</b> ${result.snippet}
+            </div>
+            <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+          </div>
+        `).join('');
+      } else {
+        alert('No saved results for this case.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('osint_cases');
+      if (stored) savedResults = JSON.parse(stored);
       renderCategories();
       setupEventListeners();
       setupImageSearch();
-    }
-    document.addEventListener('DOMContentLoaded', initializeApp);
+    });
   </script>
 </body>
 </html>

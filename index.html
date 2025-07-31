@@ -109,6 +109,7 @@
       gap: 12px;
       transition: all 0.2s;
       flex-wrap: wrap;
+      position: relative;
     }
     .category-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .category-checkbox {
@@ -156,6 +157,7 @@
       gap: 8px;
       padding: 6px 0;
       font-size: 0.9rem;
+      position: relative;
     }
     .website-url {
       flex-grow: 1;
@@ -166,6 +168,30 @@
       color: #B13F17;
       text-decoration: underline;
     }
+    /* Discreet icon-only action buttons */
+    .action-btn {
+      background: none;
+      border: none;
+      color: #bbb;
+      font-size: 1.1rem;
+      padding: 2px 6px;
+      margin-left: 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      opacity: 0;
+      transition: color 0.2s, opacity 0.2s;
+      vertical-align: middle;
+    }
+    .category-card:hover .action-btn,
+    .website-item:hover .action-btn {
+      opacity: 1;
+    }
+    .action-btn:hover {
+      color: #B13F17;
+      background: #f0e6e1;
+    }
+    .category-card .action-btn { font-size: 1.2rem; }
+    .website-item .action-btn { font-size: 1.1rem; }
     .results-container { margin-top: 20px; }
     .result-item {
       background: #fff;
@@ -505,14 +531,14 @@
           <div class="category-title" onclick="toggleCategory('${categoryName}')">${categoryName}</div>
           <div class="website-count">${sites.length}</div>
           <button class="expand-btn" onclick="expandCategory('${categoryName}')">▼</button>
-          <button class="btn btn-small btn-danger delete-category-btn" data-category="${categoryName}" title="Delete Category">🗑️</button>
-          <button class="btn btn-small btn-secondary edit-category-btn" data-category="${categoryName}" title="Edit Category">✏️</button>
+          <button class="action-btn delete-category-btn" data-category="${categoryName}" title="Delete Category">🗑️</button>
+          <button class="action-btn edit-category-btn" data-category="${categoryName}" title="Edit Category">✏️</button>
           <div class="category-websites" id="websites-${categoryName}">
             ${sites.map((site, idx) => `
               <div class="website-item">
                 <a href="${site.baseUrl}" target="_blank" class="website-url">${site.name}</a>
-                <button class="btn btn-small btn-danger delete-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Delete Website">🗑️</button>
-                <button class="btn btn-small btn-secondary edit-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Edit Website">✏️</button>
+                <button class="action-btn delete-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Delete Website">🗑️</button>
+                <button class="action-btn edit-site-btn" data-category="${categoryName}" data-idx="${idx}" title="Edit Website">✏️</button>
               </div>
             `).join('')}
             <form class="add-website-form" data-category="${categoryName}" style="margin-top:10px;">

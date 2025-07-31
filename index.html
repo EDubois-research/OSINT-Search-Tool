@@ -314,39 +314,161 @@
     </section>
 
     <!-- Results Section -->
-    <section>
-      <h2>📊 Investigation Results</h2>
-      <div id="searchSummary" style="display: none;">
-        <div class="summary-stats">
-          <div class="stat-card">
-            <div class="stat-number" id="totalSearched">0</div>
-            <div class="stat-label">Sites Searched</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="totalMatches">0</div>
-            <div class="stat-label">Matches Found</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="avgScore">0</div>
-            <div class="stat-label">Avg. Relevance</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="successRate">0%</div>
-            <div class="stat-label">Success Rate</div>
-          </div>
-        </div>
-      </div>
-      <div id="resultsContainer" class="results-container">
-        <div style="text-align: center; color: #666; padding: 60px 20px;">
-          <div style="font-size: 3rem; margin-bottom: 20px;">🔍</div>
-          <h3>Ready to Start Investigation</h3>
-          <p>Enter your search terms and select categories to begin comprehensive OSINT analysis</p>
-        </div>
-      </div>
-    </section>
+<!-- ...existing HTML up to Results Section... -->
+<section>
+  <h2>📊 Investigation Results</h2>
+  <div style="margin-bottom:12px;">
+    <input type="text" id="caseRefInput" placeholder="Case Reference Number" style="width:220px;">
+    <button class="btn btn-small btn-success" id="loadCaseBtn">🔄 Load Case</button>
+    <button class="btn btn-small btn-secondary" id="exportBtn">⬇️ Export Selected</button>
   </div>
+  <div id="searchSummary" style="display: none;">
+    <!-- ...summary stats... -->
+  </div>
+  <div id="resultsContainer" class="results-container">
+    <!-- ... -->
+  </div>
+</section>
+<!-- ...existing HTML... -->
 
-  <script>
+<script>
+// ...existing code...
+
+let savedResults = {}; // { caseRef: [results] }
+let currentCaseRef = "";
+
+function getRelevanceScore(query, site) {
+  // Simple scoring: +5 if query in name, +3 if in URL, else random
+  let score = 0;
+  if (site.name.toLowerCase().includes(query.toLowerCase())) score += 5;
+  if (site.baseUrl.toLowerCase().includes(query.toLowerCase())) score += 3;
+  score += Math.floor(Math.random() * 3); // Add some randomness
+  return score;
+}
+
+function generateMockResults(query) {
+  const results = [];
+  let allResults = [];
+  selectedCategories.forEach(categoryName => {
+    const sites = categories[categoryName];
+    sites.forEach(site => {
+      const score = getRelevanceScore(query, site);
+      const hasMatch = score > 4;
+      allResults.push({
+        category: categoryName,
+        site,
+        hasMatch,
+        score,
+        snippet: generateMockSnippet(query, site.name)
+      });
+    });
+  });
+  // Sort by score descending, show top 10
+  allResults.sort((a, b) => b.score - a.score);
+  allResults.slice(0, 10).forEach((result, idx) => {
+    results.push(`
+      <div class="result-item ${result.hasMatch ? 'result-match' : 'result-no-match'}">
+        <label style="float:right;">
+          <input type="checkbox" class="result-checkbox" data-idx="${idx}">
+          Save
+        </label>
+        <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
+          ${result.site.name}
+        </div>
+        <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+        <div style="margin:8px 0;">
+          <b>Relevance:</b> ${result.score}/10
+          <br>
+          <b>Snippet:</b> ${result.snippet}
+        </div>
+        <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+      </div>
+    `);
+  });
+  // Store for saving
+  window._lastResults = allResults.slice(0, 10);
+  return results.join('');
+}
+
+// Saving and Exporting
+function setupResultSaving() {
+  document.getElementById('resultsContainer').addEventListener('change', function(e) {
+    if (e.target.classList.contains('result-checkbox')) {
+      saveCheckedResults();
+    }
+  });
+  document.getElementById('exportBtn').onclick = exportResults;
+  document.getElementById('loadCaseBtn').onclick = loadCase;
+  document.getElementById('caseRefInput').onchange = function() {
+    currentCaseRef = this.value.trim();
+  };
+}
+
+function saveCheckedResults() {
+  const caseRef = document.getElementById('caseRefInput').value.trim();
+  if (!caseRef) return;
+  const checked = Array.from(document.querySelectorAll('.result-checkbox'))
+    .map((cb, idx) => cb.checked ? window._lastResults[idx] : null)
+    .filter(Boolean);
+  if (!savedResults[caseRef]) savedResults[caseRef] = [];
+  savedResults[caseRef] = checked;
+  localStorage.setItem('osint_cases', JSON.stringify(savedResults));
+}
+
+function exportResults() {
+  const caseRef = document.getElementById('caseRefInput').value.trim();
+  if (!caseRef || !savedResults[caseRef] || !savedResults[caseRef].length) {
+    alert('No saved results for this case.');
+    return;
+  }
+  const data = savedResults[caseRef];
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `osint_case_${caseRef}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadCase() {
+  const caseRef = document.getElementById('caseRefInput').value.trim();
+  if (!caseRef) return;
+  const stored = localStorage.getItem('osint_cases');
+  if (stored) savedResults = JSON.parse(stored);
+  if (savedResults[caseRef]) {
+    // Show saved results
+    const resultsContainer = document.getElementById('resultsContainer');
+    resultsContainer.innerHTML = savedResults[caseRef].map((result, idx) => `
+      <div class="result-item result-match">
+        <label style="float:right;">
+          <input type="checkbox" class="result-checkbox" data-idx="${idx}" checked>
+          Saved
+        </label>
+        <div style="font-size: 1.2rem; font-weight: 700; color: #B13F17;">
+          ${result.site.name}
+        </div>
+        <div style="color: #666; font-size: 0.9rem;">${result.category}</div>
+        <div style="margin:8px 0;">
+          <b>Relevance:</b> ${result.score}/10
+          <br>
+          <b>Snippet:</b> ${result.snippet}
+        </div>
+        <a href="${result.site.baseUrl}" target="_blank" class="btn btn-small btn-secondary">🔗 Go to Source</a>
+      </div>
+    `).join('');
+  } else {
+    alert('No saved results for this case.');
+  }
+}
+
+// On page load, restore savedResults
+document.addEventListener('DOMContentLoaded', () => {
+  const stored = localStorage.getItem('osint_cases');
+  if (stored) savedResults = JSON.parse(stored);
+  setupResultSaving();
+});
+</script>
     // --- CATEGORY & SITE DATABASE ---
     const defaultSiteDatabase = {
       "Searches": [
